@@ -211,9 +211,9 @@ class InputSection {
             GLOBALS.webcamClassifier.ready();
         }
         if (GLOBALS.browserUtils.isAndroid) {
-            /*eslint-disable */
+             
             if (confirm('Switching camera will clear your trained classes and reload the page.')) {
-                /* eslint-enable */
+                 
                 GLOBALS.isBackFacingCam = !GLOBALS.isBackFacingCam;
                 localStorage.setItem('isBackFacingCam', GLOBALS.isBackFacingCam.toString());
                 location.reload();

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable camelcase, max-lines,  */
 const IMAGE_SIZE = 227;
 const INPUT_SIZE = 1000;
 const TOPK = 10;
@@ -341,9 +340,6 @@ export default class WebcamClassifier {
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
 }
-/* eslint-disable keyword-spacing */
-import GLOBALS from './../config.js';
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as mobilenet from '@tensorflow-models/mobilenet';
-/* eslint-enable camelcase, max-lines, keyword-spacing */
