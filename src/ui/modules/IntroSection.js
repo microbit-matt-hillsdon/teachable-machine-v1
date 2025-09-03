@@ -102,7 +102,7 @@ class IntroSection {
     }
 }
 
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import GLOBALS from './../../config.js';
 
 export default IntroSection;

@@ -2,7 +2,7 @@ node_modules/
 .sass-cache
 .DS_Store
 *.swp
-public/*
+/dist/
 .idea
 server.key
 server.cer

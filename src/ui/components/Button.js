@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import GLOBALS from './../../config.js';
 
 class Button {

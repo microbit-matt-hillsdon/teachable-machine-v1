@@ -31,8 +31,6 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Caveat:700|Poppins:400,500,600,700" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
-    <script src="bundle.js"></script>
     <!-- Updated 1533336779 -->
 </head>
 <body class="no-scroll">
@@ -307,8 +305,9 @@
 </footer>
 <p id="input__media__activate" class="input__media__activate"></p>
 </div>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107306747-1"></script>
-<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments)}; gtag('js', new Date()); gtag('config', 'UA-107306747-1'); </script>
+<script>
+    window.gtag = () => {};
+</script>
 <script type="text/javascript">
 
     function getAndroidVersion() {
@@ -340,5 +339,6 @@ if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elain
     }
 }
 </script>
+<script type="module" src="/src/index.js"></script>
 </body>
 </html>

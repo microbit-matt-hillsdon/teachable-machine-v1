@@ -222,7 +222,7 @@ class InputSection {
     }
 }
 
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import GLOBALS from './../../config.js';
 import Button from './../components/Button.js';
 import CamInput from './../components/CamInput.js';

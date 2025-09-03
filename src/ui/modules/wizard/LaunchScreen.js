@@ -157,8 +157,8 @@ class LaunchScreen {
     }
 }
 
-import TweenMax from 'gsap';
-import ScrollToPlugin from 'gsap/ScrollToPlugin';
+import TweenMax from 'gsap/esm';
+import ScrollToPlugin from 'gsap/esm/ScrollToPlugin';
 import GLOBALS from './../../../config.js';
 import Button from './../../components/Button.js';
 

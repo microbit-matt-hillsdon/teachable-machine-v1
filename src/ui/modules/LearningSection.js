@@ -205,7 +205,7 @@ class LearningSection {
 }
 
 import GLOBALS from './../../config.js';
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import WiresLeft from './WiresLeft.js';
 import WiresRight from './WiresRight.js';
 import LearningClass from './LearningClass.js';
