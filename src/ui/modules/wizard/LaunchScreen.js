@@ -42,7 +42,7 @@ class LaunchScreen {
 
         let loader = ((el) => {
             let ajax = new XMLHttpRequest();
-            ajax.open('GET', 'assets/social-facebook.svg', true);
+            ajax.open('GET', 'static/social-facebook.svg', true);
             ajax.onload = (event) => {
                 el.innerHTML = ajax.responseText;
             };
@@ -51,7 +51,7 @@ class LaunchScreen {
 
         loader = ((el) => {
             let ajax = new XMLHttpRequest();
-            ajax.open('GET', 'assets/social-twitter.svg', true);
+            ajax.open('GET', 'static/social-twitter.svg', true);
             ajax.onload = (event) => {
                 el.innerHTML = ajax.responseText;
             };

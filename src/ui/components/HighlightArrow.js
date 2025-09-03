@@ -17,7 +17,7 @@ class HighlightArrow {
 		this.element = new Image();
         this.element.classList.add('wizard__arrow');
         this.element.width = 200;
-        this.element.src = `assets/arrows/arrow-${type}.svg`;
+        this.element.src = `static/arrows/arrow-${type}.svg`;
 	}
 
 	hide() {

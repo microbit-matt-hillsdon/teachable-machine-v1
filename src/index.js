@@ -60,7 +60,7 @@ function init() {
 	}else if (GLOBALS.browserUtils.isSafari) {
 		document.querySelector('.input__media__activate').innerHTML = 'To teach your machine, you need to turn on your camera. To do this click "Safari" in the menu bar, navigate to "Settings for This Website", in the "Camera" drop down menu choose "Allow" and then <a href="#">refresh the page</a>.';
 	}else if (GLOBALS.browserUtils.isFirefox) {
-		document.querySelector('.input__media__activate').innerHTML = 'To teach your machine, you need to turn on your camera. To do this you need to click this icon <img class="camera-icon" src="assets/ff-camera-icon.png"> to grant access and <a href="#">refresh the page</a>.';
+		document.querySelector('.input__media__activate').innerHTML = 'To teach your machine, you need to turn on your camera. To do this you need to click this icon <img class="camera-icon" src="static/ff-camera-icon.png"> to grant access and <a href="#">refresh the page</a>.';
 	}
 }
 

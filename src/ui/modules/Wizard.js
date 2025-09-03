@@ -424,7 +424,7 @@ this.stopTime = 0;
 this.audio = new Audio();
 this.loadedEvent = this.loaded.bind(this);
 this.audio.addEventListener('canplaythrough', this.loadedEvent);
-this.audio.src = 'assets/wizard/voice-over.mp3';
+this.audio.src = 'static/wizard/voice-over.mp3';
 
 this.wizardWrapper = document.querySelector('.wizard__wrapper');
 this.bar = document.querySelector('#wizard');
