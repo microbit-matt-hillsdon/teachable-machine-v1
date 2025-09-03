@@ -42,7 +42,6 @@ class GifCanvas {
     getGifler(source) {
         return new Promise((resolve) => {
             if (!this.gifs[source]) {
-                /* eslint-disable */
                 window.gifler(source)
                     .frames('canvas.gifler-canvas', this.draw.bind(this))
                     .then((response) => {
@@ -50,7 +49,6 @@ class GifCanvas {
                     this.gifs[source].start();
                     resolve(this.gifs[source]);
                 });
-                /* eslint-enable */
             }
             if (this.gifs[source]) {
                 this.gifs[source].start();

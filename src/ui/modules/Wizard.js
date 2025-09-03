@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable consistent-return, callback-return, no-case-declarations */
+ 
 import GLOBALS from './../../config.js';
 import TweenLite from 'gsap/esm';
 
@@ -51,13 +51,13 @@ class Wizard {
                 startTime: 10.5,
                 stopTime: 16,
                 event: () => {
-                    /*eslint-disable */
+                     
                     if (!GLOBALS.browserUtils.isMobile && !GLOBALS.isCamGranted) {
                         this.setText('First, click allow to turn on your camera.');
                     }else {
                         this.play(2);
                     }
-                    /* eslint-enable */
+                     
                 }
             },
             {
@@ -734,4 +734,4 @@ skip(event) {
 }
 
 export default Wizard;
-/* eslint-enable consistent-return, callback-return, no-case-declarations */
+ 

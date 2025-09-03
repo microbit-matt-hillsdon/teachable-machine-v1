@@ -31,11 +31,11 @@ class LaunchScreen {
         let twitterButton = document.querySelector('.intro__share-link--twitter');
 
         let intro = document.querySelector('.intro__content-mobile');
-        /*eslint-disable */
+         
         let defaultPrevent = (event) => {
             event.preventDefault();
         };
-        /* eslint-enable*/
+         
         intro.addEventListener('touchstart', defaultPrevent);
         intro.addEventListener('touchmove', defaultPrevent);
 
@@ -89,17 +89,15 @@ class LaunchScreen {
     openFacebookPopup(event) {
         event.preventDefault();
         let url = event.currentTarget.getAttribute('href');
-        /* eslint-disable space-infix-ops */
         window.open(url, 'fbShareWindow', 'height=450, width=550, top='+(window.innerHeight/2-275)+', left='+(window.innerWidth/2-225)+',toolbar=0, location=0, menubar=0, directories=0, scrollbars=0');
-        /* eslint-enable space-infix-ops */
     }
 
     openTwitterPopup(event) {
         event.preventDefault();
         let url = event.currentTarget.getAttribute('href');
-        /* eslint-disable space-infix-ops */
+         
         window.open(url, 'fbShareWindow', 'height=450, width=600, top='+(window.innerHeight/2-150)+', left='+(window.innerWidth/2-225)+', toolbar=0, location=0, menubar=0, directories=0, scrollbars=0');
-        /* eslint-enable space-infix-ops */
+         
     }
 
     skipClick(event) {
