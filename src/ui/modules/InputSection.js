@@ -57,7 +57,7 @@ class InputSection {
 
         this.gifs = [];
 
-        let gif1 = new WizardGIFExample('assets/wizard/1.gif');
+        let gif1 = new WizardGIFExample('static/wizard/1.gif');
         if (GLOBALS.browserUtils.isMobile) {
             TweenMax.set(gif1.element, {
                 rotation: -5,
@@ -77,7 +77,7 @@ class InputSection {
         this.gifs.push(gif1);
 
 
-        let gif2 = new WizardGIFExample('assets/wizard/2.gif');
+        let gif2 = new WizardGIFExample('static/wizard/2.gif');
         if (GLOBALS.browserUtils.isMobile) {
             TweenMax.set(gif2.element, {
                 rotation: -5,
@@ -96,7 +96,7 @@ class InputSection {
         this.element.appendChild(gif2.element);
         this.gifs.push(gif2);
 
-        let gif3 = new WizardGIFExample('assets/wizard/3.gif');
+        let gif3 = new WizardGIFExample('static/wizard/3.gif');
         if (GLOBALS.browserUtils.isMobile) {
             TweenMax.set(gif3.element, {
                 rotation: -5,
@@ -115,7 +115,7 @@ class InputSection {
         this.element.appendChild(gif3.element);
         this.gifs.push(gif3);
 
-        let gif4 = new WizardGIFExample('assets/wizard/4.gif');
+        let gif4 = new WizardGIFExample('static/wizard/4.gif');
         if (GLOBALS.browserUtils.isMobile) {
             TweenMax.set(gif4.element, {
                 rotation: -5,

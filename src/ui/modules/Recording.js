@@ -89,8 +89,8 @@ class Recording {
         stamp.onload = () => {
             this.stampImage = stamp;
         };
-        img.src = 'assets/wires-recorder.png';
-        stamp.src = 'assets/madeby.svg';
+        img.src = 'static/wires-recorder.png';
+        stamp.src = 'static/madeby.svg';
     }
 
     render() {

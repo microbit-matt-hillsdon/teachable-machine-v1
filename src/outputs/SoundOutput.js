@@ -17,7 +17,7 @@ class SoundOutput {
 		this.id = 'SoundOutput';
 		this.loaded = false;
 		this.canTrigger = true;
-		this.basePath = 'assets/outputs/sound/sounds/';
+		this.basePath = 'static/outputs/sound/sounds/';
 		this.assets = [];
 
 		this.assets.push('applause.mp3');
@@ -106,7 +106,7 @@ class SoundOutput {
 
 			let loader = ((el) => {
 				let ajax = new XMLHttpRequest();
-				ajax.open('GET', 'assets/outputs/speaker-icon.svg', true);
+				ajax.open('GET', 'static/outputs/speaker-icon.svg', true);
 				ajax.onload = (event) => {
 					el.innerHTML = ajax.responseText;
 				};
@@ -358,7 +358,7 @@ class SoundOutput {
 		img.onload = () => {
 			this.canvasImage = img;
 		};
-		img.src = 'assets/outputs/speaker-icon.svg';
+		img.src = 'static/outputs/speaker-icon.svg';
 	}
 
 	updateCanvas(colorId, sound) {

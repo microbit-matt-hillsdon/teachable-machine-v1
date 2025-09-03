@@ -32,7 +32,7 @@ class SoundSearch {
 
 		let loader = ((el) => {
 			let ajax = new XMLHttpRequest();
-			ajax.open('GET', 'assets/outputs/back-icon.svg', true);
+			ajax.open('GET', 'static/outputs/back-icon.svg', true);
 			ajax.onload = (event) => {
 				el.innerHTML = ajax.responseText;
 			};
@@ -59,7 +59,7 @@ class SoundSearch {
 			// icon.classList.add('output__sound-search-result-play');
 			let loader = ((el) => {
 				let ajax = new XMLHttpRequest();
-				ajax.open('GET', 'assets/outputs/play-icon.svg', true);
+				ajax.open('GET', 'static/outputs/play-icon.svg', true);
 				ajax.onload = (event) => {
 					el.innerHTML = ajax.responseText;
 				};
