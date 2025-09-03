@@ -51,6 +51,6 @@ class RecordOpener {
 
 import GLOBALS from './../../config.js';
 import Button from './../components/Button.js';
-import TweenLite from 'gsap';
+import TweenLite from 'gsap/esm';
 
 export default RecordOpener;

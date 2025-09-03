@@ -223,7 +223,7 @@ class LearningClass {
 }
 
 import GLOBALS from './../../config.js';
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import Button from './../components/Button.js';
 import HighlightArrow from './../components/HighlightArrow.js';
 

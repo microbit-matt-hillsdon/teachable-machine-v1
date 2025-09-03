@@ -129,7 +129,7 @@ class OutputSection {
     }
 }
 
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import GLOBALS from './../../config.js';
 
 import Selector from './../components/Selector.js';

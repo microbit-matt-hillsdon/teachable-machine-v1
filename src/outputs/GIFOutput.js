@@ -312,7 +312,7 @@ class GIFOutput {
 	}
 }
 
-import TweenMax from 'gsap';
+import TweenMax from 'gsap/esm';
 import 'gifler';
 import GifCanvas from './../ui/components/GifCanvas.js';
 import GLOBALS from './../config.js';

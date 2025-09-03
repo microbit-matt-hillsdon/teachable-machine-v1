@@ -14,7 +14,7 @@
 
 /* eslint-disable consistent-return, callback-return, no-case-declarations */
 import GLOBALS from './../../config.js';
-import TweenLite from 'gsap';
+import TweenLite from 'gsap/esm';
 
 class Wizard {
     constructor() {
