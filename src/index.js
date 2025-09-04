@@ -62,6 +62,22 @@ function init() {
 	}else if (GLOBALS.browserUtils.isFirefox) {
 		document.querySelector('.input__media__activate').innerHTML = 'To teach your machine, you need to turn on your camera. To do this you need to click this icon <img class="camera-icon" src="static/ff-camera-icon.png"> to grant access and <a href="#">refresh the page</a>.';
 	}
+
+	// Initialise micro:bit UART data listener.
+	const photoUartMessagePrefix = "c:photo:"
+	const uartDataListener = (event) => {
+		const value = new TextDecoder().decode(event.value);
+		const classIdx = parseInt(value.replace(photoUartMessagePrefix, ""))
+		if (!value.startsWith(photoUartMessagePrefix) || isNaN(classIdx)) {
+			throw new Error(`Invalid micro:bit UART message: ${value}`)
+		}
+		if (GLOBALS.recording) {
+			GLOBALS.learningSection.learningClasses[classIdx].buttonUp()
+		} else {
+			GLOBALS.learningSection.learningClasses[classIdx].buttonDown()
+		}
+	};
+	GLOBALS.microbit.addEventListener("uartdata", uartDataListener);
 }
 
 window.addEventListener('load', init);

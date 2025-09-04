@@ -261,6 +261,12 @@ class GIFOutput {
 
 	trigger(index) {
 		if (!GLOBALS.clearing) {
+			// Send microbit display UART message when detected class changes.
+			if (this.currentIndex !== index) {
+				const encoded = new TextEncoder().encode(`c:display:${index}\n`);
+            	void GLOBALS.microbit.uartWrite(encoded);
+			}
+
             this.currentIndex = index;
 
             if (this.currentBorder && this.currentClassName) {
