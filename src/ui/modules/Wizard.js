@@ -705,9 +705,10 @@ skip(event) {
     this.skipButton.style.display = 'none';
     this.soundButton.style.display = 'none';
     window.removeEventListener('class-trained', this.classTrainedEvent);
-    setTimeout(() => {
-        GLOBALS.camInput.start();
-    }, 500);
+    // This is already triggered at start-up.
+    //setTimeout(() => {
+    //    GLOBALS.camInput.start();
+    //}, 500);
     GLOBALS.inputSection.enable();
     GLOBALS.inputSection.hideGif(0);
     GLOBALS.inputSection.hideGif(1);
