@@ -17,14 +17,12 @@ class LaunchScreen {
         this.element = document.querySelector('.intro');
 
         this.startButton = new Button(document.querySelector('#start-tutorial-button'));
-        this.skipButton = document.querySelector('#skip-tutorial-button');
         this.skipButtonMobile = document.querySelector('#skip-tutorial-button-mobile');
 
         this.messageIsCompatible = document.querySelector('#is-compatible');
         this.messageIsNotCompatible = document.querySelector('#is-not-compatible');
 
         this.startButton.element.classList.add('button--disabled');
-        document.querySelector('.wizard__launch-skip-paragraph').style.display = 'none';
         document.querySelector('.wizard__browser-warning').style.display = 'block';
 
         let facebookButton = document.querySelector('.intro__share-link--facebook');
@@ -63,7 +61,6 @@ class LaunchScreen {
         
         if (GLOBALS.browserUtils.isCompatible === true && GLOBALS.browserUtils.isMobile === false) {
             this.startButton.element.classList.remove('button--disabled');
-            document.querySelector('.wizard__launch-skip-paragraph').style.display = 'block';
             document.querySelector('.wizard__browser-warning').style.display = 'none';
         }
 
@@ -79,11 +76,9 @@ class LaunchScreen {
             this.messageIsNotCompatible.style.display = 'block';
         }
 
-        this.skipButton.addEventListener('click', this.skipClick.bind(this));
-        this.skipButtonMobile.addEventListener('touchend', this.skipClick.bind(this));
+        // Hacked to skip the tutorial always
         this.skipButtonMobile.addEventListener('click', this.skipClick.bind(this));
-        this.startButton.element.addEventListener('click', this.startClick.bind(this));
-        this.startButton.element.addEventListener('touchend', this.startClick.bind(this));
+        this.startButton.element.addEventListener('click', this.skipClick.bind(this));
     }
 
     openFacebookPopup(event) {
