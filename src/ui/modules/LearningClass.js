@@ -26,6 +26,9 @@ class LearningClass {
 		this.button = new Button(this.element.querySelector('a.button--record'));
 		this.button.element.addEventListener('mousedown', this.buttonDown.bind(this));
 
+		this.buttonDown = this.buttonDown.bind(this);
+		this.buttonUp = this.buttonUp.bind(this);
+
 		this.button.element.addEventListener('touchstart', this.buttonDown.bind(this));
 		this.button.element.addEventListener('touchend', this.buttonUp.bind(this));
 
