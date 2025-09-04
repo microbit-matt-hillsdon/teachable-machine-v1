@@ -117,7 +117,13 @@ class LaunchScreen {
             onComplete: () => {
                 this.destroy();
                 if (!GLOBALS.browserUtils.isMobile) {
-                    GLOBALS.wizard.startCamera();
+                    (async () => {
+                        // TODO: Do we need to fix
+                        // https://github.com/microbit-foundation/microbit-connection/issues/20
+                        // ?
+                        await GLOBALS.microbit.connect();
+                        GLOBALS.camInput.start();
+                    })();
                 }
             }
         });

@@ -12,6 +12,7 @@
     "eslint"
   ],
   "dependencies": {
+    "@microbit/microbit-connection": "^0.0.0-alpha.39",
     "@tensorflow-models/knn-classifier": "0.1.0",
     "@tensorflow-models/mobilenet": "0.1.1",
     "@tensorflow/tfjs": "0.11.7",
