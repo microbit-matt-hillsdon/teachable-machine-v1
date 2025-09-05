@@ -18,7 +18,8 @@ class SoundOutput {
 		this.loaded = false;
 		this.canTrigger = true;
 		this.basePath = 'static/outputs/sound/sounds/';
-		this.assets = [
+		// Corresponds with sounds in the micro:bit program.
+		this.soundEffects = [
 			"giggle",
 			"happy",
 			"hello",
@@ -30,13 +31,13 @@ class SoundOutput {
 			"yawn"
 		];
 
-		this.numAssets = this.assets.length;
+		this.numAssets = this.soundEffects.length;
         window.addEventListener('mobileLaunch', this.touchAudio.bind(this));
 
 		this.defaultAssets = [ 
-			this.assets[0], 
-			this.assets[1], 
-			this.assets[2]
+			this.soundEffects[0], 
+			this.soundEffects[1], 
+			this.soundEffects[2]
 		];
 
 		this.numLoaded = 0;
@@ -62,14 +63,14 @@ class SoundOutput {
 		let options = {};
 		options.playCallback = this.searchResultPlayClick.bind(this);
 		options.selectCallback = this.searchResultClick.bind(this);
-		options.assets = this.assets;
+		options.assets = this.soundEffects;
 		this.search = new SoundSearch(options);
 		this.offScreen.appendChild(this.search.element);
 		this.inputClasses = [];
         this.lastSound;
 
-		for (let index = 0; index < this.assets.length; index += 1) {
-			let sound = this.assets[index];
+		for (let index = 0; index < this.soundEffects.length; index += 1) {
+			let sound = this.soundEffects[index];
 			this.sounds[sound] = index;
 		}
 
@@ -255,7 +256,7 @@ class SoundOutput {
 		if (this.numLoaded === this.numAssets) {
 			this.loaded = true;
 			for (let index = 0; index < this.numAssets; index += 1) {
-				let id = this.assets[index];
+				let id = this.soundEffects[index];
 			}
 			this.showScreen();
 		}
