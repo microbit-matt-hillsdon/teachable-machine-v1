@@ -66,12 +66,11 @@ class LearningSection {
 	}
 
 	record(event) {
-		const classId = event.detail.id;
-		const isRecording = event.detail.isRecording;
-		if (isRecording) {
-			this.learningClasses[classId].buttonDown();
-		} else {
-			this.learningClasses[classId].buttonUp();
+		if (event.detail.start !== undefined) {
+			this.learningClasses[event.detail.start].buttonDown();
+		} 
+		if (event.detail.stop !== undefined) {
+			this.learningClasses[event.detail.stop].buttonUp();
 		}
 	}
 

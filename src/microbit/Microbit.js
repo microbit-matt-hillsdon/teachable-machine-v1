@@ -18,10 +18,9 @@ class Microbit {
                 case "photo": {
                     const classIdx = parseInt(arg);
                     const event = new CustomEvent("record", {
-                        detail: {
-                            id: classIdx,
-                            isRecording: !GLOBALS.recording,
-                        },
+                        detail: GLOBALS.recording
+                            ? { stop: classIdx }
+                            : { start: classIdx },
                     });
                     window.dispatchEvent(event);
                 }
