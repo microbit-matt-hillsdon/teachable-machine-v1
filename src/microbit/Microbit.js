@@ -4,19 +4,8 @@ class Microbit {
     constructor() {
         this.connection = createWebBluetoothConnection();
         this.uartDataListener = null;
-        this.connect = this.connection.connect.bind(this.connection)
-    }
+        this.connect = this.connection.connect.bind(this.connection);
 
-    display = (arg) => this.writeUart("display", arg)
-    playSound = (arg) => this.writeUart("sound", arg)
-    stopSounds = () => this.writeUart("sound", -1)
-
-    writeUart = (command, arg) => {
-        const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);
-        this.connection.uartWrite(encoded)
-    }
-
-    addUartDataListener = () => {
         // Initialise micro:bit UART data listener.
         this.uartDataListener = (event) => {
             const decoded = new TextDecoder().decode(event.value);
@@ -29,9 +18,9 @@ class Microbit {
                 case "photo": {
                     const classIdx = parseInt(arg);
                     const event = new CustomEvent("record", {
-                        detail: { 
-                            id: classIdx, 
-                            isRecording: !GLOBALS.recording 
+                        detail: {
+                            id: classIdx,
+                            isRecording: !GLOBALS.recording,
                         },
                     });
                     window.dispatchEvent(event);
@@ -39,15 +28,15 @@ class Microbit {
             }
         };
         this.connection.addEventListener("uartdata", this.uartDataListener);
-    };
+    }
 
-    removeUartDataListener = () => {
-        if (this.uartDataListener) {
-            this.connection.removeEventListener(
-                "uartdata",
-                this.uartDataListener
-            );
-        }
+    display = (arg) => this.writeUart("display", arg);
+    playSound = (arg) => this.writeUart("sound", arg);
+    stopSounds = () => this.writeUart("sound", -1);
+
+    writeUart = (command, arg) => {
+        const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);
+        this.connection.uartWrite(encoded);
     };
 }
 

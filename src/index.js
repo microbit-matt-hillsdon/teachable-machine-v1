@@ -62,8 +62,6 @@ function init() {
 	}else if (GLOBALS.browserUtils.isFirefox) {
 		document.querySelector('.input__media__activate').innerHTML = 'To teach your machine, you need to turn on your camera. To do this you need to click this icon <img class="camera-icon" src="static/ff-camera-icon.png"> to grant access and <a href="#">refresh the page</a>.';
 	}
-
-	GLOBALS.microbit.addUartDataListener()
 }
 
 window.addEventListener('load', init);
