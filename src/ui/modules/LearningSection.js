@@ -61,6 +61,17 @@ class LearningSection {
 			y: -175
 		});
 		this.element.appendChild(this.arrow.element);
+
+		window.addEventListener('record', this.record.bind(this));
+	}
+
+	record(event) {
+		if (event.detail.start !== undefined) {
+			this.learningClasses[event.detail.start].buttonDown();
+		} 
+		if (event.detail.stop !== undefined) {
+			this.learningClasses[event.detail.stop].buttonUp();
+		}
 	}
 
     condenseSection() {

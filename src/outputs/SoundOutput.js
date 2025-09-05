@@ -18,39 +18,27 @@ class SoundOutput {
 		this.loaded = false;
 		this.canTrigger = true;
 		this.basePath = 'static/outputs/sound/sounds/';
-		this.assets = [];
+		// Corresponds with sounds in the micro:bit program.
+		this.soundEffects = [
+			"giggle",
+			"happy",
+			"hello",
+			"mysterious",
+			"sad",
+			"soaring",
+			"spring",
+			"twinkle",
+			"yawn"
+		];
 
-		this.assets.push('applause.mp3');
-		this.assets.push('bass.mp3');
-		this.assets.push('birds.mp3');
-		this.assets.push('cow.mp3');
-		this.assets.push('drum_joke.mp3');
-		this.assets.push('drum_roll.mp3');
-		this.assets.push('drums_1.mp3');
-		this.assets.push('drums_2.mp3');
-		this.assets.push('fanfare.mp3');
-		this.assets.push('flute_1.mp3');
-		this.assets.push('flute_2.mp3');
-		this.assets.push('flute_3.mp3');
-		this.assets.push('guitar_1.mp3');
-		this.assets.push('guitar_2.mp3');
-		this.assets.push('harp.mp3');
-		this.assets.push('jingle.mp3');
-		this.assets.push('orchestra.mp3');
-		this.assets.push('organ.mp3');
-		this.assets.push('trombone.mp3');
-		this.assets.push('trumpet_1.mp3');
-		this.assets.push('trumpet_2.mp3');
-		this.assets.push('trumpet_3.mp3');
-		this.assets.push('tuba.mp3');
-		
-		this.numAssets = this.assets.length;
+		this.numAssets = this.soundEffects.length;
         window.addEventListener('mobileLaunch', this.touchAudio.bind(this));
 
-		this.defaultAssets = [];
-		this.defaultAssets[0] = 'birds.mp3';
-		this.defaultAssets[1] = 'guitar_1.mp3';
-		this.defaultAssets[2] = 'trombone.mp3';
+		this.defaultAssets = [ 
+			this.soundEffects[0], 
+			this.soundEffects[1], 
+			this.soundEffects[2]
+		];
 
 		this.numLoaded = 0;
 		this.sounds = {};
@@ -75,20 +63,15 @@ class SoundOutput {
 		let options = {};
 		options.playCallback = this.searchResultPlayClick.bind(this);
 		options.selectCallback = this.searchResultClick.bind(this);
-		options.assets = this.assets;
+		options.assets = this.soundEffects;
 		this.search = new SoundSearch(options);
 		this.offScreen.appendChild(this.search.element);
 		this.inputClasses = [];
         this.lastSound;
 
-		for (let index = 0; index < this.assets.length; index += 1) {
-			let sound = this.assets[index];
-			let audio = new Audio();
-			audio.muted = true;
-			audio.loop = true;
-			audio.addEventListener('canplaythrough', this.assetLoaded.bind(this));
-			audio.src = this.basePath + sound;
-			this.sounds[sound] = audio;
+		for (let index = 0; index < this.soundEffects.length; index += 1) {
+			let sound = this.soundEffects[index];
+			this.sounds[sound] = index;
 		}
 
 		for (let index = 0; index < this.numClasses; index += 1) {
@@ -153,28 +136,30 @@ class SoundOutput {
 			if (this.currentSound === null) {
 				this.currentSound;
 			}else if (document.hidden) {
-				this.currentSound.pause();
+				this.pauseCurrentSound()
 			}else {
-				this.currentSound.play();
+				this.playCurrentSound();
 			}
 		}
     }
 
     playCurrentSound() {
-		if (this.currentSound) {
-			this.currentSound.play();
+		if (this.currentSound !== null) {
+			GLOBALS.microbit.playSound(this.currentSound);
 		}
 	}
 
     pauseCurrentSound() {
-		if (this.currentSound) {
-			this.currentSound.pause();
-		}
+		// We can't pause individual micro:bit sounds, instead we can only stop all sounds.
+		this.stopSounds()
+		// if (this.currentSound) {
+		// 	this.currentSound.pause();
+		// }
     }
 
 	clearInput(event) {
 		if (this.currentSound === this.sounds[event.target.parentNode.sound]) {
-			this.currentSound.muted = true;
+			this.stopSounds()
             this.currentSound = null;
             if (this.currentIcon) {
 				this.currentIcon.classList.remove('output__sound-speaker--active');
@@ -204,7 +189,7 @@ class SoundOutput {
 		this.activeInput.parentNode.sound = value;
 		this.activeInput.parentNode.input.classList.remove('output__sound-input--nothing');
 		if (this.currentSound) {
-            this.currentSound.muted = true;
+            this.stopSounds()
             this.currentSound = null;
         }
         this.search.hide();
@@ -214,7 +199,7 @@ class SoundOutput {
 		this.activeInput = event.target;
 		let classId = this.activeInput.classId;
 		if (this.currentSound) {
-			this.currentSound.muted = true;
+			this.stopSounds()
 			this.currentSound = null;
 			if (this.currentIcon) {
 				this.currentIcon.classList.remove('output__sound-speaker--active');
@@ -231,12 +216,12 @@ class SoundOutput {
 
 	soundEnded(event) {
 		if (this.activeSpeaker) {
-			this.currentSound.muted = true;
+			this.stopSounds()
 			this.activeSpeaker.classList.remove('output__sound-speaker--active');	
 		}
 		this.canTrigger = true;
 		if (this.currentSound === event.target) {
-			this.currentSound.muted = true;
+			this.stopSounds()
 			this.currentSound = null;
 			if (this.currentIcon) {
 				this.currentIcon.classList.remove('output__sound-speaker--active');
@@ -246,24 +231,24 @@ class SoundOutput {
 	}
 
     playSound(sound) {
-        this.muteSounds();
+        this.stopSounds();
 		if (!this.search.visible) {
 			if (this.currentSound === sound) {
 				this.currentSound = null;
-			}else if (this.sounds[sound]) {
+			}else if (this.sounds[sound] !== null) {
 				this.currentSound = this.sounds[sound];
-				this.currentSound.muted = false;
-				this.currentSound.currentTime = 0;
-				this.currentSound.play();
+				this.playCurrentSound();
                 this.lastSound = this.currentSound;
 			}
 		}
     }
 
-    muteSounds() {
-		if (this.currentSound) {
-            this.currentSound.muted = true;
-		}
+    stopSounds() {
+		// We can't mute individual micro:bit sounds, instead we can only stop all sounds.
+		GLOBALS.microbit.stopSounds()
+		// if (this.currentSound) {
+        //     this.currentSound.muted = true;
+		// }
 	}
 
 	assetLoaded(event) {
@@ -271,7 +256,7 @@ class SoundOutput {
 		if (this.numLoaded === this.numAssets) {
 			this.loaded = true;
 			for (let index = 0; index < this.numAssets; index += 1) {
-				let id = this.assets[index];
+				let id = this.soundEffects[index];
 			}
 			this.showScreen();
 		}
@@ -291,7 +276,7 @@ class SoundOutput {
                 if (sound) {
                     this.playSound(sound);
                 }else {
-                    this.muteSounds();
+                    this.stopSounds();
                 }
 
                 if (this.currentIcon) {
@@ -325,19 +310,13 @@ class SoundOutput {
             if (this.currentBorder && this.currentClassName) {
                 this.currentBorder.classList.remove(`output__sound-input--${this.currentClassName}-selected`);
             }
-            for (let index = 0; index < this.numAssets; index += 1) {
-                let id = this.assets[index];
-                this.sounds[id].pause();
-            }
+            this.stopSounds()
         }
     }
 
 
 	stop() {
-		for (let index = 0; index < this.numAssets; index += 1) {
-			let id = this.assets[index];
-			this.sounds[id].pause();
-		}
+		this.stopSounds()
 		this.element.style.display = 'none';
 	}
 
@@ -397,8 +376,9 @@ class SoundOutput {
         for (let key in this.sounds) {
             /* eslint-disable */
             if (this.sounds.hasOwnProperty(key)) {
-                this.sounds[key].play();
-                this.sounds[key].pause();
+                GLOBALS.microbit.playSound(this.sounds[key]);
+				// We can't pause individual sounds in the micro:bit.
+                // this.sounds[key].pause();
             }
             /* eslint-enable */
         }

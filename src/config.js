@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-import { createWebBluetoothConnection } from "@microbit/microbit-connection";
+import Microbit from "./microbit/Microbit";
 
 // limitations under the License.
 let AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -60,7 +60,7 @@ let GLOBALS = {
 	audioContext: new AudioContext(),
 	isBackFacingCam: false,
 	microbitName: null,
-	microbit: createWebBluetoothConnection()
+	microbit: new Microbit()
 };
 
 export default GLOBALS;
