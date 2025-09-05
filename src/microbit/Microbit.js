@@ -7,6 +7,10 @@ class Microbit {
         this.connect = this.connection.connect.bind(this.connection)
     }
 
+    display = (arg) => this.writeUart("display", arg)
+    playSound = (arg) => this.writeUart("sound", arg)
+    stopSounds = () => this.writeUart("sound", -1)
+
     writeUart = (command, arg) => {
         const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);
         this.connection.uartWrite(encoded)

@@ -263,7 +263,7 @@ class GIFOutput {
 		if (!GLOBALS.clearing) {
 			// Send microbit display UART message when detected class changes.
 			if (this.currentIndex !== index) {
-				void GLOBALS.microbit.writeUart("display", index);
+				GLOBALS.microbit.display(index);
 			}
 
             this.currentIndex = index;
