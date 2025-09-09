@@ -255,7 +255,6 @@ class LEDOutput {
     }
 
     start() {
-        console.trace("here");
         this.element.style.display = "block";
         this.offScreen.style.display = "block";
         this.handleVisibilityChange();
