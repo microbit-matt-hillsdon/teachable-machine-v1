@@ -47,6 +47,7 @@ class LEDOutput {
             "Rabbit",
             "Cow",
             "Quarter note",
+            "Eigth note",
             "Eighth note",
             "Pitchfork",
             "Target",
@@ -69,7 +70,6 @@ class LEDOutput {
 
         this.LEDIcons = {};
         this.currentLEDIcon = null;
-        this.currentIcon = null;
         this.element = document.createElement("div");
         this.element.classList.add("output__container");
         this.element.classList.add("output__container--led");
@@ -98,21 +98,8 @@ class LEDOutput {
             let LEDIcon = this.defaultAssets[index];
             inputClass.classList.add("output__led-class");
             inputClass.classList.add(`output__led-class--${id}`);
-
-            let speakerIcon = document.createElement("div");
-            speakerIcon.classList.add("output__led-speaker");
-            speakerIcon.classList.add(`output__led-speaker--${id}`);
+            
             inputClass.LEDIcon = LEDIcon;
-            inputClass.icon = speakerIcon;
-
-            let loader = ((el) => {
-                let ajax = new XMLHttpRequest();
-                ajax.open("GET", "static/outputs/speaker-icon.svg", true);
-                ajax.onload = (event) => {
-                    el.innerHTML = ajax.responseText;
-                };
-                ajax.send();
-            })(speakerIcon);
 
             let editIcon = document.createElement("div");
             editIcon.classList.add("output__led-edit");
@@ -124,7 +111,6 @@ class LEDOutput {
             input.classList.add(`output__led-input--${id}`);
             input.setAttribute("readonly", "readonly");
             input.value = LEDIcon;
-            inputClass.appendChild(speakerIcon);
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
@@ -139,7 +125,6 @@ class LEDOutput {
             this.offScreen.appendChild(inputClass);
         }
         this.element.appendChild(this.offScreen);
-        this.speakers = [];
         this.buildCanvas();
     }
 
@@ -150,12 +135,6 @@ class LEDOutput {
         ) {
             this.clearDisplay();
             this.currentLEDIcon = null;
-            if (this.currentIcon) {
-                this.currentIcon.classList.remove(
-                    "output__led-speaker--active"
-                );
-                this.currentIcon = null;
-            }
         }
         event.target.parentNode.LEDIcon = null;
         event.target.parentNode.input.value = "Nothing";
@@ -198,12 +177,6 @@ class LEDOutput {
         if (this.currentLEDIcon) {
             this.clearDisplay();
             this.currentLEDIcon = null;
-            if (this.currentIcon) {
-                this.currentIcon.classList.remove(
-                    "output__led-speaker--active"
-                );
-                this.currentIcon = null;
-            }
         }
         this.search.show(classId);
     }
@@ -242,12 +215,6 @@ class LEDOutput {
                     this.clearDisplay();
                 }
 
-                if (this.currentIcon) {
-                    this.currentIcon.classList.remove(
-                        "output__led-speaker--active"
-                    );
-                }
-
                 if (this.currentBorder && this.currentClassName) {
                     this.currentBorder.classList.remove(
                         `output__led-input--${this.currentClassName}-selected`
@@ -263,8 +230,6 @@ class LEDOutput {
                     `output__led-input--${this.currentClassName}-selected`
                 );
 
-                this.currentIcon = this.inputClasses[this.currentIndex];
-                this.currentIcon.classList.add("output__led-speaker--active");
                 if (this.canvas) {
                     icon === null ? (icon = "(nothing)") : icon;
                     this.updateCanvas(this.currentIndex, icon);
@@ -272,11 +237,6 @@ class LEDOutput {
             }
         }
         if (GLOBALS.clearing) {
-            if (this.currentIcon) {
-                this.currentIcon.classList.remove(
-                    "output__led-speaker--active"
-                );
-            }
             if (this.currentBorder && this.currentClassName) {
                 this.currentBorder.classList.remove(
                     `output__led-input--${this.currentClassName}-selected`
@@ -321,12 +281,6 @@ class LEDOutput {
         this.canvas.width = 340;
         this.canvas.height = 260;
         this.offScreen.appendChild(this.canvas);
-
-        let img = new Image();
-        img.onload = () => {
-            this.canvasImage = img;
-        };
-        img.src = "static/outputs/speaker-icon.svg";
     }
 
     updateCanvas(colorId, icon) {

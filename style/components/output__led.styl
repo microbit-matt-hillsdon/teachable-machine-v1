@@ -194,7 +194,6 @@
 	display: flex
 	align-items: center
 	height: 33%
-	padding-left: space(1)
 }
 
 .output__led-delete {
@@ -210,53 +209,6 @@
 	background-position: center center
 }
 
-.output__led-speaker {
-	width: 52px
-	height: 50px
-	margin-right: space(0)
-	padding-right: 4px
-	// cursor: pointer
-
-	svg {
-		fill: $color__class-green--primary
-		width: 100%
-		height: 100%
-		pointer-events: none
-
-		.led-on {
-			display: none
-		}
-	}
-}
-
-.output__led-speaker-class-icon {
-	width: 70px
-	height: 70px
-	margin-left: space(1)
-	margin-top: 5px
-	
-}
-
-.output__led-speaker--green svg {
-	fill: $color__class-green--primary
-}
-
-
-.output__led-speaker--purple svg {
-	fill: $color__class-purple--primary
-}
-
-.output__led-speaker--orange svg {
-	fill: $color__class-orange--primary
-}
-
-
-.output__led-speaker--active svg {
-
-	.led-on {
-		display: block
-	}
-}
 
 .output__led-edit {
 	position: absolute
@@ -267,8 +219,7 @@
 	background-image url(../static/outputs/edit-icon.svg)
 	background-position 0 center
 	background-repeat: no-repeat
-	margin-left: 51px
-	left: space(2.5)
+	left: space(1.2)
 	pointer-events: none
 	
 	svg {
@@ -280,7 +231,7 @@
 }
 
 .output__led-edit:after {
-	content: "Play"
+	content: "Show"
 	position: absolute
 	top: 0
 	left: 25px
@@ -305,7 +256,6 @@
 
 
 .output__led-input {
-	width: calc(100% - 50px)
 	padding-left: space(8)
 	padding-right: 40px
 	height: 50px
@@ -348,41 +298,6 @@
 .output__led-on {
 	display: flex
 	flex-wrap: wrap
-}
-
-.output__led-speaker-class {
-	position: relative
-	flex: 1 1 1
-	width: 50%
-	height: 50%
-	background: $color__white
-}
-
-.output__led-speaker-class:nth-child(1) {
-	border-right: 1px solid $color__background
-	border-bottom: 1px solid $color__background
-}
-
-.output__led-speaker-class:nth-child(2) {
-	border-left: 1px solid $color__background
-	border-bottom: 1px solid $color__background
-}
-
-.output__led-speaker-class:nth-child(3) {
-	border-right: 1px solid $color__background
-	border-top: 1px solid $color__background
-}
-
-.output__led-speaker-class:nth-child(4) {
-	border-left: 1px solid $color__background
-	border-top: 1px solid $color__background
-}
-
-.output__led-speaker-class-icon {
-	position: relative
-	top: 50%
-	left: 50%
-	transform: translate3d(-50%, -50%, 0)
 }
 
 .output__led {
