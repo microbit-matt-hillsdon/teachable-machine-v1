@@ -15,9 +15,9 @@
 class LEDOutput {
     constructor() {
         this.id = "LEDOutput";
-        
-		// Corresponds with icon options in MakeCode.
-        this.microbitLedIcons = [
+
+        // Corresponds with icon options in MakeCode.
+        this.microbitLEDIcons = [
             "Heart",
             "Small heart",
             "Yes",
@@ -47,6 +47,7 @@ class LEDOutput {
             "Rabbit",
             "Cow",
             "Quarter note",
+            // Eigth note LED icon is deprecated and hidden in MakeCode.
             "Eigth note",
             "Eighth note",
             "Pitchfork",
@@ -62,11 +63,10 @@ class LEDOutput {
         ];
 
         this.defaultAssets = [
-            this.microbitLedIcons[0],
-            this.microbitLedIcons[1],
-            this.microbitLedIcons[2],
+            this.microbitLEDIcons[0],
+            this.microbitLEDIcons[1],
+            this.microbitLEDIcons[2],
         ];
-
 
         this.LEDIcons = {};
         this.currentLEDIcon = null;
@@ -79,16 +79,19 @@ class LEDOutput {
         this.offScreen = document.createElement("div");
         this.offScreen.classList.add("output__led");
         let options = {};
-        options.playCallback = this.searchResultPlayClick.bind(this);
+        options.displayCallback = this.searchResultLEDIconClick.bind(this);
         options.selectCallback = this.searchResultClick.bind(this);
-        options.assets = this.microbitLedIcons;
+        options.assets = this.microbitLEDIcons.filter((icon) => {
+            // Remove deprecated icon in MakeCode.
+            return icon !== "Eigth note";
+        });
         this.search = new LEDSearch(options);
         this.offScreen.appendChild(this.search.element);
         this.inputClasses = [];
         this.lastIcon;
 
-        for (let index = 0; index < this.microbitLedIcons.length; index += 1) {
-            let icon = this.microbitLedIcons[index];
+        for (let index = 0; index < this.microbitLEDIcons.length; index += 1) {
+            const icon = this.microbitLEDIcons[index];
             this.LEDIcons[icon] = index;
         }
 
@@ -98,7 +101,7 @@ class LEDOutput {
             let LEDIcon = this.defaultAssets[index];
             inputClass.classList.add("output__led-class");
             inputClass.classList.add(`output__led-class--${id}`);
-            
+
             inputClass.LEDIcon = LEDIcon;
 
             let editIcon = document.createElement("div");
@@ -150,11 +153,11 @@ class LEDOutput {
         }
     }
 
-    searchResultPlayClick(event) {
+    searchResultLEDIconClick(event) {
         event.stopPropagation();
-        let sound = event.target.parentNode.value;
-        this.lastIcon = sound;
-        this.showIcon(sound);
+        let icon = event.target.parentNode.value;
+        this.lastIcon = icon;
+        this.showIcon(icon);
     }
 
     searchResultClick(event) {
@@ -264,8 +267,8 @@ class LEDOutput {
             GLOBALS.outputSection.currentOutput &&
             GLOBALS.outputSection.currentOutput.id === this.id
         ) {
-            if (this.currentSound === null) {
-                this.currentSound;
+            if (this.currentLEDIcon === null) {
+                this.currentLEDIcon;
             } else if (document.hidden) {
                 this.clearDisplay();
             } else {

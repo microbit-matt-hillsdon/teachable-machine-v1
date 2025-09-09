@@ -14,7 +14,7 @@
 
 class LEDSearch {
 	constructor(options) {
-		this.displayCallback = options.playCallback;
+		this.displayCallback = options.displayCallback;
 		this.selectCallback = options.selectCallback;
 		this.assets = options.assets;
 
@@ -55,16 +55,6 @@ class LEDSearch {
 			let label = document.createElement('input');
 			label.setAttribute('readonly', 'readonly');
 			label.classList.add('output__led-search-result-input');
-
-			// icon.classList.add('output__led-search-result-play');
-			let loader = ((el) => {
-				let ajax = new XMLHttpRequest();
-				ajax.open('GET', 'static/outputs/play-icon.svg', true);
-				ajax.onload = (event) => {
-					el.innerHTML = ajax.responseText;
-				};
-				ajax.send();
-			})(icon);
 
 			item.value = this.assets[index];
 			label.value = item.value;
