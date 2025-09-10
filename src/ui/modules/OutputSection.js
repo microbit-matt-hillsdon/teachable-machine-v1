@@ -18,6 +18,7 @@ class OutputSection {
 
         const outputs = {
             GIFOutput: new GIFOutput(),
+            LEDOutput: new LEDOutput(),
             SoundOutput: new SoundOutput(document.querySelector('#SoundOutput')),
             SpeechOutput: new SpeechOutput()
         };
@@ -140,5 +141,7 @@ import HighlightArrow from './../components/HighlightArrow.js';
 import SpeechOutput from './../../outputs/SpeechOutput.js';
 import GIFOutput from './../../outputs/GIFOutput.js';
 import SoundOutput from './../../outputs/SoundOutput.js';
+import LEDOutput from './../../outputs/LEDOutput.js';
+
 
 export default OutputSection;
