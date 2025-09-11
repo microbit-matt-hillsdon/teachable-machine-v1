@@ -19,6 +19,7 @@ class OutputSection {
         const outputs = {
             GIFOutput: new GIFOutput(),
             LEDOutput: new LEDOutput(),
+            ServoOutput: new ServoOutput(),
             SoundOutput: new SoundOutput(document.querySelector('#SoundOutput')),
             SpeechOutput: new SpeechOutput()
         };
@@ -142,6 +143,7 @@ import SpeechOutput from './../../outputs/SpeechOutput.js';
 import GIFOutput from './../../outputs/GIFOutput.js';
 import SoundOutput from './../../outputs/SoundOutput.js';
 import LEDOutput from './../../outputs/LEDOutput.js';
+import ServoOutput from '../../outputs/ServoOutput.js';
 
 
 export default OutputSection;
