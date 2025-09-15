@@ -31,6 +31,9 @@ class Microbit {
 
     display = (arg) => this.writeUart("display", arg);
     clearDisplay = () => this.writeUart("display", -1);
+
+    servo = (arg) => this.writeUart("servo", arg);
+    stopServo = () => this.writeUart("servo", -1)
     
     playSound = (arg) => this.writeUart("sound", arg);
     stopSounds = () => this.writeUart("sound", -1);
