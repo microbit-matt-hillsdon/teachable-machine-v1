@@ -20,7 +20,7 @@ class ServoOutput {
         this.microbitServoOptions = [
             "slow wave",
             "fast wave",
-            ...[...Array(12).keys()].map((i) => `${i * 15}`),
+            ...[...Array(13).keys()].map((i) => `${i * 15}`),
         ];
 
         this.defaultAssets = [
@@ -169,9 +169,9 @@ class ServoOutput {
             if (this.currentIndex !== index) {
                 this.currentIndex = index;
 
-                let icon = this.inputClasses[this.currentIndex].servoOption;
-                if (icon) {
-                    this.triggerServoOption(icon);
+                let option = this.inputClasses[this.currentIndex].servoOption;
+                if (option) {
+                    this.triggerServoOption(option);
                 } else {
                     this.resetServo();
                 }
@@ -192,8 +192,8 @@ class ServoOutput {
                 );
 
                 if (this.canvas) {
-                    icon === null ? (icon = "(nothing)") : icon;
-                    this.updateCanvas(this.currentIndex, icon);
+                    option === null ? (option = "(nothing)") : option;
+                    this.updateCanvas(this.currentIndex, option);
                 }
             }
         }
