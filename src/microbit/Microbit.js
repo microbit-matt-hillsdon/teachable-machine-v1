@@ -23,6 +23,14 @@ class Microbit {
                             : { start: classIdx },
                     });
                     window.dispatchEvent(event);
+                    return;
+                }
+                case "camera": {
+                    const event = new CustomEvent("photo", {
+                        detail: { showImage: parseInt(arg) === 1 }
+                    })
+                    window.dispatchEvent(event);
+                    return;
                 }
             }
         };
@@ -37,6 +45,8 @@ class Microbit {
     
     playSound = (arg) => this.writeUart("sound", arg);
     stopSounds = () => this.writeUart("sound", -1);
+
+    requestCameraMode = () => this.writeUart("camera", 0)
 
     writeUart = (command, arg) => {
         const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);

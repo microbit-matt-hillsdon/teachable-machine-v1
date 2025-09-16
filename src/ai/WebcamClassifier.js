@@ -19,8 +19,6 @@ const TOPK = 10;
 const CLASS_COUNT = 3;
 const MEASURE_TIMING_EVERY_NUM_FRAMES = 20;
 
-const displayImageGrid = 1
-
 function passThrough() {
   return 0;
 }
@@ -65,6 +63,7 @@ export default class WebcamClassifier {
     this.lastFrameTimeMs = 1000;
     this.classIndices = {};
     this.currentSavedClassIndex = 0;
+    this.showPhotoImage = true;
 
     this.mappedButtonIndexes = [];
 
@@ -76,6 +75,12 @@ export default class WebcamClassifier {
         location.reload();
       });
     }
+
+    window.addEventListener('photo', this.togglePhotoImage.bind(this));
+  }
+
+  togglePhotoImage(event) {
+    this.showPhotoImage = event.detail.showImage;
   }
 
   startWebcam() {
@@ -235,6 +240,7 @@ export default class WebcamClassifier {
     this.current.down = true;
     this.isDown = true;
     this.training = this.current.index;
+    GLOBALS.microbit.requestCameraMode();
 
     this.videoRatio = this.video.videoWidth / this.video.videoHeight;
     this.currentClass = learningClass;
@@ -313,7 +319,7 @@ export default class WebcamClassifier {
         const dy = rows * this.thumbVideoHeight
         const { width, height } = this.thumbCanvas
         
-        if (displayImageGrid && probabilities) {
+        if (!this.showPhotoImage && probabilities) {
           // Display grid showing logit probabilities.
           const numGridCols = 32
           const numGridRows = 31
