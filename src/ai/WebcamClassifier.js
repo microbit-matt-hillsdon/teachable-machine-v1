@@ -19,6 +19,8 @@ const TOPK = 10;
 const CLASS_COUNT = 3;
 const MEASURE_TIMING_EVERY_NUM_FRAMES = 20;
 
+const displayImageGrid = 1
+
 function passThrough() {
   return 0;
 }
@@ -171,6 +173,8 @@ export default class WebcamClassifier {
     const img = tf.fromPixels(image);
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
+
+    return [...logits.softmax().dataSync()]
   }
 
   clear(index) {
@@ -295,25 +299,50 @@ export default class WebcamClassifier {
       let data = this.thumbContext.getImageData(
         0, 0, this.canvasWidth, this.canvasHeight);
       this.current.latestThumbs.push(data);
+
+      // Train class if one of the buttons is held down
+      // Add current image to classifier
+      let probabilities;
+      if (this.training !== -1) {
+        probabilities = this.train(image, this.training);
+      }
       let cols = 0;
       let rows = 0;
       for (let index = 0; index < this.current.latestThumbs.length; index += 1) {
-        this.currentContext.putImageData(
-          this.current.latestThumbs[index], (2 - cols) * this.thumbCanvas.width,
-          rows * this.thumbVideoHeight, 0, 0, this.thumbCanvas.width,
-          this.thumbCanvas.height);
+        const dx = (2 - cols) * this.thumbCanvas.width
+        const dy = rows * this.thumbVideoHeight
+        const { width, height } = this.thumbCanvas
+        
+        if (displayImageGrid && probabilities) {
+          // Display grid showing logit probabilities.
+          const numGridCols = 32
+          const numGridRows = 31
+          this.currentContext.beginPath(); // Start a new path
+          const dw = width / numGridCols;
+          const dh = height / numGridRows;
+          const maxProbabilities = Math.max(...probabilities);
+
+          probabilities.forEach((p, i) => {
+            this.currentContext.fillStyle = calculateGradientColor("#3e80f6", (p / maxProbabilities))
+            this.currentContext.fillRect(
+              dx + dw*(i%numGridCols), 
+              dy + dh*(i%numGridRows), 
+              dw, 
+              dh
+            );
+          })
+
+        } else {
+          this.currentContext.putImageData(
+            this.current.latestThumbs[index], dx, dy, 0, 0, width, height
+          );
+        }
         if (cols === 2) {
           rows += 1;
           cols = 0;
         }else {
           cols += 1;
         }
-      }
-
-      // Train class if one of the buttons is held down
-      // Add current image to classifier
-      if (this.training !== -1) {
-        this.train(image, this.training);
       }
 
     }else if (exampleCount > 0) {
@@ -343,6 +372,16 @@ export default class WebcamClassifier {
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
 }
+
+const calculateGradientColor = (hexColor, value) => {
+  const minLightness = 10;
+  const maxLightness = 90;
+  const diffLightness = maxLightness - minLightness;
+  return `hsl(from ${hexColor} h s ${
+    minLightness + (1 - value) * diffLightness
+  }%)`;
+};
+
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as mobilenet from '@tensorflow-models/mobilenet';
