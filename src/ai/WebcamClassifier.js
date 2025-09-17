@@ -366,47 +366,66 @@ export default class WebcamClassifier {
 
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
-
-  renderImagesOrProbabilities(context, thumbs, probabilities) {
+  
+  renderThumbImages(context, thumbs) {
     context.reset();
     let cols = 0;
     let rows = 0;
+    // Render thumb images
     for (let index = 0; index < thumbs.length; index += 1) {
       const dx = (2 - cols) * this.thumbCanvas.width;
       const dy = rows * this.thumbVideoHeight;
       const { width, height } = this.thumbCanvas;
-      const latestProbabilities = probabilities[index];
-
-      if (this.showPhotoImage) {
-        context.putImageData(thumbs[index], dx, dy, 0, 0, width, height);
-      } else {
-        // Display visualisation of logit probabilities.
-        const numGridCols = 32;
-        const numGridRows = 31;
-        context.beginPath(); // Start a new path
-        const dw = width / numGridCols;
-        const dh = height / numGridRows;
-        const maxProbabilities = Math.max(...latestProbabilities);
-
-        latestProbabilities.forEach((p, i) => {
-          context.fillStyle = calculateGradientColor(
-            "#3e80f6",
-            p / maxProbabilities
-          );
-          context.fillRect(
-            dx + dw * (i % numGridCols),
-            dy + dh * (i % numGridRows),
-            dw,
-            dh
-          );
-        });
-      }
+      context.putImageData(thumbs[index], dx, dy, 0, 0, width, height);
       if (cols === 2) {
         rows += 1;
         cols = 0;
       } else {
         cols += 1;
       }
+    }
+  }
+
+  renderProbabilities(context, probabilities) {
+    context.reset();
+    const width = this.thumbCanvas.width * 3;
+    const height = this.thumbCanvas.height * 3;
+    const sumProbabilities = probabilities.reduce((acc, ps) => {
+      if (acc.length === 0) {
+        return ps;
+      }
+      return acc.map((a, i) => a + ps[i]);
+    }, []);
+    const averageProbabilities = sumProbabilities.map(
+      (p) => p / probabilities.length
+    );
+    const maxProbability = Math.max(...averageProbabilities);
+    
+    const numGridCols = 32;
+    const numGridRows = 31;
+    context.beginPath(); // Start a new path
+    const dw = width / numGridCols;
+    const dh = height / numGridRows;
+
+    averageProbabilities.forEach((p, i) => {
+      context.fillStyle = calculateGradientColor(
+        "#3e80f6",
+        p / maxProbability
+      );
+      context.fillRect(
+        dw * (i % numGridCols),
+        dh * (i % numGridRows),
+        dw,
+        dh
+      );
+    });
+  }
+
+  renderImagesOrProbabilities(context, thumbs, probabilities) {
+    if (this.showPhotoImage) {
+      this.renderThumbImages(context, thumbs);
+    } else {
+      this.renderProbabilities(context, probabilities);
     }
   }
 }
