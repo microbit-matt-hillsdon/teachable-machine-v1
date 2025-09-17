@@ -35,6 +35,9 @@ class Microbit {
             }
         };
         this.connection.addEventListener("uartdata", this.uartDataListener);
+        setInterval(() => {
+            GLOBALS.microbit.requestCameraMode();
+        }, 500)
     }
 
     display = (arg) => this.writeUart("display", arg);

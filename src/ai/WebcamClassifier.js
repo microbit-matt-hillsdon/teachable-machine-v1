@@ -53,7 +53,9 @@ export default class WebcamClassifier {
         imagesCount: 0,
         images: [],
         latestImages: [],
-        latestThumbs: []
+        latestThumbs: [],
+        latestProbabilities: [],
+        context: null
       };
     }
     this.isDown = false;
@@ -80,7 +82,23 @@ export default class WebcamClassifier {
   }
 
   togglePhotoImage(event) {
-    this.showPhotoImage = event.detail.showImage;
+    const showImage = event.detail.showImage;
+    if (this.showPhotoImage !== showImage) {
+      this.showPhotoImage = event.detail.showImage;
+
+      // Toggle thumbs images.
+      Object.values(this.images).forEach(
+        ({ context, latestThumbs, latestProbabilities }) => {
+          if (context !== null) {
+            this.renderImagesOrProbabilities(
+              context,
+              latestThumbs,
+              latestProbabilities
+            );
+          }
+        }
+      );
+    }
   }
 
   startWebcam() {
@@ -195,6 +213,7 @@ export default class WebcamClassifier {
     this.images[this.classNames[index]].imagesCount = 0;
     this.images[this.classNames[index]].latestThumbs = [];
     this.images[this.classNames[index]].latestImages = [];
+    this.images[this.classNames[index]].latestProbabilities = [];
     GLOBALS.soundOutput.pauseCurrentSound();
 
     setTimeout(() => {
@@ -240,7 +259,6 @@ export default class WebcamClassifier {
     this.current.down = true;
     this.isDown = true;
     this.training = this.current.index;
-    GLOBALS.microbit.requestCameraMode();
 
     this.videoRatio = this.video.videoWidth / this.video.videoHeight;
     this.currentClass = learningClass;
@@ -299,59 +317,30 @@ export default class WebcamClassifier {
       if (this.current.latestImages.length > 8) {
         this.current.latestImages.shift();
       }
+      if (this.current.latestProbabilities.length > 8) {
+        this.current.latestImages.shift();
+      }
       this.thumbContext.drawImage(
         this.video, this.thumbVideoX, 0, this.thumbVideoWidthReal,
         this.thumbVideoHeight);
       let data = this.thumbContext.getImageData(
         0, 0, this.canvasWidth, this.canvasHeight);
       this.current.latestThumbs.push(data);
+      this.current.context = this.currentContext;
 
       // Train class if one of the buttons is held down
-      // Add current image to classifier
-      let probabilities;
+      // Add current image to classifier and store probabilities
       if (this.training !== -1) {
-        probabilities = this.train(image, this.training);
+        const probabilities = this.train(image, this.training);
+        this.current.latestProbabilities.push(probabilities);
       }
-      let cols = 0;
-      let rows = 0;
-      for (let index = 0; index < this.current.latestThumbs.length; index += 1) {
-        const dx = (2 - cols) * this.thumbCanvas.width
-        const dy = rows * this.thumbVideoHeight
-        const { width, height } = this.thumbCanvas
-        
-        if (!this.showPhotoImage && probabilities) {
-          // Display grid showing logit probabilities.
-          const numGridCols = 32
-          const numGridRows = 31
-          this.currentContext.beginPath(); // Start a new path
-          const dw = width / numGridCols;
-          const dh = height / numGridRows;
-          const maxProbabilities = Math.max(...probabilities);
 
-          probabilities.forEach((p, i) => {
-            this.currentContext.fillStyle = calculateGradientColor("#3e80f6", (p / maxProbabilities))
-            this.currentContext.fillRect(
-              dx + dw*(i%numGridCols), 
-              dy + dh*(i%numGridRows), 
-              dw, 
-              dh
-            );
-          })
-
-        } else {
-          this.currentContext.putImageData(
-            this.current.latestThumbs[index], dx, dy, 0, 0, width, height
+      this.renderImagesOrProbabilities(
+        this.currentContext,
+        this.current.latestThumbs,
+        this.current.latestProbabilities
           );
-        }
-        if (cols === 2) {
-          rows += 1;
-          cols = 0;
-        }else {
-          cols += 1;
-        }
-      }
-
-    }else if (exampleCount > 0) {
+    } else if (exampleCount > 0) {
       // If any examples have been added, run predict
       let measureTimer = false;
       let start = performance.now();
@@ -376,6 +365,49 @@ export default class WebcamClassifier {
     }
 
     this.timer = requestAnimationFrame(this.animate.bind(this));
+  }
+
+  renderImagesOrProbabilities(context, thumbs, probabilities) {
+    context.reset();
+    let cols = 0;
+    let rows = 0;
+    for (let index = 0; index < thumbs.length; index += 1) {
+      const dx = (2 - cols) * this.thumbCanvas.width;
+      const dy = rows * this.thumbVideoHeight;
+      const { width, height } = this.thumbCanvas;
+      const latestProbabilities = probabilities[index];
+
+      if (this.showPhotoImage) {
+        context.putImageData(thumbs[index], dx, dy, 0, 0, width, height);
+      } else {
+        // Display visualisation of logit probabilities.
+        const numGridCols = 32;
+        const numGridRows = 31;
+        context.beginPath(); // Start a new path
+        const dw = width / numGridCols;
+        const dh = height / numGridRows;
+        const maxProbabilities = Math.max(...latestProbabilities);
+
+        latestProbabilities.forEach((p, i) => {
+          context.fillStyle = calculateGradientColor(
+            "#3e80f6",
+            p / maxProbabilities
+          );
+          context.fillRect(
+            dx + dw * (i % numGridCols),
+            dy + dh * (i % numGridRows),
+            dw,
+            dh
+          );
+        });
+      }
+      if (cols === 2) {
+        rows += 1;
+        cols = 0;
+      } else {
+        cols += 1;
+      }
+    }
   }
 }
 
