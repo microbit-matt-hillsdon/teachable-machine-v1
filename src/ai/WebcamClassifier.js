@@ -32,6 +32,10 @@ export default class WebcamClassifier {
     this.blankCanvas = document.createElement('canvas');
     this.blankCanvas.width = 227;
     this.blankCanvas.height = 227;
+    this.probabilitiesCanvas = document.createElement("canvas");
+    this.probabilitiesCanvas.id = "probabilities-canvas";
+    this.probabilitiesContext = this.probabilitiesCanvas.getContext("2d");
+    this.probabilitiesInterval = null;
     this.timer = null;
     this.active = false;
     this.wasActive = false;
@@ -55,7 +59,7 @@ export default class WebcamClassifier {
         latestImages: [],
         latestThumbs: [],
         latestProbabilities: [],
-        context: null
+        context: null,
       };
     }
     this.isDown = false;
@@ -90,7 +94,7 @@ export default class WebcamClassifier {
       Object.values(this.images).forEach(
         ({ context, latestThumbs, latestProbabilities }) => {
           if (context !== null) {
-            this.renderImagesOrProbabilities(
+            this.renderThumbImagesOrProbabilities(
               context,
               latestThumbs,
               latestProbabilities
@@ -188,6 +192,12 @@ export default class WebcamClassifier {
     return newOutput;
   }
 
+  getProbabilities(image) {
+    const img = tf.fromPixels(image);
+    const logits = this.mobilenetModule.infer(img, "conv_preds");
+    return [...logits.softmax().dataSync()];
+  }
+
   train(image, index) {
     if (this.mappedButtonIndexes.indexOf(index) === -1) {
       this.mappedButtonIndexes.push(index);
@@ -197,7 +207,7 @@ export default class WebcamClassifier {
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
 
-    return [...logits.softmax().dataSync()]
+    return [...logits.softmax().dataSync()];
   }
 
   clear(index) {
@@ -235,6 +245,9 @@ export default class WebcamClassifier {
     this.video.style.width = videoWidth + 'px';
     this.video.style.height = parentHeight + 'px';
     this.video.style.transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
+
+    this.probabilitiesCanvas.style.width = this.video.style.width;
+    this.probabilitiesCanvas.style.height = this.video.style.height;
 
     // If video is taller:
     if (videoRatio < 1) {
@@ -289,6 +302,22 @@ export default class WebcamClassifier {
     }
 
     this.video.play();
+
+    if (!this.probabilitiesInterval) {
+      this.probabilitiesInterval = setInterval(() => {
+        this.probabilitiesContext.reset();
+        if (!this.showPhotoImage) {
+          const probabilities = this.getProbabilities(this.video);
+          renderProbabilities(
+            this.probabilitiesCanvas.width,
+            this.probabilitiesCanvas.height,
+            this.probabilitiesContext, 
+            [probabilities]
+          );
+        }
+      }, 500);
+    }
+
     this.wasActive = true;
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
@@ -297,6 +326,8 @@ export default class WebcamClassifier {
     this.active = false;
     this.wasActive = true;
     this.video.pause();
+    clearInterval(this.probabilitiesInterval);
+    this.probabilitiesInterval = null;
     cancelAnimationFrame(this.timer);
     if (GLOBALS.soundOutput && GLOBALS.soundOutput.muteSounds) {
         GLOBALS.soundOutput.muteSounds();
@@ -335,7 +366,7 @@ export default class WebcamClassifier {
         this.current.latestProbabilities.push(probabilities);
       }
 
-      this.renderImagesOrProbabilities(
+      this.renderThumbImagesOrProbabilities(
         this.currentContext,
         this.current.latestThumbs,
         this.current.latestProbabilities
@@ -386,10 +417,19 @@ export default class WebcamClassifier {
     }
   }
 
-  renderProbabilities(context, probabilities) {
-    context.reset();
+  renderThumbImagesOrProbabilities(context, thumbs, probabilities) {
+    if (this.showPhotoImage) {
+      this.renderThumbImages(context, thumbs);
+    } else {
     const width = this.thumbCanvas.width * 3;
     const height = this.thumbCanvas.height * 3;
+      renderProbabilities(width, height, context, probabilities);
+    }
+  }
+}
+
+const renderProbabilities = (width, height, context, probabilities) => {
+  context.reset();
     const sumProbabilities = probabilities.reduce((acc, ps) => {
       if (acc.length === 0) {
         return ps;
@@ -403,31 +443,16 @@ export default class WebcamClassifier {
     
     const numGridCols = 32;
     const numGridRows = 31;
-    context.beginPath(); // Start a new path
-    const dw = width / numGridCols;
-    const dh = height / numGridRows;
+    context.beginPath();
+    const dw = Math.ceil(width / numGridCols);
+    const dh = Math.ceil(height / numGridRows);
 
     averageProbabilities.forEach((p, i) => {
-      context.fillStyle = calculateGradientColor(
-        "#3e80f6",
-        p / maxProbability
-      );
-      context.fillRect(
-        dw * (i % numGridCols),
-        dh * (i % numGridRows),
-        dw,
-        dh
-      );
-    });
-  }
-
-  renderImagesOrProbabilities(context, thumbs, probabilities) {
-    if (this.showPhotoImage) {
-      this.renderThumbImages(context, thumbs);
-    } else {
-      this.renderProbabilities(context, probabilities);
-    }
-  }
+    context.fillStyle = calculateGradientColor("#3e80f6", p / maxProbability);
+    const x = dw * (i % numGridCols)
+    const y = dh * (i % numGridRows)
+    context.fillRect(x, y, dw, dh);
+  });
 }
 
 const calculateGradientColor = (hexColor, value) => {
