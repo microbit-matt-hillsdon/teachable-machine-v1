@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import GLOBALS from '../config.js';
+import { mobilenetClasses } from './mobilenet.js';
 
 const IMAGE_SIZE = 227;
 const INPUT_SIZE = 1000;
@@ -306,8 +307,19 @@ export default class WebcamClassifier {
     if (!this.probabilitiesInterval) {
       this.probabilitiesInterval = setInterval(() => {
         this.probabilitiesContext.reset();
+        const probabilities = this.getProbabilities(this.video);
+
+        // Log probabilities.
+        const predictions = probabilities.map((p, idx) => ({
+          class: mobilenetClasses[idx], 
+          probability: p
+        }))
+        predictions.sort((a, b) => (b.probability - a.probability)).slice(undefined, 10).forEach((p, idx) => {
+          console.log(idx + 1, p.class, p.probability)
+        })
+        console.log("----")
+
         if (!this.showPhotoImage) {
-          const probabilities = this.getProbabilities(this.video);
           renderProbabilities(
             this.probabilitiesCanvas.width,
             this.probabilitiesCanvas.height,
