@@ -246,8 +246,8 @@ export default class WebcamClassifier {
     this.video.style.height = parentHeight + 'px';
     this.video.style.transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
 
-    this.probabilitiesCanvas.style.width = this.video.style.width;
-    this.probabilitiesCanvas.style.height = this.video.style.width;
+    this.probabilitiesCanvas.style.width = this.video.style.height;
+    this.probabilitiesCanvas.style.height = this.video.style.height;
 
     // If video is taller:
     if (videoRatio < 1) {
