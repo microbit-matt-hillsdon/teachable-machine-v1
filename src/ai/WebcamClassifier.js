@@ -430,27 +430,28 @@ export default class WebcamClassifier {
 
 const renderProbabilities = (width, height, context, probabilities) => {
   context.reset();
-    const sumProbabilities = probabilities.reduce((acc, ps) => {
-      if (acc.length === 0) {
-        return ps;
-      }
-      return acc.map((a, i) => a + ps[i]);
-    }, []);
-    const averageProbabilities = sumProbabilities.map(
-      (p) => p / probabilities.length
-    );
-    const maxProbability = Math.max(...averageProbabilities);
-    
-    const numGridCols = 32;
-    const numGridRows = 31;
-    context.beginPath();
-    const dw = Math.ceil(width / numGridCols);
-    const dh = Math.ceil(height / numGridRows);
+  const sumProbabilities = probabilities.reduce((acc, ps) => {
+    if (acc.length === 0) {
+      return ps;
+    }
+    return acc.map((a, i) => a + ps[i]);
+  }, []);
+  const averageProbabilities = sumProbabilities.map(
+    (p) => p / probabilities.length
+  );
+  const maxProbability = Math.max(...averageProbabilities);
+  const normProbabilities = averageProbabilities.map(p => p/maxProbability)
+  
+  const numGridCols = 32;
+  const numGridRows = 32;
+  context.beginPath();
+  const dw = Math.ceil(width / numGridCols);
+  const dh = Math.ceil(height / numGridRows);
 
-    averageProbabilities.forEach((p, i) => {
-    context.fillStyle = calculateGradientColor("#3e80f6", p / maxProbability);
+  normProbabilities.forEach((p, i) => {
+    context.fillStyle = calculateGradientColor("#3e80f6", p);
     const x = dw * (i % numGridCols)
-    const y = dh * (i % numGridRows)
+    const y = dh * Math.floor(i / numGridRows)
     context.fillRect(x, y, dw, dh);
   });
 }
