@@ -58,7 +58,7 @@ export default class WebcamClassifier {
         images: [],
         latestImages: [],
         latestThumbs: [],
-        latestProbabilities: [],
+        latestLayers: [],
         context: null,
       };
     }
@@ -69,7 +69,7 @@ export default class WebcamClassifier {
     this.lastFrameTimeMs = 1000;
     this.classIndices = {};
     this.currentSavedClassIndex = 0;
-    this.showPhotoImage = true;
+    this.showPhotoImage = false;
 
     this.mappedButtonIndexes = [];
 
@@ -92,12 +92,12 @@ export default class WebcamClassifier {
 
       // Toggle thumbs images.
       Object.values(this.images).forEach(
-        ({ context, latestThumbs, latestProbabilities }) => {
+        ({ context, latestThumbs, latestLayers }) => {
           if (context !== null) {
-            this.renderThumbImagesOrProbabilities(
+            this.renderThumbImagesOrLayers(
               context,
               latestThumbs,
-              latestProbabilities
+              latestLayers
             );
           }
         }
@@ -192,10 +192,10 @@ export default class WebcamClassifier {
     return newOutput;
   }
 
-  getProbabilities(image) {
+  getLastLayerValues(image) {
     const img = tf.fromPixels(image);
-    const logits = this.mobilenetModule.infer(img, "conv_preds");
-    return [...logits.softmax().dataSync()];
+    const lastLayer = this.mobilenetModule.infer(img, 'conv_pw_13_relu')
+    return lastLayer.dataSync();
   }
 
   train(image, index) {
@@ -207,7 +207,7 @@ export default class WebcamClassifier {
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
 
-    return [...logits.softmax().dataSync()];
+    return this.getLastLayerValues(image);
   }
 
   clear(index) {
@@ -223,7 +223,7 @@ export default class WebcamClassifier {
     this.images[this.classNames[index]].imagesCount = 0;
     this.images[this.classNames[index]].latestThumbs = [];
     this.images[this.classNames[index]].latestImages = [];
-    this.images[this.classNames[index]].latestProbabilities = [];
+    this.images[this.classNames[index]].latestLayers = [];
     GLOBALS.soundOutput.pauseCurrentSound();
 
     setTimeout(() => {
@@ -307,12 +307,12 @@ export default class WebcamClassifier {
       this.probabilitiesInterval = setInterval(() => {
         this.probabilitiesContext.reset();
         if (!this.showPhotoImage) {
-          const probabilities = this.getProbabilities(this.video);
-          renderProbabilities(
+          const layerValues = this.getLastLayerValues(this.video);
+          renderLayers(
             this.probabilitiesCanvas.width,
             this.probabilitiesCanvas.height,
             this.probabilitiesContext, 
-            [probabilities]
+            [layerValues]
           );
         }
       }, 500);
@@ -348,7 +348,7 @@ export default class WebcamClassifier {
       if (this.current.latestImages.length > 8) {
         this.current.latestImages.shift();
       }
-      if (this.current.latestProbabilities.length > 8) {
+      if (this.current.latestLayers.length > 8) {
         this.current.latestImages.shift();
       }
       this.thumbContext.drawImage(
@@ -362,14 +362,14 @@ export default class WebcamClassifier {
       // Train class if one of the buttons is held down
       // Add current image to classifier and store probabilities
       if (this.training !== -1) {
-        const probabilities = this.train(image, this.training);
-        this.current.latestProbabilities.push(probabilities);
+        const lastLayer = this.train(image, this.training);
+        this.current.latestLayers.push(lastLayer);
       }
 
-      this.renderThumbImagesOrProbabilities(
+      this.renderThumbImagesOrLayers(
         this.currentContext,
         this.current.latestThumbs,
-        this.current.latestProbabilities
+        this.current.latestLayers
           );
     } else if (exampleCount > 0) {
       // If any examples have been added, run predict
@@ -417,41 +417,69 @@ export default class WebcamClassifier {
     }
   }
 
-  renderThumbImagesOrProbabilities(context, thumbs, probabilities) {
+  renderThumbImagesOrLayers(context, thumbs, layers) {
     if (this.showPhotoImage) {
       this.renderThumbImages(context, thumbs);
     } else {
-    const width = this.thumbCanvas.width * 3;
-    const height = this.thumbCanvas.height * 3;
-      renderProbabilities(width, height, context, probabilities);
+      const width = this.thumbCanvas.width * 3;
+      const height = this.thumbCanvas.height * 3;
+      renderLayers(width, height, context, layers);
     }
   }
 }
 
-const renderProbabilities = (width, height, context, probabilities) => {
-  context.reset();
-    const sumProbabilities = probabilities.reduce((acc, ps) => {
-      if (acc.length === 0) {
-        return ps;
-      }
-      return acc.map((a, i) => a + ps[i]);
-    }, []);
-    const averageProbabilities = sumProbabilities.map(
-      (p) => p / probabilities.length
-    );
-    const maxProbability = Math.max(...averageProbabilities);
-    
-    const numGridCols = 32;
-    const numGridRows = 31;
-    context.beginPath();
-    const dw = Math.ceil(width / numGridCols);
-    const dh = Math.ceil(height / numGridRows);
+const chunkArray = (arr, chunkSize) => {
+  const result = []
+  for (let i = 0; i < arr.length; i += chunkSize) {
+      const chunk = arr.slice(i, i + chunkSize);
+      result.push(chunk)
+  }
+  return result
+}
 
-    averageProbabilities.forEach((p, i) => {
-    context.fillStyle = calculateGradientColor("#3e80f6", p / maxProbability);
-    const x = dw * (i % numGridCols)
-    const y = dh * (i % numGridRows)
-    context.fillRect(x, y, dw, dh);
+const layerDimensions = {
+  x: 7,
+  y: 7,
+  c: 1024
+}
+
+const chunkLayer = (layer) => {
+  const rows = chunkArray(layer, layerDimensions.y * layerDimensions.c)
+  return rows.map((row) => {
+    return chunkArray(row, layerDimensions.c)
+  })
+}
+
+const transformTo1D = (layer) => {
+  // Get only first channel value for now
+  const twoDim = layer.map(row => row.map(values => values[0]))
+  const oneDim = twoDim.flat(Infinity)
+  const max = Math.max(...oneDim)
+  return max === 0 ? oneDim : oneDim.map(v => v/max)
+}
+
+const renderLayers = (width, height, context, layers) => {
+    context.reset();
+    const chunkedLayers = layers.map(l => chunkLayer(l))
+    const flattenedSumLayer = chunkedLayers.reduce((acc, layer) => {
+      const flatLayer = transformTo1D(layer)
+      if (acc === null) {
+        return flatLayer
+      }
+      return acc.map((cell, i) => cell + flatLayer[i])
+    }, null);
+    const averageFlattenedLayers = flattenedSumLayer.map(v => v /layers.length);
+    
+    const dim = Math.sqrt(averageFlattenedLayers.length)
+    context.beginPath();
+    const dw = width / dim;
+    const dh = height / dim;
+
+    averageFlattenedLayers.forEach((v, i) => {
+      context.fillStyle = calculateGradientColor("#3e80f6", v);
+      const x = dw * (i % dim)
+      const y = dh * Math.floor(i / dim)
+      context.fillRect(x, y, dw, dh);
   });
 }
 
