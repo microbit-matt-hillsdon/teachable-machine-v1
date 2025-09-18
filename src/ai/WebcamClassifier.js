@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import GLOBALS from '../config.js';
+import GLOBALS from "../config.js";
 
 const IMAGE_SIZE = 227;
 const INPUT_SIZE = 1000;
@@ -26,10 +26,10 @@ function passThrough() {
 export default class WebcamClassifier {
   constructor() {
     this.loaded = false;
-    this.video = document.createElement('video');
-    this.video.setAttribute('autoplay', '');
-    this.video.setAttribute('playsinline', '');
-    this.blankCanvas = document.createElement('canvas');
+    this.video = document.createElement("video");
+    this.video.setAttribute("autoplay", "");
+    this.video.setAttribute("playsinline", "");
+    this.blankCanvas = document.createElement("canvas");
     this.blankCanvas.width = 227;
     this.blankCanvas.height = 227;
     this.probabilitiesCanvas = document.createElement("canvas");
@@ -39,14 +39,14 @@ export default class WebcamClassifier {
     this.timer = null;
     this.active = false;
     this.wasActive = false;
-    this.latestCanvas = document.createElement('canvas');
+    this.latestCanvas = document.createElement("canvas");
     this.latestCanvas.width = 98;
     this.latestCanvas.height = 98;
-    this.latestContext = this.latestCanvas.getContext('2d');
-    this.thumbCanvas = document.createElement('canvas');
+    this.latestContext = this.latestCanvas.getContext("2d");
+    this.thumbCanvas = document.createElement("canvas");
     this.thumbCanvas.width = Math.floor(this.latestCanvas.width / 3) + 1;
     this.thumbCanvas.height = Math.floor(this.latestCanvas.height / 3) + 1;
-    this.thumbContext = this.thumbCanvas.getContext('2d');
+    this.thumbContext = this.thumbCanvas.getContext("2d");
     this.thumbVideoX = 0;
     this.classNames = GLOBALS.classNames;
     this.images = {};
@@ -75,14 +75,16 @@ export default class WebcamClassifier {
 
     this.init();
 
-    this.activateWebcamButton = document.getElementById('input__media__activate');
+    this.activateWebcamButton = document.getElementById(
+      "input__media__activate"
+    );
     if (this.activateWebcamButton) {
-      this.activateWebcamButton.addEventListener('click', () => {
+      this.activateWebcamButton.addEventListener("click", () => {
         location.reload();
       });
     }
 
-    window.addEventListener('photo', this.togglePhotoImage.bind(this));
+    window.addEventListener("photo", this.togglePhotoImage.bind(this));
   }
 
   togglePhotoImage(event) {
@@ -94,11 +96,7 @@ export default class WebcamClassifier {
       Object.values(this.images).forEach(
         ({ context, latestThumbs, latestLayers }) => {
           if (context !== null) {
-            this.renderThumbImagesOrLayers(
-              context,
-              latestThumbs,
-              latestLayers
-            );
+            this.renderThumbImagesOrLayers(context, latestThumbs, latestLayers);
           }
         }
       );
@@ -108,52 +106,59 @@ export default class WebcamClassifier {
   startWebcam() {
     let video = true;
     if (GLOBALS.browserUtils.isMobile) {
-      video = {facingMode: (GLOBALS.isBackFacingCam) ? 'environment' : 'user'};
+      video = { facingMode: GLOBALS.isBackFacingCam ? "environment" : "user" };
     }
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia(
-      {
-        video: video,
-        audio: (GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile)
-      }).
-      then((stream) => {
-        GLOBALS.isCamGranted = true;
-        if ((GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile)) {
-          GLOBALS.audioContext.createMediaStreamSource(stream);
-          GLOBALS.stream = stream;
-        }
-        this.activateWebcamButton.style.display = 'none';
-        this.active = true;
-        this.stream = stream;
-        this.video.addEventListener('loadedmetadata', this.videoLoaded.bind(this));
-        this.video.muted = true;
-        this.video.srcObject = stream;
-        this.video.width = 227;
-        this.video.height = 227;
-
-        let event = new CustomEvent('webcam-status', {detail: {granted: true}});
-        window.dispatchEvent(event);
-        gtag('event', 'webcam_granted');
-        this.startTimer();
-      }).
-      catch((error) => {
-        let event = new CustomEvent('webcam-status', {
-          detail: {
-            granted: false,
-            error: error
+      navigator.mediaDevices
+        .getUserMedia({
+          video: video,
+          audio:
+            GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile,
+        })
+        .then((stream) => {
+          GLOBALS.isCamGranted = true;
+          if (GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile) {
+            GLOBALS.audioContext.createMediaStreamSource(stream);
+            GLOBALS.stream = stream;
           }
+          this.activateWebcamButton.style.display = "none";
+          this.active = true;
+          this.stream = stream;
+          this.video.addEventListener(
+            "loadedmetadata",
+            this.videoLoaded.bind(this)
+          );
+          this.video.muted = true;
+          this.video.srcObject = stream;
+          this.video.width = 227;
+          this.video.height = 227;
+
+          let event = new CustomEvent("webcam-status", {
+            detail: { granted: true },
+          });
+          window.dispatchEvent(event);
+          gtag("event", "webcam_granted");
+          this.startTimer();
+        })
+        .catch((error) => {
+          let event = new CustomEvent("webcam-status", {
+            detail: {
+              granted: false,
+              error: error,
+            },
+          });
+          this.activateWebcamButton.style.display = "block";
+          window.dispatchEvent(event);
+          gtag("event", "webcam_denied");
         });
-        this.activateWebcamButton.style.display = 'block';
-        window.dispatchEvent(event);
-        gtag('event', 'webcam_denied');
-      });
     }
   }
 
   async init() {
-    this.useFloatTextures = !GLOBALS.browserUtils.isMobile && !GLOBALS.browserUtils.isSafari;
-    tf.ENV.set('WEBGL_DOWNLOAD_FLOAT_ENABLED', false);
+    this.useFloatTextures =
+      !GLOBALS.browserUtils.isMobile && !GLOBALS.browserUtils.isSafari;
+    tf.ENV.set("WEBGL_DOWNLOAD_FLOAT_ENABLED", false);
     this.classifier = knnClassifier.create();
 
     // Load mobilenet.
@@ -163,27 +168,26 @@ export default class WebcamClassifier {
   /**
    *  There is an issue with mobilenetModule/knnClassifier where
    *  it returns -1 if you don't start with an index of zero
-   * 
+   *
    *  In these train/predict methods, we remap the index of 0-2.
    *  This way you can train the third model and have it retain
    *  the index of 2.
-   *  
+   *
    *  We have these super verbosely named functions
    *  so it's clear what's happening
    */
 
-  
   async predict(image) {
     const imgFromPixels = tf.fromPixels(image);
-    const logits = this.mobilenetModule.infer(imgFromPixels, 'conv_preds');
+    const logits = this.mobilenetModule.infer(imgFromPixels, "conv_preds");
     const response = await this.classifier.predictClass(logits);
     const newOutput = {
       classIndex: this.mappedButtonIndexes[response.classIndex],
       confidences: {
         0: 0,
         1: 0,
-        2: 0
-      }
+        2: 0,
+      },
     };
     this.mappedButtonIndexes.forEach((index, count) => {
       newOutput.confidences[index] = response.confidences[count];
@@ -194,7 +198,7 @@ export default class WebcamClassifier {
 
   getLastLayerValues(image) {
     const img = tf.fromPixels(image);
-    const lastLayer = this.mobilenetModule.infer(img, 'conv_pw_13_relu')
+    const lastLayer = this.mobilenetModule.infer(img, "conv_pw_13_relu");
     return lastLayer.dataSync();
   }
 
@@ -204,7 +208,7 @@ export default class WebcamClassifier {
     }
     const newMappedIndex = this.mappedButtonIndexes.indexOf(index);
     const img = tf.fromPixels(image);
-    const logits = this.mobilenetModule.infer(img, 'conv_preds');
+    const logits = this.mobilenetModule.infer(img, "conv_preds");
     this.classifier.addExample(logits, newMappedIndex);
 
     return this.getLastLayerValues(image);
@@ -213,7 +217,7 @@ export default class WebcamClassifier {
   clear(index) {
     const newMappedIndex = this.mappedButtonIndexes.indexOf(index);
     if (newMappedIndex > -1) {
-        this.classifier.clearClass(newMappedIndex);
+      this.classifier.clearClass(newMappedIndex);
     }
   }
 
@@ -236,22 +240,24 @@ export default class WebcamClassifier {
   }
 
   videoLoaded() {
-    let flip = (GLOBALS.isBackFacingCam) ? 1 : -1;
+    let flip = GLOBALS.isBackFacingCam ? 1 : -1;
     let videoRatio = this.video.videoWidth / this.video.videoHeight;
     let parent = this.video.parentNode;
     let parentWidth = parent.offsetWidth;
     let parentHeight = parent.offsetHeight;
     let videoWidth = parentHeight * videoRatio;
-    this.video.style.width = videoWidth + 'px';
-    this.video.style.height = parentHeight + 'px';
-    this.video.style.transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
+    this.video.style.width = videoWidth + "px";
+    this.video.style.height = parentHeight + "px";
+    this.video.style.transform =
+      "scaleX(" + flip + ") translate(" + 50 * flip * -1 + "%, -50%)";
 
     this.probabilitiesCanvas.style.width = this.video.style.height;
     this.probabilitiesCanvas.style.height = this.video.style.height;
 
     // If video is taller:
     if (videoRatio < 1) {
-      this.video.style.transform = 'scale(' + (flip * 2) + ', 2) translate(' + (flip * 20 * -1) + '%, -30%)';
+      this.video.style.transform =
+        "scale(" + flip * 2 + ", 2) translate(" + flip * 20 * -1 + "%, -30%)";
     }
   }
 
@@ -283,7 +289,7 @@ export default class WebcamClassifier {
     this.thumbVideoWidth = this.canvasWidth / 3;
     this.thumbVideoWidthReal = this.thumbVideoHeight * this.videoRatio;
     this.thumbVideoX = -(this.thumbVideoWidthReal - this.thumbVideoWidth) / 2;
-    this.currentContext = this.currentClass.canvas.getContext('2d');
+    this.currentContext = this.currentClass.canvas.getContext("2d");
   }
 
   buttonUp(id) {
@@ -311,7 +317,7 @@ export default class WebcamClassifier {
           renderLayers(
             this.probabilitiesCanvas.width,
             this.probabilitiesCanvas.height,
-            this.probabilitiesContext, 
+            this.probabilitiesContext,
             [layerValues]
           );
         }
@@ -330,15 +336,17 @@ export default class WebcamClassifier {
     this.probabilitiesInterval = null;
     cancelAnimationFrame(this.timer);
     if (GLOBALS.soundOutput && GLOBALS.soundOutput.muteSounds) {
-        GLOBALS.soundOutput.muteSounds();
+      GLOBALS.soundOutput.muteSounds();
     }
   }
 
   async animate() {
     // Get image data from video element
     const image = this.video;
-    const exampleCount = Object.keys(this.classifier.getClassExampleCount()).length;
-    
+    const exampleCount = Object.keys(
+      this.classifier.getClassExampleCount()
+    ).length;
+
     if (this.isDown) {
       this.current.imagesCount += 1;
       this.currentClass.setSamples(this.current.imagesCount);
@@ -352,10 +360,18 @@ export default class WebcamClassifier {
         this.current.latestImages.shift();
       }
       this.thumbContext.drawImage(
-        this.video, this.thumbVideoX, 0, this.thumbVideoWidthReal,
-        this.thumbVideoHeight);
+        this.video,
+        this.thumbVideoX,
+        0,
+        this.thumbVideoWidthReal,
+        this.thumbVideoHeight
+      );
       let data = this.thumbContext.getImageData(
-        0, 0, this.canvasWidth, this.canvasHeight);
+        0,
+        0,
+        this.canvasWidth,
+        this.canvasHeight
+      );
       this.current.latestThumbs.push(data);
       this.current.context = this.currentContext;
 
@@ -370,7 +386,7 @@ export default class WebcamClassifier {
         this.currentContext,
         this.current.latestThumbs,
         this.current.latestLayers
-          );
+      );
     } else if (exampleCount > 0) {
       // If any examples have been added, run predict
       let measureTimer = false;
@@ -380,24 +396,28 @@ export default class WebcamClassifier {
         const res = await this.predict(image);
         const computeConfidences = () => {
           GLOBALS.learningSection.setConfidences(res.confidences);
-          this.measureTimingCounter = (this.measureTimingCounter + 1) % MEASURE_TIMING_EVERY_NUM_FRAMES;
+          this.measureTimingCounter =
+            (this.measureTimingCounter + 1) % MEASURE_TIMING_EVERY_NUM_FRAMES;
         };
 
-        if (!GLOBALS.browserUtils.isSafari || measureTimer || !GLOBALS.browserUtils.isMobile) {
+        if (
+          !GLOBALS.browserUtils.isSafari ||
+          measureTimer ||
+          !GLOBALS.browserUtils.isMobile
+        ) {
           this.lastFrameTimeMs = performance.now() - start;
           computeConfidences();
-        }else {
+        } else {
           setTimeout(computeConfidences, this.lastFrameTimeMs);
         }
-
-      }else if (image.dispose) {
+      } else if (image.dispose) {
         image.dispose();
       }
     }
 
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
-  
+
   renderThumbImages(context, thumbs) {
     context.reset();
     let cols = 0;
@@ -429,59 +449,92 @@ export default class WebcamClassifier {
 }
 
 const chunkArray = (arr, chunkSize) => {
-  const result = []
+  const result = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
-      const chunk = arr.slice(i, i + chunkSize);
-      result.push(chunk)
+    const chunk = arr.slice(i, i + chunkSize);
+    result.push(chunk);
   }
-  return result
-}
+  return result;
+};
 
 const layerDimensions = {
   x: 7,
   y: 7,
-  c: 1024
-}
+  c: 1024,
+};
 
 const chunkLayer = (layer) => {
-  const rows = chunkArray(layer, layerDimensions.y * layerDimensions.c)
+  const rows = chunkArray(layer, layerDimensions.y * layerDimensions.c);
   return rows.map((row) => {
-    return chunkArray(row, layerDimensions.c)
-  })
-}
+    return chunkArray(row, layerDimensions.c);
+  });
+};
 
-const transformTo1D = (layer) => {
-  // Get only first channel value for now
-  const twoDim = layer.map(row => row.map(values => values[0]))
-  const oneDim = twoDim.flat(Infinity)
-  const max = Math.max(...oneDim)
-  return max === 0 ? oneDim : oneDim.map(v => v/max)
-}
+const getNormalisedChannel = (layer, channelIdx) => {
+  const channel = layer.map((row) => row.map((vs) => vs[channelIdx]));
+  const max = Math.max(...channel.flat(Infinity));
+  return max === 0 ? channel : channel.map((row) => row.map((v) => v / max));
+};
+
+const getNormalisedChannels = (layer) => {
+  const channels = Array.from(Array(layerDimensions.c).keys()).map((i) =>
+    getNormalisedChannel(layer, i)
+  );
+  return channels.reduce((acc, channel) => {
+    if (acc === null) {
+      return channel;
+    }
+    return acc.map((row, rowIdx) =>
+      row.map((v, colIdx) => {
+        const newValue = channel[rowIdx][colIdx]
+        return typeof v === "number" 
+          ? [v, newValue]
+          : [...v, newValue]
+      })
+    );
+  }, null);
+};
 
 const renderLayers = (width, height, context, layers) => {
-    context.reset();
-    const chunkedLayers = layers.map(l => chunkLayer(l))
-    const flattenedSumLayer = chunkedLayers.reduce((acc, layer) => {
-      const flatLayer = transformTo1D(layer)
-      if (acc === null) {
-        return flatLayer
-      }
-      return acc.map((cell, i) => cell + flatLayer[i])
-    }, null);
-    const averageFlattenedLayers = flattenedSumLayer.map(v => v /layers.length);
-    
-    const dim = Math.sqrt(averageFlattenedLayers.length)
-    context.beginPath();
-    const dw = width / dim;
-    const dh = height / dim;
+  context.reset();
+  const threeDimLayers = layers.map((l) => chunkLayer(l));
+  const numLayers = layers.length;
+  const average3DLayer = threeDimLayers.reduce((acc, layer) => {
+    const channels = getNormalisedChannels(layer);
+    if (acc === null) {
+      return channels.map((x) => x.map((y) => y.map((c) => c / numLayers)));
+    }
+    return acc.map((x, xIdx) =>
+      x.map((y, yIdx) =>
+        y.map((c, cIdx) => c + channels[xIdx][yIdx][cIdx] / numLayers)
+      )
+    );
+  }, null);
 
-    averageFlattenedLayers.forEach((v, i) => {
-      context.fillStyle = calculateGradientColor("#3e80f6", v);
-      const x = dw * (i % dim)
-      const y = dh * Math.floor(i / dim)
-      context.fillRect(x, y, dw, dh);
+  context.beginPath();
+  const dw = width / layerDimensions.y;
+  const dh = height / layerDimensions.x;
+  const cdim = Math.sqrt(layerDimensions.c);
+  const cdw = dw / cdim;
+  const cdh = dh / cdim;
+
+  average3DLayer.forEach((row, rowIdx) => {
+    row.forEach((cells, colIdx) => {
+      const cellX = dw * (colIdx % layerDimensions.x);
+      const cellY = dh * rowIdx;
+
+      cells.forEach((c, cIdx) => {
+        context.fillStyle = calculateGradientColor(`#${channelColors[cIdx]}`, c);
+        const x = cellX + cdw * (cIdx % cdim);
+        const y = cellY + cdh * Math.floor(cIdx / cdim);
+        context.fillRect(x, y, Math.ceil(cdw), Math.ceil(cdh));
+      });
+    });
   });
-}
+};
+
+const generateRandomColor = () => Math.floor(Math.random()*16777215).toString(16);
+const channelColors = [...Array(layerDimensions.c)].map(() => generateRandomColor())
 
 const calculateGradientColor = (hexColor, value) => {
   const minLightness = 10;
@@ -492,6 +545,6 @@ const calculateGradientColor = (hexColor, value) => {
   }%)`;
 };
 
-import * as tf from '@tensorflow/tfjs';
-import * as knnClassifier from '@tensorflow-models/knn-classifier';
-import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as tf from "@tensorflow/tfjs";
+import * as knnClassifier from "@tensorflow-models/knn-classifier";
+import * as mobilenet from "@tensorflow-models/mobilenet";
