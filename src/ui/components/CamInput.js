@@ -23,6 +23,8 @@ class CamInput {
     this.webcamClassifier.video.classList.add('input__camera-video');
     this.webcamClassifier.video.addEventListener(
         'loadeddata', this.videoLoaded.bind(this));
+    this.element.appendChild(this.webcamClassifier.probabilitiesCanvas);
+    this.webcamClassifier.probabilitiesCanvas.classList.add('input__camera-probabilities');
     window.addEventListener('resize', this.size.bind(this));
     GLOBALS.webcamClassifier = this.webcamClassifier;
     this.stop();

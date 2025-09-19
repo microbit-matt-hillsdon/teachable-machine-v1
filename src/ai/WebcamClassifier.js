@@ -32,6 +32,10 @@ export default class WebcamClassifier {
     this.blankCanvas = document.createElement('canvas');
     this.blankCanvas.width = 227;
     this.blankCanvas.height = 227;
+    this.probabilitiesCanvas = document.createElement("canvas");
+    this.probabilitiesCanvas.id = "probabilities-canvas";
+    this.probabilitiesContext = this.probabilitiesCanvas.getContext("2d");
+    this.probabilitiesInterval = null;
     this.timer = null;
     this.active = false;
     this.wasActive = false;
@@ -53,7 +57,9 @@ export default class WebcamClassifier {
         imagesCount: 0,
         images: [],
         latestImages: [],
-        latestThumbs: []
+        latestThumbs: [],
+        latestProbabilities: [],
+        context: null,
       };
     }
     this.isDown = false;
@@ -63,6 +69,7 @@ export default class WebcamClassifier {
     this.lastFrameTimeMs = 1000;
     this.classIndices = {};
     this.currentSavedClassIndex = 0;
+    this.showPhotoImage = true;
 
     this.mappedButtonIndexes = [];
 
@@ -73,6 +80,28 @@ export default class WebcamClassifier {
       this.activateWebcamButton.addEventListener('click', () => {
         location.reload();
       });
+    }
+
+    window.addEventListener('photo', this.togglePhotoImage.bind(this));
+  }
+
+  togglePhotoImage(event) {
+    const showImage = event.detail.showImage;
+    if (this.showPhotoImage !== showImage) {
+      this.showPhotoImage = event.detail.showImage;
+
+      // Toggle thumbs images.
+      Object.values(this.images).forEach(
+        ({ context, latestThumbs, latestProbabilities }) => {
+          if (context !== null) {
+            this.renderThumbImagesOrProbabilities(
+              context,
+              latestThumbs,
+              latestProbabilities
+            );
+          }
+        }
+      );
     }
   }
 
@@ -163,6 +192,12 @@ export default class WebcamClassifier {
     return newOutput;
   }
 
+  getProbabilities(image) {
+    const img = tf.fromPixels(image);
+    const logits = this.mobilenetModule.infer(img, "conv_preds");
+    return [...logits.softmax().dataSync()];
+  }
+
   train(image, index) {
     if (this.mappedButtonIndexes.indexOf(index) === -1) {
       this.mappedButtonIndexes.push(index);
@@ -171,6 +206,8 @@ export default class WebcamClassifier {
     const img = tf.fromPixels(image);
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
+
+    return [...logits.softmax().dataSync()];
   }
 
   clear(index) {
@@ -186,6 +223,7 @@ export default class WebcamClassifier {
     this.images[this.classNames[index]].imagesCount = 0;
     this.images[this.classNames[index]].latestThumbs = [];
     this.images[this.classNames[index]].latestImages = [];
+    this.images[this.classNames[index]].latestProbabilities = [];
     GLOBALS.soundOutput.pauseCurrentSound();
 
     setTimeout(() => {
@@ -207,6 +245,9 @@ export default class WebcamClassifier {
     this.video.style.width = videoWidth + 'px';
     this.video.style.height = parentHeight + 'px';
     this.video.style.transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
+
+    this.probabilitiesCanvas.style.width = this.video.style.height;
+    this.probabilitiesCanvas.style.height = this.video.style.height;
 
     // If video is taller:
     if (videoRatio < 1) {
@@ -261,6 +302,22 @@ export default class WebcamClassifier {
     }
 
     this.video.play();
+
+    if (!this.probabilitiesInterval) {
+      this.probabilitiesInterval = setInterval(() => {
+        this.probabilitiesContext.reset();
+        if (!this.showPhotoImage) {
+          const probabilities = this.getProbabilities(this.video);
+          renderProbabilities(
+            this.probabilitiesCanvas.width,
+            this.probabilitiesCanvas.height,
+            this.probabilitiesContext, 
+            [probabilities]
+          );
+        }
+      }, 500);
+    }
+
     this.wasActive = true;
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
@@ -269,6 +326,8 @@ export default class WebcamClassifier {
     this.active = false;
     this.wasActive = true;
     this.video.pause();
+    clearInterval(this.probabilitiesInterval);
+    this.probabilitiesInterval = null;
     cancelAnimationFrame(this.timer);
     if (GLOBALS.soundOutput && GLOBALS.soundOutput.muteSounds) {
         GLOBALS.soundOutput.muteSounds();
@@ -289,34 +348,30 @@ export default class WebcamClassifier {
       if (this.current.latestImages.length > 8) {
         this.current.latestImages.shift();
       }
+      if (this.current.latestProbabilities.length > 8) {
+        this.current.latestImages.shift();
+      }
       this.thumbContext.drawImage(
         this.video, this.thumbVideoX, 0, this.thumbVideoWidthReal,
         this.thumbVideoHeight);
       let data = this.thumbContext.getImageData(
         0, 0, this.canvasWidth, this.canvasHeight);
       this.current.latestThumbs.push(data);
-      let cols = 0;
-      let rows = 0;
-      for (let index = 0; index < this.current.latestThumbs.length; index += 1) {
-        this.currentContext.putImageData(
-          this.current.latestThumbs[index], (2 - cols) * this.thumbCanvas.width,
-          rows * this.thumbVideoHeight, 0, 0, this.thumbCanvas.width,
-          this.thumbCanvas.height);
-        if (cols === 2) {
-          rows += 1;
-          cols = 0;
-        }else {
-          cols += 1;
-        }
-      }
+      this.current.context = this.currentContext;
 
       // Train class if one of the buttons is held down
-      // Add current image to classifier
+      // Add current image to classifier and store probabilities
       if (this.training !== -1) {
-        this.train(image, this.training);
+        const probabilities = this.train(image, this.training);
+        this.current.latestProbabilities.push(probabilities);
       }
 
-    }else if (exampleCount > 0) {
+      this.renderThumbImagesOrProbabilities(
+        this.currentContext,
+        this.current.latestThumbs,
+        this.current.latestProbabilities
+          );
+    } else if (exampleCount > 0) {
       // If any examples have been added, run predict
       let measureTimer = false;
       let start = performance.now();
@@ -342,7 +397,74 @@ export default class WebcamClassifier {
 
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
+  
+  renderThumbImages(context, thumbs) {
+    context.reset();
+    let cols = 0;
+    let rows = 0;
+    // Render thumb images
+    for (let index = 0; index < thumbs.length; index += 1) {
+      const dx = (2 - cols) * this.thumbCanvas.width;
+      const dy = rows * this.thumbVideoHeight;
+      const { width, height } = this.thumbCanvas;
+      context.putImageData(thumbs[index], dx, dy, 0, 0, width, height);
+      if (cols === 2) {
+        rows += 1;
+        cols = 0;
+      } else {
+        cols += 1;
+      }
+    }
+  }
+
+  renderThumbImagesOrProbabilities(context, thumbs, probabilities) {
+    if (this.showPhotoImage) {
+      this.renderThumbImages(context, thumbs);
+    } else {
+    const width = this.thumbCanvas.width * 3;
+    const height = this.thumbCanvas.height * 3;
+      renderProbabilities(width, height, context, probabilities);
+    }
+  }
 }
+
+const renderProbabilities = (width, height, context, probabilities) => {
+  context.reset();
+  const sumProbabilities = probabilities.reduce((acc, ps) => {
+    if (acc.length === 0) {
+      return ps;
+    }
+    return acc.map((a, i) => a + ps[i]);
+  }, []);
+  const averageProbabilities = sumProbabilities.map(
+    (p) => p / probabilities.length
+  );
+  const maxProbability = Math.max(...averageProbabilities);
+  const normProbabilities = averageProbabilities.map(p => p/maxProbability)
+  
+  const numGridCols = 32;
+  const numGridRows = 32;
+  context.beginPath();
+  const dw = Math.ceil(width / numGridCols);
+  const dh = Math.ceil(height / numGridRows);
+
+  normProbabilities.forEach((p, i) => {
+    context.fillStyle = calculateGradientColor("#3e80f6", p);
+    const x = dw * (i % numGridCols)
+    const y = dh * Math.floor(i / numGridRows)
+    context.fillRect(x, y, dw, dh);
+  });
+}
+
+const calculateGradientColor = (hexColor, value) => {
+  const minLightness = 10;
+  const maxLightness = 90;
+  const diffLightness = maxLightness - minLightness;
+  return `hsl(from ${hexColor} h s ${
+    minLightness + (1 - value) * diffLightness
+  }%)`;
+};
+
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as mobilenet from '@tensorflow-models/mobilenet';
