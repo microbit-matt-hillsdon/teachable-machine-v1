@@ -166,9 +166,9 @@ class LearningClass {
 
 		GLOBALS.recording = true;
 		GLOBALS.classId = this.id;
-
-    GLOBALS.outputSection.toggleSoundOutput(false);
-    clearTimeout(this.buttonClickTimeout);
+		
+		GLOBALS.outputSection.toggleSoundOutput(false);
+		clearTimeout(this.buttonClickTimeout);
 		clearTimeout(this.buttonDownTimeout);
 
 		this.buttonDownTimeout = setTimeout(() => {
@@ -185,17 +185,17 @@ class LearningClass {
 	buttonUp(timedOut) {
 		this.button.setText(`Train <br>${this.id}`);
 		this.section.stopRecording();
-    clearTimeout(this.buttonClickTimeout);
+		clearTimeout(this.buttonClickTimeout);
 		clearTimeout(this.buttonDownTimeout);
 		this.button.up();
 
 		GLOBALS.classId = null;
-
+		
 		if (!timedOut) {
 			GLOBALS.recording = false;
 		}
-
-    GLOBALS.outputSection.toggleSoundOutput(true);
+		
+		GLOBALS.outputSection.toggleSoundOutput(true);
 
 		GLOBALS.webcamClassifier.buttonUp(this.id, this.canvas);
 
