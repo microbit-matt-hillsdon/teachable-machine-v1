@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const recordingTimeout = 10_000
+
 class LearningClass {
 	constructor(options) {
 		this.element = options.element;
@@ -165,8 +167,14 @@ class LearningClass {
 		GLOBALS.recording = true;
 		GLOBALS.classId = this.id;
 
-        GLOBALS.outputSection.toggleSoundOutput(false);
-        clearTimeout(this.buttonClickTimeout);
+    GLOBALS.outputSection.toggleSoundOutput(false);
+    clearTimeout(this.buttonClickTimeout);
+		clearTimeout(this.buttonDownTimeout);
+
+		this.buttonDownTimeout = setTimeout(() => {
+			this.buttonUp(true)
+		}, recordingTimeout);
+
 		this.buttonClickTimeout = setTimeout(() => {
 			GLOBALS.webcamClassifier.buttonDown(this.id, this.canvas, this);
 		}, 100);
@@ -174,16 +182,20 @@ class LearningClass {
 		gtag('event', 'training', {'id': this.index});
 	}
 
-	buttonUp() {
+	buttonUp(timedOut) {
 		this.button.setText(`Train <br>${this.id}`);
 		this.section.stopRecording();
-        clearTimeout(this.buttonClickTimeout);
+    clearTimeout(this.buttonClickTimeout);
+		clearTimeout(this.buttonDownTimeout);
 		this.button.up();
 
 		GLOBALS.classId = null;
-		GLOBALS.recording = false;
 
-        GLOBALS.outputSection.toggleSoundOutput(true);
+		if (!timedOut) {
+			GLOBALS.recording = false;
+		}
+
+    GLOBALS.outputSection.toggleSoundOutput(true);
 
 		GLOBALS.webcamClassifier.buttonUp(this.id, this.canvas);
 
