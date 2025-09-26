@@ -69,11 +69,6 @@ export default class WebcamClassifier {
     this.init();
 
     this.activateWebcamButton = document.getElementById('input__media__activate');
-    if (this.activateWebcamButton) {
-      this.activateWebcamButton.addEventListener('click', () => {
-        location.reload();
-      });
-    }
   }
 
   startWebcam() {
@@ -115,7 +110,9 @@ export default class WebcamClassifier {
             error: error
           }
         });
-        this.activateWebcamButton.style.display = 'block';
+        this.activateWebcamButton.style.display = 'flex';
+        this.activateWebcamButton.innerHTML = getMediaPermissionErrorMsg(error)
+
         window.dispatchEvent(event);
         gtag('event', 'webcam_denied');
       });
@@ -346,3 +343,4 @@ export default class WebcamClassifier {
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as mobilenet from '@tensorflow-models/mobilenet';
+import { getMediaPermissionErrorMsg } from './webcamPermissionError.js'

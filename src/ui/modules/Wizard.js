@@ -444,11 +444,6 @@ this.lastClassTriggered = null;
 
 this.activateWebcamButton = document.getElementById('input__media__activate');
 this.activateWebcamButton.style.display = 'none';
-if (this.activateWebcamButton) {
-  this.activateWebcamButton.addEventListener('click', () => {
-    location.reload();
-});
-}
 
 
 this.resizeEvent = this.size.bind(this);
@@ -555,7 +550,6 @@ ended() {
             this.play(2);
         }else if (localStorage.getItem('webcam_status') === 'denied') {
             this.play(7);
-
         }
     }
 
