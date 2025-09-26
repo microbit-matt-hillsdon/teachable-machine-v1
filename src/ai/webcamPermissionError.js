@@ -2,11 +2,11 @@
 
 const mediaPermissionsErrorMsg = {
 	/** (macOS) browser does not have permission to access cam/mic */
-	SystemPermissionDenied: 'Your browser cannot access your camera/microphone. Make sure permissions are enabled in your browser settings.',
+	SystemPermissionDenied: 'Your browser cannot access your camera/microphone. Make sure permissions are enabled in your browser settings. Reload the page.',
 	/** user denied permission for site to access cam/mic */
-	UserPermissionDenied: 'There was an error accessing your camera/microphone. Make sure permissions are enabled.',
+	UserPermissionDenied: 'There was an error accessing your camera/microphone. Make sure permissions are enabled, then reload the page.',
 	/** (Windows) browser does not have permission to access cam/mic OR camera is in use by another application or browser tab */
-	CouldNotStartVideoSource: 'Another application or browser tab may already be using your webcam. Please turn off other cameras before proceeding.',
+	CouldNotStartVideoSource: 'Another application or browser tab may already be using your webcam. Please turn off other cameras and reload the page.',
 	/** all other errors */
 	Generic: 'There was an error accessing your camera/microphone. Make sure permissions are enabled, or ask for help.',
 }
