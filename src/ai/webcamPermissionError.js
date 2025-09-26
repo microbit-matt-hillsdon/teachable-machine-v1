@@ -12,7 +12,6 @@ const mediaPermissionsErrorMsg = {
 }
 
 export const getMediaPermissionErrorMsg = (error) => {
-  console.log(error.name, error.message)
   const errName = error.name
   const errMessage = error.message
   if (GLOBALS.browserUtils.isChrome) {
