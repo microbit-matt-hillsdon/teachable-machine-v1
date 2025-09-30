@@ -137,6 +137,7 @@ class LaunchScreen {
                 this.connectStatusDisplay.innerHTML = `Loading<br />${Math.round(percentage * 100)}%`;
             });
             this.connectStatusDisplay.innerHTML = `Connecting...`;
+            // Commenting out bluetooth connection to rely on WebUSB connection.
             // TODO: Handle bluetooth connection errors
             // await GLOBALS.microbit.bluetoothConnect()
             this.connectStatusDisplay.style.display = 'none';
