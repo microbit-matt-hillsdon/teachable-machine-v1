@@ -12,24 +12,44 @@ class Microbit {
         // Initialise micro:bit UART data listener.
         this.uartDataListener = (event) => {
             const decoded = new TextDecoder().decode(event.value);
-            const values = decoded.split(":", 3);
-            const [start, command, arg] = values;
-            if (values.length !== 3 || start !== "c" || isNaN(parseInt(arg))) {
-                throw new Error(`Invalid micro:bit UART message: ${decoded}`);
-            }
-            switch (command) {
-                case "photo": {
-                    const classIdx = parseInt(arg);
-                    const event = new CustomEvent("record", {
-                        detail: GLOBALS.recording
-                            ? { stop: classIdx }
-                            : { start: classIdx },
-                    });
-                    window.dispatchEvent(event);
-                }
-            }
+            this.triggerCommand(decoded);
         };
         this.bluetooth.addEventListener("uartdata", this.uartDataListener);
+
+        // Initialise micro:bit serial data listener.
+        this.serialBuffer = "";
+        this.serialDataListener = (event) => {
+            const decoded = event.data;
+            this.serialBuffer = this.serialBuffer + decoded;
+            if (this.serialBuffer.endsWith("\n")) {
+                const cmds = this.serialBuffer.split("\n").filter(s => s.length > 0);
+                cmds.forEach((cmd) => {
+                    this.triggerCommand(cmd)
+                })
+                this.serialBuffer = "";
+            }
+        };
+        this.usb.addEventListener("serialdata", this.serialDataListener);
+    }
+
+    triggerCommand (commandMsg) {
+        const values = commandMsg.split(":", 3);
+        const [start, command, arg] = values;
+        if (values.length !== 3 || start !== "c" || isNaN(parseInt(arg))) {
+            console.error(`Invalid micro:bit message: ${commandMsg}`);
+            return;
+        }
+        switch (command) {
+            case "photo": {
+                const classIdx = parseInt(arg);
+                const event = new CustomEvent("record", {
+                    detail: GLOBALS.recording
+                        ? { stop: classIdx }
+                        : { start: classIdx },
+                });
+                window.dispatchEvent(event);
+            }
+        }
     }
 
     display = (arg) => this.writeUart("display", arg);
@@ -53,6 +73,10 @@ class Microbit {
             partial: true,
             progress,
         });
+    }
+
+    usbReset = async () => {
+        await this.usb.clearDevice()
     }
 }
 
