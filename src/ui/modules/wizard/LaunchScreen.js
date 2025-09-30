@@ -79,6 +79,8 @@ class LaunchScreen {
         // Hacked to skip the tutorial always
         this.skipButtonMobile.addEventListener('click', this.skipClick.bind(this));
         this.startButton.element.addEventListener('click', this.skipClick.bind(this));
+
+        this.connectStatusDisplay = document.getElementById('input__media__activate');
     }
 
     openFacebookPopup(event) {
@@ -117,16 +119,35 @@ class LaunchScreen {
             onComplete: () => {
                 this.destroy();
                 if (!GLOBALS.browserUtils.isMobile) {
-                    (async () => {
-                        // TODO: Do we need to fix
-                        // https://github.com/microbit-foundation/microbit-connection/issues/20
-                        // ?
-                        await GLOBALS.microbit.connect();
-                        GLOBALS.camInput.start();
-                    })();
+                    this.connect();
                 }
             }
         });
+    }
+
+    async connect() {
+        // TODO: Do we need to fix
+        // https://github.com/microbit-foundation/microbit-connection/issues/20
+        // ?
+        try {
+            await GLOBALS.microbit.usbConnect();
+            this.connectStatusDisplay.style.display = 'flex';
+            this.connectStatusDisplay.innerHTML = "Loading<br />0%";
+            await GLOBALS.microbit.flashMicrobitProgram((percentage) => {
+                this.connectStatusDisplay.innerHTML = `Loading<br />${Math.round(percentage * 100)}%`;
+            });
+            this.connectStatusDisplay.innerHTML = `Connecting...`;
+            // TODO: Handle bluetooth connection errors
+            // await GLOBALS.microbit.bluetoothConnect()
+            this.connectStatusDisplay.style.display = 'none';
+            GLOBALS.camInput.start();
+        } catch (err) {
+            await GLOBALS.microbit.usbReset()
+            const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg["generic"]
+            this.connectStatusDisplay.style.display = 'flex';
+            this.connectStatusDisplay.innerHTML = `<p>${errMessage}</p>`;
+            this.connectStatusDisplay.addEventListener('click', this.connect.bind(this));
+        }
     }
 
     destroy() {
@@ -156,9 +177,17 @@ class LaunchScreen {
     }
 }
 
+const connectionErrorMsg = {
+    "update-req": "Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <a href='https://microbit.org/get-started/user-guide/firmware/'>update your firmware</a> before you can connect to this micro:bit.",
+    "no-device-selected": "No device selected. Plug in a micro:bit and <a>click here to try again</a>.",
+    "clear-connect": "Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <a>clicking here to try again</a>.",
+    generic: "Replug the micro:bit and <a>click here to try again</a>."
+}
+
 import TweenMax from 'gsap/esm';
 import ScrollToPlugin from 'gsap/esm/ScrollToPlugin';
 import GLOBALS from './../../../config.js';
 import Button from './../../components/Button.js';
+import { ConnectionStatus } from '@microbit/microbit-connection';
 
 export default LaunchScreen;

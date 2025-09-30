@@ -68,7 +68,7 @@ export default class WebcamClassifier {
 
     this.init();
 
-    this.activateWebcamButton = document.getElementById('input__media__activate');
+    this.connectStatusDisplay = document.getElementById('input__media__activate');
   }
 
   startWebcam() {
@@ -85,7 +85,7 @@ export default class WebcamClassifier {
       }).
       then((stream) => {
         GLOBALS.isCamGranted = true;
-        this.activateWebcamButton.style.display = 'none';
+        this.connectStatusDisplay.style.display = 'none';
         this.active = true;
         this.stream = stream;
         this.video.addEventListener('loadedmetadata', this.videoLoaded.bind(this));
@@ -106,8 +106,8 @@ export default class WebcamClassifier {
             error: error
           }
         });
-        this.activateWebcamButton.style.display = 'flex';
-        this.activateWebcamButton.innerHTML = getMediaPermissionErrorMsg(error)
+        this.connectStatusDisplay.style.display = 'flex';
+        this.connectStatusDisplay.innerHTML = getMediaPermissionErrorMsg(error)
 
         window.dispatchEvent(event);
         gtag('event', 'webcam_denied');
