@@ -1,4 +1,4 @@
-import { createUniversalHexFlashDataSource, createWebBluetoothConnection, createWebUSBConnection } from "@microbit/microbit-connection";
+import { ConnectionStatus, createUniversalHexFlashDataSource, createWebBluetoothConnection, createWebUSBConnection } from "@microbit/microbit-connection";
 
 class Microbit {
     constructor() {
@@ -19,14 +19,18 @@ class Microbit {
         // Initialise micro:bit serial data listener.
         this.serialBuffer = "";
         this.serialDataListener = (event) => {
+            if (this.bluetooth.status === ConnectionStatus.CONNECTED) {
+                // Listen to UART data listener instead.
+                return
+            }
             const decoded = event.data;
             this.serialBuffer = this.serialBuffer + decoded;
             if (this.serialBuffer.endsWith("\n")) {
                 const cmds = this.serialBuffer.split("\n").filter(s => s.length > 0);
+                this.serialBuffer = "";
                 cmds.forEach((cmd) => {
                     this.triggerCommand(cmd)
                 })
-                this.serialBuffer = "";
             }
         };
         this.usb.addEventListener("serialdata", this.serialDataListener);
@@ -52,18 +56,23 @@ class Microbit {
         }
     }
 
-    display = (arg) => this.writeUart("display", arg);
-    clearDisplay = () => this.writeUart("display", -1);
+    display = (arg) => this.writeToMicrobit("display", arg);
+    clearDisplay = () => this.writeToMicrobit("display", -1);
 
-    servo = (arg) => this.writeUart("servo", arg);
-    stopServo = () => this.writeUart("servo", -1)
+    servo = (arg) => this.writeToMicrobit("servo", arg);
+    stopServo = () => this.writeToMicrobit("servo", -1)
     
-    playSound = (arg) => this.writeUart("sound", arg);
-    stopSounds = () => this.writeUart("sound", -1);
+    playSound = (arg) => this.writeToMicrobit("sound", arg);
+    stopSounds = () => this.writeToMicrobit("sound", -1);
 
-    writeUart = (command, arg) => {
-        const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);
-        this.bluetooth.uartWrite(encoded);
+    writeToMicrobit = (command, arg) => {
+        const msg = microbitCommandMessage(command, arg);
+        const encoded = new TextEncoder().encode(msg);
+        if (this.bluetooth.status === ConnectionStatus.CONNECTED) {
+            this.bluetooth.uartWrite(encoded);
+        } else {
+            this.usb.serialWrite(msg)
+        }
     };
 
     flashMicrobitProgram = async (progress) => {
@@ -79,6 +88,8 @@ class Microbit {
         await this.usb.clearDevice()
     }
 }
+
+const microbitCommandMessage = (command, arg) => `c:${command}:${arg}\n`
 
 import GLOBALS from "../config.js";
 
