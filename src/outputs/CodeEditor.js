@@ -13,84 +13,108 @@
 // limitations under the License.
 
 class CodeEditor {
-  constructor(parentElement) {
-    this.parent = parentElement;
-    this.id = "CodeEditor";
-    this.element = document.createElement("div");
-    this.element.classList.add("output__code-editor");
-    this.element.style.display = "none";
-    this.parent.appendChild(this.element);
+    constructor(parentElement) {
+        this.parent = parentElement;
+        this.id = "CodeEditor";
+        this.element = document.createElement("div");
+        this.element.classList.add("output__code-editor");
+        this.element.style.display = "none";
+        this.parent.appendChild(this.element);
 
-    this.topBar = document.createElement("div");
-    this.topBar.classList.add("top-bar");
-    this.backButton = document.createElement("button");
-    this.backButton.innerText = "< Back";
-    this.backButton.addEventListener("click", this.close.bind(this));
-    this.topBar.appendChild(this.backButton);
-    this.element.appendChild(this.topBar);
+        // Top bar.
+        this.topBar = document.createElement("div");
+        this.topBar.classList.add("top-bar");
+        this.backButton = document.createElement("button");
+        this.backButton.innerText = "< Back";
+        this.backButton.addEventListener("click", this.close.bind(this));
+        this.topBar.appendChild(this.backButton);
+        this.element.appendChild(this.topBar);
 
-    this.iframeWrapper = document.createElement("div");
-    this.iframeWrapper.classList.add("iframe-wrapper");
-    this.element.appendChild(this.iframeWrapper);
+        // MakeCode iframe.
+        this.iframeWrapper = document.createElement("div");
+        this.iframeWrapper.classList.add("iframe-wrapper");
+        this.element.appendChild(this.iframeWrapper);
 
-    // MakeCode iframe
-    this.iframe = document.createElement("iframe");
-    this.iframe.allow = "usb; autoplay; camera; microphone;";
-    this.iframe.src = createMakeCodeURL(
-      "https://makecode.microbit.org",
-      undefined, // Version.
-      undefined, // Language.
-      1, // Controller.
-      { hideMenu: "" } // Query params.
-    );
-    this.iframe.width = "100%";
-    this.iframe.height = "100%";
-    this.iframeWrapper.appendChild(this.iframe);
+        this.iframe = document.createElement("iframe");
+        this.iframe.allow = "usb; autoplay; camera; microphone;";
+        this.iframe.src = createMakeCodeURL(
+            "https://makecode.microbit.org",
+            undefined, // Version.
+            undefined, // Language.
+            2, // Controller.
+            { hideMenu: "" } // Query params.
+        );
+        this.iframe.width = "100%";
+        this.iframe.height = "100%";
+        this.iframeWrapper.appendChild(this.iframe);
 
-    // Create and initialise an instance of MakeCodeFrameDriver.
-    this.driverRef = new MakeCodeFrameDriver(
-      {
-        controllerId: "Teachable machine with micro:bit",
-        queryParams: { hideLanguage: "1" },
-        initialProjects: async () => [defaultMakeCodeProject],
-        onEditorContentLoaded: (e) => console.log("MakeCode is now ready"),
-        onWorkspaceSave: (e) => {
-          console.log(e.project.header.id, e.project);
-        },
-      },
-      () => this.iframe
-    );
-    this.driverRef.initialize();
+        // Progress dialog.
+        this.progressDialog = document.createElement("dialog");
+        this.progressDialogContent = document.createElement("div");
+        this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
+        this.progressDialog.appendChild(this.progressDialogContent);
+        this.element.appendChild(this.progressDialog);
 
-    this.bodyEl = document.querySelector("body");
-  }
+        // Create and initialise an instance of MakeCodeFrameDriver.
+        this.driverRef = new MakeCodeFrameDriver(
+            {
+                controllerId: "Teachable machine with micro:bit",
+                queryParams: { hideLanguage: "1" },
+                initialProjects: async () => [defaultMakeCodeProject],
+                onEditorContentLoaded: (e) =>
+                    console.log("MakeCode is now ready"),
+                onWorkspaceSave: (e) => {
+                    console.log(e.project.header.id, e.project);
+                },
+                onDownload: this.onDownload.bind(this),
+            },
+            () => this.iframe
+        );
+        this.driverRef.initialize();
 
-  open() {
-    this.element.style.display = "flex";
-    this.bodyEl.style.overflow = "hidden";
-  }
+        this.bodyEl = document.querySelector("body");
+    }
 
-  close() {
-    this.element.style.display = "none";
-    this.bodyEl.style.overflow = "auto";
-  }
+    open() {
+        this.element.style.display = "flex";
+        this.bodyEl.style.overflow = "hidden";
+    }
+
+    close() {
+        this.element.style.display = "none";
+        this.bodyEl.style.overflow = "auto";
+    }
+
+    async onDownload(e) {
+        await GLOBALS.microbit.downloadProgram(e.hex, (progress) => {
+            if (progress) {
+                const percentage = Math.round(progress * 100);
+                this.progressDialogContent.innerHTML = `Downloading program...<br/>${percentage}%`;
+            }
+            if (!this.progressDialog.open) {
+                this.progressDialog.showModal();
+            }
+        });
+        this.progressDialog.close();
+        this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
+    }
 }
 
 const defaultMakeCodeProject = {
-  text: {
-    "main.blocks":
-      '<xml xmlns="http://www.w3.org/1999/xhtml">\n  <block type="pxt-on-start" id=",{,HjW]u:lVGcDRS_Cu|" x="-247" y="113"></block>\n</xml>',
-    "main.ts": "",
-    "README.md": " ",
-    "pxt.json":
-      '{\n    "name": "Untitled",\n    "dependencies": {\n        "core": "*"\n , "radio": "*"\n   },\n    "description": "",\n    "files": [\n        "main.blocks",\n        "main.ts",\n        "README.md"\n    ]\n}',
-  },
+    text: {
+        "main.blocks":
+            '<xml xmlns="http://www.w3.org/1999/xhtml">\n  <block type="pxt-on-start" id=",{,HjW]u:lVGcDRS_Cu|" x="-247" y="113"></block>\n</xml>',
+        "main.ts": "",
+        "README.md": " ",
+        "pxt.json":
+            '{\n    "name": "Untitled",\n    "dependencies": {\n        "core": "*"\n , "radio": "*"\n   },\n    "description": "",\n    "files": [\n        "main.blocks",\n        "main.ts",\n        "README.md"\n    ]\n}',
+    },
 };
 
 import GLOBALS from "../config.js";
 import {
-  MakeCodeFrameDriver,
-  createMakeCodeURL,
+    MakeCodeFrameDriver,
+    createMakeCodeURL,
 } from "@microbit/makecode-embed/vanilla";
 
 export default CodeEditor;

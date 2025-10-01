@@ -136,9 +136,14 @@ class LaunchScreen {
             await GLOBALS.microbit.connect();
             this.connectStatusDisplay.style.display = 'flex';
             this.connectStatusDisplay.innerHTML = "Loading<br />0%";
-            await GLOBALS.microbit.flashMicrobitProgram((percentage) => {
-                this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? Math.round(percentage * 100) : ""}%`;
-            });
+            const fetchedHex = await fetch("static/microbit/TMv1Integration.hex");
+            const universalHexString = await fetchedHex.text();
+            await GLOBALS.microbit.downloadProgram(
+                universalHexString, 
+                (percentage) => {
+                    this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
+                }
+            );
             this.connectStatusDisplay.style.display = 'none';
             GLOBALS.camInput.start();
             this.hasConnectedBefore = true;

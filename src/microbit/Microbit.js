@@ -1,4 +1,8 @@
-import { ConnectionStatus, createUniversalHexFlashDataSource, createWebUSBConnection } from "@microbit/microbit-connection";
+import {
+    ConnectionStatus,
+    createUniversalHexFlashDataSource,
+    createWebUSBConnection,
+} from "@microbit/microbit-connection";
 
 class Microbit {
     constructor() {
@@ -6,7 +10,9 @@ class Microbit {
         this.connect = this.connection.connect.bind(this.connection);
 
         // Initialise connection.
-        (async() => { await this.connection.initialize() })();
+        (async () => {
+            await this.connection.initialize();
+        })();
 
         // Initialise micro:bit serial listeners.
         this.serialBuffer = "";
@@ -18,7 +24,7 @@ class Microbit {
                 if (idx < cmds.length - 1) {
                     this.triggerCommand(cmd);
                 }
-            })
+            });
         };
         this.connection.addEventListener("serialdata", this.serialDataListener);
 
@@ -27,11 +33,11 @@ class Microbit {
                 const customEvent = new CustomEvent("disconnected", {});
                 window.dispatchEvent(customEvent);
             }
-        }
-        this.connection.addEventListener("status", this.serialStatusListener)
+        };
+        this.connection.addEventListener("status", this.serialStatusListener);
     }
 
-    triggerCommand (commandMsg) {
+    triggerCommand(commandMsg) {
         const values = commandMsg.split(":", 3);
         const [start, command, arg] = values;
         if (values.length !== 3 || start !== "c" || isNaN(parseInt(arg))) {
@@ -50,7 +56,7 @@ class Microbit {
             case "endRecord": {
                 const classIdx = parseInt(arg);
                 const event = new CustomEvent("record", {
-                    detail: { stop: classIdx }
+                    detail: { stop: classIdx },
                 });
                 window.dispatchEvent(event);
                 break;
@@ -65,32 +71,28 @@ class Microbit {
     clearDisplay = () => this.writeToMicrobit("display", -1);
 
     servo = (arg) => this.writeToMicrobit("servo", arg);
-    stopServo = () => this.writeToMicrobit("servo", -1)
-    
+    stopServo = () => this.writeToMicrobit("servo", -1);
+
     playSound = (arg) => this.writeToMicrobit("sound", arg);
     stopSounds = () => this.writeToMicrobit("sound", -1);
 
     writeToMicrobit = (command, arg) => {
         const msg = microbitCommandMessage(command, arg);
-        this.connection.serialWrite(msg)
+        this.connection.serialWrite(msg);
     };
 
-    flashMicrobitProgram = async (progress) => {
-        const fetchedHex = await fetch('static/microbit/TMv1Integration.hex');
-        const universalHexString = await fetchedHex.text()
-        await this.connection.flash(createUniversalHexFlashDataSource(universalHexString), {
-        partial: true,
-        progress,
-        });
-    }
+    downloadProgram = async (hexString, progress) => {
+        await this.connection.flash(
+            createUniversalHexFlashDataSource(hexString),
+            { partial: true, progress }
+        );
+    };
 
     usbReset = async () => {
-        await this.connection.clearDevice()
-    }
+        await this.connection.clearDevice();
+    };
 }
 
-const microbitCommandMessage = (command, arg) => `c:${command}:${arg}\n`
-
-import GLOBALS from "../config.js";
+const microbitCommandMessage = (command, arg) => `c:${command}:${arg}\n`;
 
 export default Microbit;

@@ -13,33 +13,33 @@
 // limitations under the License.
 
 class CodeOutput {
-  constructor() {
-    this.id = "CodeOutput";
-    this.element = document.createElement("div");
-    this.element.classList.add("output__container");
-    this.element.classList.add("output__code");
+    constructor() {
+        this.id = "CodeOutput";
+        this.element = document.createElement("div");
+        this.element.classList.add("output__container");
+        this.element.classList.add("output__code");
 
-    this.openMakeCodeBtn = document.createElement("button");
-    //  button--large button--color-blue
-    this.openMakeCodeBtn.classList.add("button");
-    this.openMakeCodeBtn.classList.add("button--open-makecode");
-    this.openMakeCodeBtn.innerText = "Edit in MakeCode";
-    this.openMakeCodeBtn.addEventListener(
-      "click",
-      this.openMakeCode.bind(this)
-    );
-    this.element.appendChild(this.openMakeCodeBtn);
+        this.openMakeCodeBtn = document.createElement("button");
+        //  button--large button--color-blue
+        this.openMakeCodeBtn.classList.add("button");
+        this.openMakeCodeBtn.classList.add("button--open-makecode");
+        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.addEventListener(
+            "click",
+            this.openMakeCode.bind(this)
+        );
+        this.element.appendChild(this.openMakeCodeBtn);
 
-    this.codeEditor = new CodeEditor(this.element);
-  }
+        this.codeEditor = new CodeEditor(this.element);
+    }
 
-  openMakeCode() {
-    this.codeEditor.open();
-  }
+    openMakeCode() {
+        this.codeEditor.open();
+    }
 
-  start() {}
-  stop() {}
-  trigger() {}
+    start() {}
+    stop() {}
+    trigger() {}
 }
 
 import CodeEditor from "./CodeEditor.js";
