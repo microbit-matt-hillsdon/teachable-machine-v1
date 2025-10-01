@@ -20,23 +20,28 @@ class CodeOutput {
     this.element.classList.add("output__code");
 
     this.openMakeCodeBtn = document.createElement("button");
-		//  button--large button--color-blue
+    //  button--large button--color-blue
     this.openMakeCodeBtn.classList.add("button");
-		this.openMakeCodeBtn.classList.add("button--open-makecode");
+    this.openMakeCodeBtn.classList.add("button--open-makecode");
     this.openMakeCodeBtn.innerText = "Edit in MakeCode";
-		this.openMakeCodeBtn.addEventListener("click", this.openMakeCode.bind(this))
+    this.openMakeCodeBtn.addEventListener(
+      "click",
+      this.openMakeCode.bind(this)
+    );
     this.element.appendChild(this.openMakeCodeBtn);
+
+    this.codeEditor = new CodeEditor(this.element);
   }
 
-	openMakeCode() {
-		console.log("click")
-	}
+  openMakeCode() {
+    this.codeEditor.open();
+  }
 
   start() {}
-
   stop() {}
+  trigger() {}
 }
 
-import GLOBALS from "../config.js";
+import CodeEditor from "./CodeEditor.js";
 
 export default CodeOutput;
