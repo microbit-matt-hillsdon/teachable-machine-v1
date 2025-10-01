@@ -130,16 +130,12 @@ class LaunchScreen {
         // https://github.com/microbit-foundation/microbit-connection/issues/20
         // ?
         try {
-            await GLOBALS.microbit.usbConnect();
+            await GLOBALS.microbit.connect();
             this.connectStatusDisplay.style.display = 'flex';
             this.connectStatusDisplay.innerHTML = "Loading<br />0%";
             await GLOBALS.microbit.flashMicrobitProgram((percentage) => {
-                this.connectStatusDisplay.innerHTML = `Loading<br />${Math.round(percentage * 100)}%`;
+                this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? Math.round(percentage * 100) : ""}%`;
             });
-            this.connectStatusDisplay.innerHTML = `Connecting...`;
-            // Commenting out bluetooth connection to rely on WebUSB connection.
-            // TODO: Handle bluetooth connection errors
-            // await GLOBALS.microbit.bluetoothConnect()
             this.connectStatusDisplay.style.display = 'none';
             GLOBALS.camInput.start();
         } catch (err) {

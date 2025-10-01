@@ -1,28 +1,13 @@
-import { ConnectionStatus, createUniversalHexFlashDataSource, createWebBluetoothConnection, createWebUSBConnection } from "@microbit/microbit-connection";
+import { createUniversalHexFlashDataSource, createWebUSBConnection } from "@microbit/microbit-connection";
 
 class Microbit {
     constructor() {
-        this.bluetooth = createWebBluetoothConnection();
-        this.uartDataListener = null;
-        this.bluetoothConnect = this.bluetooth.connect.bind(this.bluetooth);
-
-        this.usb = createWebUSBConnection();
-        this.usbConnect = this.usb.connect.bind(this.usb);
-
-        // Initialise micro:bit UART data listener.
-        this.uartDataListener = (event) => {
-            const decoded = new TextDecoder().decode(event.value);
-            this.triggerCommand(decoded);
-        };
-        this.bluetooth.addEventListener("uartdata", this.uartDataListener);
+        this.connection = createWebUSBConnection();
+        this.connect = this.connection.connect.bind(this.connection);
 
         // Initialise micro:bit serial data listener.
         this.serialBuffer = "";
         this.serialDataListener = (event) => {
-            if (this.bluetooth.status === ConnectionStatus.CONNECTED) {
-                // Listen to UART data listener instead.
-                return
-            }
             const cmds = (this.serialBuffer + event.data).split("\n");
             this.serialBuffer = cmds[cmds.length - 1];
             cmds.forEach((cmd) => {
@@ -31,7 +16,7 @@ class Microbit {
                 }
             })
         };
-        this.usb.addEventListener("serialdata", this.serialDataListener);
+        this.connection.addEventListener("serialdata", this.serialDataListener);
     }
 
     triggerCommand (commandMsg) {
@@ -65,25 +50,20 @@ class Microbit {
 
     writeToMicrobit = (command, arg) => {
         const msg = microbitCommandMessage(command, arg);
-        const encoded = new TextEncoder().encode(msg);
-        if (this.bluetooth.status === ConnectionStatus.CONNECTED) {
-            this.bluetooth.uartWrite(encoded);
-        } else {
-            this.usb.serialWrite(msg)
-        }
+        this.connection.serialWrite(msg)
     };
 
     flashMicrobitProgram = async (progress) => {
         const fetchedHex = await fetch('static/microbit/TMv1Integration.hex');
         const universalHexString = await fetchedHex.text()
-        await this.usb.flash(createUniversalHexFlashDataSource(universalHexString), {
+        await this.connection.flash(createUniversalHexFlashDataSource(universalHexString), {
             partial: true,
             progress,
         });
     }
 
     usbReset = async () => {
-        await this.usb.clearDevice()
+        await this.connection.clearDevice()
     }
 }
 
