@@ -13,8 +13,9 @@ class Microbit {
         this.serialDataListener = (event) => {
             const cmds = (this.serialBuffer + event.data).split("\n");
             this.serialBuffer = cmds[cmds.length - 1];
-            cmds.forEach((cmd) => {
-                if (cmd !== "") {
+            cmds.forEach((cmd, idx) => {
+                // Skip the last cmd which is either an empty string or a partially completed cmd.
+                if (idx < cmds.length - 1) {
                     this.triggerCommand(cmd);
                 }
             })
@@ -38,14 +39,24 @@ class Microbit {
             return;
         }
         switch (command) {
-            case "photo": {
+            case "startRecord": {
                 const classIdx = parseInt(arg);
                 const event = new CustomEvent("record", {
-                    detail: GLOBALS.recording
-                        ? { stop: classIdx }
-                        : { start: classIdx },
+                    detail: { start: classIdx },
                 });
                 window.dispatchEvent(event);
+                break;
+            }
+            case "endRecord": {
+                const classIdx = parseInt(arg);
+                const event = new CustomEvent("record", {
+                    detail: { stop: classIdx }
+                });
+                window.dispatchEvent(event);
+                break;
+            }
+            default: {
+                console.error(`Unexpected micro:bit message: ${commandMsg}`);
             }
         }
     }
@@ -68,8 +79,8 @@ class Microbit {
         const fetchedHex = await fetch('static/microbit/TMv1Integration.hex');
         const universalHexString = await fetchedHex.text()
         await this.connection.flash(createUniversalHexFlashDataSource(universalHexString), {
-            partial: true,
-            progress,
+        partial: true,
+        progress,
         });
     }
 
