@@ -23,15 +23,13 @@ class Microbit {
                 // Listen to UART data listener instead.
                 return
             }
-            const decoded = event.data;
-            this.serialBuffer = this.serialBuffer + decoded;
-            if (this.serialBuffer.endsWith("\n")) {
-                const cmds = this.serialBuffer.split("\n").filter(s => s.length > 0);
-                this.serialBuffer = "";
-                cmds.forEach((cmd) => {
-                    this.triggerCommand(cmd)
-                })
-            }
+            const cmds = (this.serialBuffer + event.data).split("\n");
+            this.serialBuffer = cmds[cmds.length - 1];
+            cmds.forEach((cmd) => {
+                if (cmd !== "") {
+                    this.triggerCommand(cmd);
+                }
+            })
         };
         this.usb.addEventListener("serialdata", this.serialDataListener);
     }
