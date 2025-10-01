@@ -1,11 +1,14 @@
-import { createUniversalHexFlashDataSource, createWebUSBConnection } from "@microbit/microbit-connection";
+import { ConnectionStatus, createUniversalHexFlashDataSource, createWebUSBConnection } from "@microbit/microbit-connection";
 
 class Microbit {
     constructor() {
         this.connection = createWebUSBConnection();
         this.connect = this.connection.connect.bind(this.connection);
 
-        // Initialise micro:bit serial data listener.
+        // Initialise connection.
+        (async() => { await this.connection.initialize() })();
+
+        // Initialise micro:bit serial listeners.
         this.serialBuffer = "";
         this.serialDataListener = (event) => {
             const cmds = (this.serialBuffer + event.data).split("\n");
@@ -17,6 +20,14 @@ class Microbit {
             })
         };
         this.connection.addEventListener("serialdata", this.serialDataListener);
+
+        this.serialStatusListener = (event) => {
+            if (event.status !== ConnectionStatus.CONNECTED) {
+                const customEvent = new CustomEvent("disconnected", {});
+                window.dispatchEvent(customEvent);
+            }
+        }
+        this.connection.addEventListener("status", this.serialStatusListener)
     }
 
     triggerCommand (commandMsg) {
