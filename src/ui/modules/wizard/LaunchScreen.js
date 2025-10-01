@@ -82,6 +82,7 @@ class LaunchScreen {
 
         this.connectStatusDisplay = document.getElementById('input__media__activate');
         this.hasConnectedBefore = false;
+        this.hasDownloadedInitialProgram = false;
         window.addEventListener('disconnected', this.onDisconnected.bind(this));
     }
 
@@ -138,12 +139,16 @@ class LaunchScreen {
             this.connectStatusDisplay.innerHTML = "Loading<br />0%";
             const fetchedHex = await fetch("static/microbit/TMv1Integration.hex");
             const universalHexString = await fetchedHex.text();
-            await GLOBALS.microbit.downloadProgram(
-                universalHexString, 
-                (percentage) => {
-                    this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
-                }
-            );
+            // Avoid overwriting program on reconnection if the initial program has been downloaded before.
+            if (!this.hasDownloadedInitialProgram) {
+                await GLOBALS.microbit.downloadProgram(
+                    universalHexString, 
+                    (percentage) => {
+                        this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
+                    }
+                );
+                this.hasDownloadedInitialProgram = true;
+            }
             this.connectStatusDisplay.style.display = 'none';
             GLOBALS.camInput.start();
             this.hasConnectedBefore = true;
