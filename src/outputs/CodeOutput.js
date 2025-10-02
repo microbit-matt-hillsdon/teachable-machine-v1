@@ -16,11 +16,23 @@ class CodeOutput {
     constructor(codeEditor) {
         this.id = "CodeOutput";
         this.element = document.createElement("div");
-        this.element.classList.add("output__container");
         this.element.classList.add("output__code");
+        this.container = document.createElement("div");
+        this.container.classList.add("output__code-container");
+        this.element.appendChild(this.container);
+
+        this.renderer = createMakeCodeRenderBlocks({});
+        this.renderer.initialize();
+  
+        makeCodeProjectsForCodePreview.forEach(code => {
+            const blockPreviewContainer = document.createElement("div");
+            blockPreviewContainer.classList.add("block-preview");
+            this.container.appendChild(blockPreviewContainer);
+            blockPreviewContainer.innerHTML = "<p>Loading...</p>"
+            this.renderBlock(blockPreviewContainer, code)
+        })
 
         this.openMakeCodeBtn = document.createElement("button");
-        //  button--large button--color-blue
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
         this.openMakeCodeBtn.innerText = "Edit in MakeCode";
@@ -28,7 +40,7 @@ class CodeOutput {
             "click",
             this.openMakeCode.bind(this)
         );
-        this.element.appendChild(this.openMakeCodeBtn);
+        this.container.appendChild(this.openMakeCodeBtn);
 
         this.codeEditor = codeEditor;
         this.classNames = GLOBALS.classNames;
@@ -36,6 +48,16 @@ class CodeOutput {
 
     openMakeCode() {
         this.codeEditor.open();
+    }
+
+    renderBlock(parent, code) {
+        this.renderer
+            .renderBlocks({ code, options: { layout: BlockLayout.None } })
+            .then((result) => {
+                // Remove styling from SVG as it would influence the styling of other components.
+                const svgText = result.svg.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                parent.innerHTML = svgText;
+            });
     }
 
     start() {}
@@ -53,7 +75,8 @@ class CodeOutput {
     }
 }
 
+import { BlockLayout, createMakeCodeRenderBlocks } from "@microbit/makecode-embed/vanilla";
 import GLOBALS from "../config.js";
-import CodeEditor from "./CodeEditor.js";
+import { makeCodeProjectsForCodePreview } from "./code/constants.js";
 
 export default CodeOutput;

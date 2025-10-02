@@ -147,6 +147,6 @@ import SoundOutput from './../../outputs/SoundOutput.js';
 import LEDOutput from './../../outputs/LEDOutput.js';
 import ServoOutput from '../../outputs/ServoOutput.js';
 import CodeOutput from '../../outputs/CodeOutput.js';
-import CodeEditor from '../../outputs/CodeEditor.js';
+import CodeEditor from '../../outputs/code/CodeEditor.js';
 
 export default OutputSection;

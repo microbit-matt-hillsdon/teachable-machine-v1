@@ -5,7 +5,15 @@
 	background: $color__white
 }
 
-.button--open-makecode {
+.output__code-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.output__code .button--open-makecode {
 	font-family: $font;
 	font-size: 14px;
 	background: $color__white;
@@ -14,6 +22,17 @@
 	cursor: pointer;
 	width: 80%;
 	padding: 5px 0;
+}
+
+.output__code .block-preview {
+	display: flex;
+}
+
+.output__code .block-preview svg {
+	font: 600 11pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+	fill: $color__white;
+	width: 80%;
+	height: fit-content;
 }
 
 .output__code-editor {
