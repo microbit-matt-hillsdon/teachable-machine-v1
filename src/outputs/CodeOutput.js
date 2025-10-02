@@ -31,6 +31,7 @@ class CodeOutput {
         this.element.appendChild(this.openMakeCodeBtn);
 
         this.codeEditor = new CodeEditor(this.element);
+        this.classNames = GLOBALS.classNames;
     }
 
     openMakeCode() {
@@ -38,10 +39,21 @@ class CodeOutput {
     }
 
     start() {}
-    stop() {}
-    trigger() {}
+    stop() {
+        GLOBALS.microbit.stopSounds();
+        GLOBALS.microbit.stopServo();
+        GLOBALS.microbit.clearDisplay();
+    }
+    trigger(index) {
+        if (this.currentIndex !== index) {
+            this.currentIndex = index;
+            const className = this.classNames[index];
+            GLOBALS.microbit.writeToMicrobit(className);
+        }
+    }
 }
 
+import GLOBALS from "../config.js";
 import CodeEditor from "./CodeEditor.js";
 
 export default CodeOutput;

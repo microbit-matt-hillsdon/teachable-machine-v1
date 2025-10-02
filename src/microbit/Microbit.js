@@ -93,6 +93,8 @@ class Microbit {
     };
 }
 
-const microbitCommandMessage = (command, arg) => `c:${command}:${arg}\n`;
+const microbitCommandMessage = (command, arg) => {
+    return arg !== undefined ? `c:${command}:${arg}\n` : `c:${command}\n`;
+};
 
 export default Microbit;
