@@ -13,7 +13,7 @@
 // limitations under the License.
 
 class CodeOutput {
-    constructor() {
+    constructor(codeEditor) {
         this.id = "CodeOutput";
         this.element = document.createElement("div");
         this.element.classList.add("output__container");
@@ -30,7 +30,7 @@ class CodeOutput {
         );
         this.element.appendChild(this.openMakeCodeBtn);
 
-        this.codeEditor = new CodeEditor(this.element);
+        this.codeEditor = codeEditor;
         this.classNames = GLOBALS.classNames;
     }
 
