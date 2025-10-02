@@ -23,11 +23,15 @@ class CodeOutput {
 
         this.renderer = createMakeCodeRenderBlocks({});
         this.renderer.initialize();
+        
+        this.codePreviews = document.createElement("div");
+        this.codePreviews.classList.add("output__code-container");
+        this.container.appendChild(this.codePreviews);
   
         makeCodeProjectsForCodePreview.forEach(code => {
             const blockPreviewContainer = document.createElement("div");
             blockPreviewContainer.classList.add("block-preview");
-            this.container.appendChild(blockPreviewContainer);
+            this.codePreviews.appendChild(blockPreviewContainer);
             blockPreviewContainer.innerHTML = "<p>Loading...</p>"
             this.renderBlock(blockPreviewContainer, code)
         })
@@ -48,6 +52,7 @@ class CodeOutput {
 
     openMakeCode() {
         this.codeEditor.open();
+        this.codePreviews.innerHTML = "<p>Open MakeCode editor to see the code.</p>"
     }
 
     renderBlock(parent, code) {
