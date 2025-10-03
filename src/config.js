@@ -58,7 +58,7 @@ let GLOBALS = {
 	},
 	numClasses: 3,
 	audioContext: new AudioContext(),
-	isBackFacingCam: false,
+	isBackFacingCam: true,
 	microbitName: null,
 	microbit: new Microbit()
 };

@@ -14,6 +14,10 @@
 	padding-top: space(8)
 	padding-bottom: space(10)
 	text-align: center
+	min-height: 100vh
+	display: flex
+	flex-direction: column
+	justify-content: center
 
 	@extend .font__size--small
 	letter-spacing: 0.3px
@@ -73,6 +77,12 @@
 	height: 100%;
 	color: $color__text--light;
 	margin: 0;
+}
+
+.input__media__activate a {
+	block: inline;
+	color: $color__blue--primary;
+  text-decoration: underline;
 }
 
 .input__media__activate--mobile {

@@ -16,10 +16,12 @@ class OutputSection {
     constructor(element) {
         this.element = element;
 
+        this.codeEditor = new CodeEditor(this.element);
         const outputs = {
             GIFOutput: new GIFOutput(),
             LEDOutput: new LEDOutput(),
             ServoOutput: new ServoOutput(),
+            CodeOutput: new CodeOutput(this.codeEditor),
             SoundOutput: new SoundOutput(document.querySelector('#SoundOutput')),
             SpeechOutput: new SpeechOutput()
         };
@@ -144,6 +146,7 @@ import GIFOutput from './../../outputs/GIFOutput.js';
 import SoundOutput from './../../outputs/SoundOutput.js';
 import LEDOutput from './../../outputs/LEDOutput.js';
 import ServoOutput from '../../outputs/ServoOutput.js';
-
+import CodeOutput from '../../outputs/CodeOutput.js';
+import CodeEditor from '../../outputs/code/CodeEditor.js';
 
 export default OutputSection;

@@ -79,6 +79,11 @@ class LaunchScreen {
         // Hacked to skip the tutorial always
         this.skipButtonMobile.addEventListener('click', this.skipClick.bind(this));
         this.startButton.element.addEventListener('click', this.skipClick.bind(this));
+
+        this.connectStatusDisplay = document.getElementById('input__media__activate');
+        this.hasConnectedBefore = false;
+        this.hasDownloadedInitialProgram = false;
+        window.addEventListener('disconnected', this.onDisconnected.bind(this));
     }
 
     openFacebookPopup(event) {
@@ -117,16 +122,53 @@ class LaunchScreen {
             onComplete: () => {
                 this.destroy();
                 if (!GLOBALS.browserUtils.isMobile) {
-                    (async () => {
-                        // TODO: Do we need to fix
-                        // https://github.com/microbit-foundation/microbit-connection/issues/20
-                        // ?
-                        await GLOBALS.microbit.connect();
-                        GLOBALS.camInput.start();
-                    })();
+                    this.connect();
                 }
             }
         });
+    }
+
+    async connect() {
+        // TODO: Do we need to fix
+        // https://github.com/microbit-foundation/microbit-connection/issues/20
+        // ?
+        try {
+            this.hasConnectedBefore = false;
+            await GLOBALS.microbit.connect();
+            this.connectStatusDisplay.style.display = 'flex';
+            this.connectStatusDisplay.innerHTML = "Loading<br />0%";
+            const fetchedHex = await fetch("static/microbit/TMv1Integration.hex");
+            const universalHexString = await fetchedHex.text();
+            // Avoid overwriting program on reconnection if the initial program has been downloaded before.
+            if (!this.hasDownloadedInitialProgram) {
+                await GLOBALS.microbit.downloadProgram(
+                    universalHexString, 
+                    (percentage) => {
+                        this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
+                    }
+                );
+                this.hasDownloadedInitialProgram = true;
+            }
+            this.connectStatusDisplay.style.display = 'none';
+            GLOBALS.camInput.start();
+            this.hasConnectedBefore = true;
+        } catch (err) {
+            const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg["generic"]
+            await GLOBALS.microbit.usbReset();
+            await this.displayConnectionError(errMessage)
+        }
+    }
+
+    async onDisconnected() {
+        if (this.hasConnectedBefore) {
+            this.displayConnectionError(connectionErrorMsg["disconnected"]);
+        }
+    }
+
+    async displayConnectionError(errMessage) {
+        this.connectStatusDisplay.style.display = 'flex';
+        this.connectStatusDisplay.innerHTML = `<p>${errMessage}</p>`;
+        this.connectStatusDisplay.addEventListener('click', this.connect.bind(this));
     }
 
     destroy() {
@@ -156,9 +198,18 @@ class LaunchScreen {
     }
 }
 
+const connectionErrorMsg = {
+    "update-req": "Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <a href='https://microbit.org/get-started/user-guide/firmware/'>update your firmware</a> before you can connect to this micro:bit.",
+    "no-device-selected": "No device selected. Plug in a micro:bit and <a>click here to try again</a>.",
+    "clear-connect": "Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <a>clicking here to try again</a>.",
+    "disconnected": "The micro:bit got disconnected. <a>Click here to try again</a>.",
+    generic: "Replug the micro:bit and <a>click here to try again</a>."
+}
+
 import TweenMax from 'gsap/esm';
 import ScrollToPlugin from 'gsap/esm/ScrollToPlugin';
 import GLOBALS from './../../../config.js';
 import Button from './../../components/Button.js';
+import { ConnectionStatus } from '@microbit/microbit-connection';
 
 export default LaunchScreen;

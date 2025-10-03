@@ -1,49 +1,100 @@
-import { createWebBluetoothConnection } from "@microbit/microbit-connection";
+import {
+    ConnectionStatus,
+    createUniversalHexFlashDataSource,
+    createWebUSBConnection,
+} from "@microbit/microbit-connection";
 
 class Microbit {
     constructor() {
-        this.connection = createWebBluetoothConnection();
-        this.uartDataListener = null;
+        this.connection = createWebUSBConnection();
         this.connect = this.connection.connect.bind(this.connection);
 
-        // Initialise micro:bit UART data listener.
-        this.uartDataListener = (event) => {
-            const decoded = new TextDecoder().decode(event.value);
-            const values = decoded.split(":", 3);
-            const [start, command, arg] = values;
-            if (values.length !== 3 || start !== "c" || isNaN(parseInt(arg))) {
-                throw new Error(`Invalid micro:bit UART message: ${decoded}`);
-            }
-            switch (command) {
-                case "photo": {
-                    const classIdx = parseInt(arg);
-                    const event = new CustomEvent("record", {
-                        detail: GLOBALS.recording
-                            ? { stop: classIdx }
-                            : { start: classIdx },
-                    });
-                    window.dispatchEvent(event);
+        // Initialise connection.
+        (async () => {
+            await this.connection.initialize();
+        })();
+
+        // Initialise micro:bit serial listeners.
+        this.serialBuffer = "";
+        this.serialDataListener = (event) => {
+            const cmds = (this.serialBuffer + event.data).split("\n");
+            this.serialBuffer = cmds[cmds.length - 1];
+            cmds.forEach((cmd, idx) => {
+                // Skip the last cmd which is either an empty string or a partially completed cmd.
+                if (idx < cmds.length - 1) {
+                    this.triggerCommand(cmd);
                 }
+            });
+        };
+        this.connection.addEventListener("serialdata", this.serialDataListener);
+
+        this.serialStatusListener = (event) => {
+            if (event.status !== ConnectionStatus.CONNECTED) {
+                const customEvent = new CustomEvent("disconnected", {});
+                window.dispatchEvent(customEvent);
             }
         };
-        this.connection.addEventListener("uartdata", this.uartDataListener);
+        this.connection.addEventListener("status", this.serialStatusListener);
     }
 
-    display = (arg) => this.writeUart("display", arg);
-    clearDisplay = () => this.writeUart("display", -1);
+    triggerCommand(commandMsg) {
+        const values = commandMsg.split(":", 3);
+        const [start, command, arg] = values;
+        if (values.length !== 3 || start !== "c" || isNaN(parseInt(arg))) {
+            console.error(`Invalid micro:bit message: ${commandMsg}`);
+            return;
+        }
+        switch (command) {
+            case "startRecord": {
+                const classIdx = parseInt(arg);
+                const event = new CustomEvent("record", {
+                    detail: { start: classIdx },
+                });
+                window.dispatchEvent(event);
+                break;
+            }
+            case "endRecord": {
+                const classIdx = parseInt(arg);
+                const event = new CustomEvent("record", {
+                    detail: { stop: classIdx },
+                });
+                window.dispatchEvent(event);
+                break;
+            }
+            default: {
+                console.error(`Unexpected micro:bit message: ${commandMsg}`);
+            }
+        }
+    }
 
-    servo = (arg) => this.writeUart("servo", arg);
-    stopServo = () => this.writeUart("servo", -1)
-    
-    playSound = (arg) => this.writeUart("sound", arg);
-    stopSounds = () => this.writeUart("sound", -1);
+    display = (arg) => this.writeToMicrobit("display", arg);
+    clearDisplay = () => this.writeToMicrobit("display", -1);
 
-    writeUart = (command, arg) => {
-        const encoded = new TextEncoder().encode(`c:${command}:${arg}\n`);
-        this.connection.uartWrite(encoded);
+    servo = (arg) => this.writeToMicrobit("servo", arg);
+    stopServo = () => this.writeToMicrobit("servo", -1);
+
+    playSound = (arg) => this.writeToMicrobit("sound", arg);
+    stopSounds = () => this.writeToMicrobit("sound", -1);
+
+    writeToMicrobit = (command, arg) => {
+        const msg = microbitCommandMessage(command, arg);
+        this.connection.serialWrite(msg);
+    };
+
+    downloadProgram = async (hexString, progress) => {
+        await this.connection.flash(
+            createUniversalHexFlashDataSource(hexString),
+            { partial: true, progress }
+        );
+    };
+
+    usbReset = async () => {
+        await this.connection.clearDevice();
     };
 }
 
-import GLOBALS from "../config.js";
+const microbitCommandMessage = (command, arg) => {
+    return arg !== undefined ? `c:${command}:${arg}\n` : `c:${command}\n`;
+};
 
 export default Microbit;

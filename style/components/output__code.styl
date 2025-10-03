@@ -1,0 +1,122 @@
+.output__code {
+	position: absolute
+	width: 100%
+	height: 100%
+	background: $color__white
+}
+
+.output__code-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5em;
+	height: 100%;
+}
+
+.output__code .button--open-makecode {
+	font-family: $font;
+	font-size: 14px;
+	background: $color__white;
+	color: $color__text--light;
+	border: 4px solid $color__background;
+	cursor: pointer;
+	width: 80%;
+	padding: 5px 0;
+}
+
+.output__code .block-preview {
+	display: flex;
+}
+
+.output__code .block-preview svg {
+	font: 600 11pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+	fill: $color__white;
+	width: 80%;
+	height: fit-content;
+}
+
+.output__code-editor {
+	display: flex;
+	position: fixed;
+	flex-direction: column;
+	right: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 102;
+}
+
+.output__code-editor .top-bar {
+	width: 100%;
+	height: 3rem;
+	background: $color__background;
+	text-align: start;
+	display: flex;
+	color: $color__text--light;
+	font-family: $font;
+	font-size: 16px;
+}
+
+.output__code-editor .top-bar.detected,
+.output__code-editor .top-bar.detected button {
+	color: $color__white;
+}
+.output__code-editor .top-bar.green {
+	background: $color__class-green--primary
+}
+.output__code-editor .top-bar.orange {
+	background: $color__class-orange--primary
+}
+.output__code-editor .top-bar.purple {
+	background: $color__class-purple--primary
+}
+
+.output__code-editor .top-bar button {
+	font-family: $font;
+	font-size: 16px;
+	height: 100%;
+	border: none;
+	padding: 0 2em;
+	cursor: pointer;
+	display: flex;
+	width: max-content;
+	align-items: center;
+	background: transparent;
+}
+
+.output__code-editor .top-bar .status {
+	height: 100%;
+	flex-grow: 1;
+	border: none;
+	padding: 0 2em;
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+}
+
+.output__code-editor .top-bar .status p {
+	margin: 0;
+}
+
+.output__code-editor .iframe-wrapper {
+	display: flex;
+	flex-grow: 1;
+  	flex-direction: column;
+	width: 100%
+}
+
+.output__code-editor iframe {
+	border: none;
+}
+
+dialog {
+	font-family: $font;
+	font-size: 16px;
+}
+
+dialog::backdrop {
+  background-color: $color__black;
+  opacity: 0.5;
+}

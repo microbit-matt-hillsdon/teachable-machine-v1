@@ -18,6 +18,7 @@ const INPUT_SIZE = 1000;
 const TOPK = 10;
 const CLASS_COUNT = 3;
 const MEASURE_TIMING_EVERY_NUM_FRAMES = 20;
+const PREDICT_INTERVAL_IN_MS = 250;
 
 function passThrough() {
   return 0;
@@ -59,6 +60,8 @@ export default class WebcamClassifier {
     this.isDown = false;
     this.current = null;
     this.currentClass = null;
+    this.lastPredictResult = null;
+    this.lastPredictTime = null;
     this.measureTimingCounter = 0;
     this.lastFrameTimeMs = 1000;
     this.classIndices = {};
@@ -68,7 +71,7 @@ export default class WebcamClassifier {
 
     this.init();
 
-    this.activateWebcamButton = document.getElementById('input__media__activate');
+    this.connectStatusDisplay = document.getElementById('input__media__activate');
   }
 
   startWebcam() {
@@ -81,15 +84,11 @@ export default class WebcamClassifier {
       navigator.mediaDevices.getUserMedia(
       {
         video: video,
-        audio: (GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile)
+        audio: false
       }).
       then((stream) => {
         GLOBALS.isCamGranted = true;
-        if ((GLOBALS.browserUtils.isChrome && !GLOBALS.browserUtils.isMobile)) {
-          GLOBALS.audioContext.createMediaStreamSource(stream);
-          GLOBALS.stream = stream;
-        }
-        this.activateWebcamButton.style.display = 'none';
+        this.connectStatusDisplay.style.display = 'none';
         this.active = true;
         this.stream = stream;
         this.video.addEventListener('loadedmetadata', this.videoLoaded.bind(this));
@@ -110,8 +109,8 @@ export default class WebcamClassifier {
             error: error
           }
         });
-        this.activateWebcamButton.style.display = 'flex';
-        this.activateWebcamButton.innerHTML = getMediaPermissionErrorMsg(error)
+        this.connectStatusDisplay.style.display = 'flex';
+        this.connectStatusDisplay.innerHTML = getMediaPermissionErrorMsg(error)
 
         window.dispatchEvent(event);
         gtag('event', 'webcam_denied');
@@ -318,8 +317,14 @@ export default class WebcamClassifier {
       let measureTimer = false;
       let start = performance.now();
       measureTimer = this.measureTimingCounter === 0;
+      let res = this.lastPredictResult;
       if (exampleCount > 0) {
-        const res = await this.predict(image);
+        // Use last predict result, or make new prediction when interval elapses.
+        if (!this.lastPredictTime || start - this.lastPredictTime >= PREDICT_INTERVAL_IN_MS) {
+          this.lastPredictTime = start;
+          res = await this.predict(image);
+          this.lastPredictResult = res;
+        }
         const computeConfidences = () => {
           GLOBALS.learningSection.setConfidences(res.confidences);
           this.measureTimingCounter = (this.measureTimingCounter + 1) % MEASURE_TIMING_EVERY_NUM_FRAMES;
