@@ -28,6 +28,9 @@ class CodeEditor {
         this.backButton.innerText = "< Back";
         this.backButton.addEventListener("click", this.close.bind(this));
         this.topBar.appendChild(this.backButton);
+        this.classDetectedStatus = document.createElement("div");
+        this.classDetectedStatus.classList.add("status")
+        this.topBar.appendChild(this.classDetectedStatus);
         this.element.appendChild(this.topBar);
 
         // MakeCode iframe.
@@ -74,6 +77,10 @@ class CodeEditor {
         this.driverRef.initialize();
 
         this.bodyEl = document.querySelector("body");
+        window.addEventListener(
+            "classDetected",
+            this.onClassDetected.bind(this)
+        );
     }
 
     open() {
@@ -84,6 +91,18 @@ class CodeEditor {
     close() {
         this.element.style.display = "none";
         this.bodyEl.style.overflow = "auto";
+        this.clearClassDetection();
+    }
+
+    onClassDetected(event) {
+        const className = event.detail.className
+        this.classDetectedStatus.innerHTML = `<p>Detected: ${className}</p>`
+        this.topBar.className = `top-bar detected ${className}`
+    }
+
+    clearClassDetection() {
+        this.classDetectedStatus.innerHTML = ""
+        this.topBar.className = "top-bar"
     }
 
     async onDownload(e) {
@@ -106,5 +125,5 @@ import {
     MakeCodeFrameDriver,
     createMakeCodeURL,
 } from "@microbit/makecode-embed/vanilla";
-import { initialMakeCodeProject } from "./constants.js"
+import { initialMakeCodeProject } from "./constants.js";
 export default CodeEditor;

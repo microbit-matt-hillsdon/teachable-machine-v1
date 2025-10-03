@@ -23,18 +23,18 @@ class CodeOutput {
 
         this.renderer = createMakeCodeRenderBlocks({});
         this.renderer.initialize();
-        
+
         this.codePreviews = document.createElement("div");
         this.codePreviews.classList.add("output__code-container");
         this.container.appendChild(this.codePreviews);
-  
-        makeCodeProjectsForCodePreview.forEach(code => {
+
+        makeCodeProjectsForCodePreview.forEach((code) => {
             const blockPreviewContainer = document.createElement("div");
             blockPreviewContainer.classList.add("block-preview");
             this.codePreviews.appendChild(blockPreviewContainer);
-            blockPreviewContainer.innerHTML = "<p>Loading...</p>"
-            this.renderBlock(blockPreviewContainer, code)
-        })
+            blockPreviewContainer.innerHTML = "<p>Loading...</p>";
+            this.renderBlock(blockPreviewContainer, code);
+        });
 
         this.openMakeCodeBtn = document.createElement("button");
         this.openMakeCodeBtn.classList.add("button");
@@ -52,7 +52,8 @@ class CodeOutput {
 
     openMakeCode() {
         this.codeEditor.open();
-        this.codePreviews.innerHTML = "<p>Open MakeCode editor to see the code.</p>"
+        this.codePreviews.innerHTML =
+            "<p>Open MakeCode editor to see the code.</p>";
     }
 
     renderBlock(parent, code) {
@@ -60,7 +61,10 @@ class CodeOutput {
             .renderBlocks({ code, options: { layout: BlockLayout.None } })
             .then((result) => {
                 // Remove styling from SVG as it would influence the styling of other components.
-                const svgText = result.svg.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                const svgText = result.svg.replace(
+                    /<style[^>]*>[\s\S]*?<\/style>/gi,
+                    ""
+                );
                 parent.innerHTML = svgText;
             });
     }
@@ -76,11 +80,20 @@ class CodeOutput {
             this.currentIndex = index;
             const className = this.classNames[index];
             GLOBALS.microbit.writeToMicrobit(className);
+            // Dispatch event for code editor.
+            console.log("dispatch class detected")
+            const event = new CustomEvent("classDetected", {
+                detail: { className },
+            });
+            window.dispatchEvent(event);
         }
     }
 }
 
-import { BlockLayout, createMakeCodeRenderBlocks } from "@microbit/makecode-embed/vanilla";
+import {
+    BlockLayout,
+    createMakeCodeRenderBlocks,
+} from "@microbit/makecode-embed/vanilla";
 import GLOBALS from "../config.js";
 import { makeCodeProjectsForCodePreview } from "./code/constants.js";
 
