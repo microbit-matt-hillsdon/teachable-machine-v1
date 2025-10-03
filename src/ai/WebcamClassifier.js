@@ -174,6 +174,11 @@ export default class WebcamClassifier {
     if (newMappedIndex > -1) {
         this.classifier.clearClass(newMappedIndex);
     }
+    // Reset mappedButtonIndexes when there is no class in the classifier.
+    const classCount = Object.keys(this.classifier.getClassExampleCount()).length
+    if (classCount === 0) {
+      this.mappedButtonIndexes = [];
+    }
   }
 
   deleteClassData(index) {
