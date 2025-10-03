@@ -12,13 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// It's important that the editor has a size so it renders properly so we
+// move it off screen but keep it in the layout.
+const editorHiddenStyles = {
+    transform: "translate(-150vw, -150vh)",
+    visibility: "hidden"
+};
+const editorVisibleStyles = {
+    transform: "unset",
+    visibility: "unset",
+};
 class CodeEditor {
     constructor(parentElement) {
         this.parent = parentElement;
         this.id = "CodeEditor";
         this.element = document.createElement("div");
         this.element.classList.add("output__code-editor");
-        this.element.style.display = "none";
+        Object.assign(this.element.style, editorHiddenStyles);
+
         this.parent.appendChild(this.element);
 
         // Top bar.
@@ -84,13 +95,11 @@ class CodeEditor {
     }
 
     open() {
-        this.element.style.display = "flex";
-        this.bodyEl.style.overflow = "hidden";
+        Object.assign(this.element.style, editorVisibleStyles);
     }
 
     close() {
-        this.element.style.display = "none";
-        this.bodyEl.style.overflow = "auto";
+        Object.assign(this.element.style, editorHiddenStyles);
         this.clearClassDetection();
     }
 
