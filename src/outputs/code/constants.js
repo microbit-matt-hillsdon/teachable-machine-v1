@@ -1,4 +1,4 @@
-const extensionVersion = "5e046c731a54cbfc41f7d8b63300ffa020b3060e";
+const extensionVersion = "bddabb4a84578f71a8d19326a135e14fe99d71f6";
 
 const classNames = ["green", "purple", "orange"];
 const mainTsForClasses = {
