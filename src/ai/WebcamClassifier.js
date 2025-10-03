@@ -18,6 +18,7 @@ const INPUT_SIZE = 1000;
 const TOPK = 10;
 const CLASS_COUNT = 3;
 const MEASURE_TIMING_EVERY_NUM_FRAMES = 20;
+const PREDICT_INTERVAL_IN_MS = 250;
 
 function passThrough() {
   return 0;
@@ -59,6 +60,8 @@ export default class WebcamClassifier {
     this.isDown = false;
     this.current = null;
     this.currentClass = null;
+    this.lastPredictResult = null;
+    this.lastPredictTime = null;
     this.measureTimingCounter = 0;
     this.lastFrameTimeMs = 1000;
     this.classIndices = {};
@@ -314,8 +317,14 @@ export default class WebcamClassifier {
       let measureTimer = false;
       let start = performance.now();
       measureTimer = this.measureTimingCounter === 0;
+      let res = this.lastPredictResult;
       if (exampleCount > 0) {
-        const res = await this.predict(image);
+        // Use last predict result, or make new prediction when interval elapses.
+        if (!this.lastPredictTime || start - this.lastPredictTime >= PREDICT_INTERVAL_IN_MS) {
+          this.lastPredictTime = start;
+          res = await this.predict(image);
+          this.lastPredictResult = res;
+        }
         const computeConfidences = () => {
           GLOBALS.learningSection.setConfidences(res.confidences);
           this.measureTimingCounter = (this.measureTimingCounter + 1) % MEASURE_TIMING_EVERY_NUM_FRAMES;
