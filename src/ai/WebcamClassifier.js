@@ -67,6 +67,8 @@ export default class WebcamClassifier {
     this.classIndices = {};
     this.currentSavedClassIndex = 0;
 
+    // For storing logits to recreate classifier after a class is cleared.
+    this.mappedClassifierLogits = [];
     this.mappedButtonIndexes = [];
 
     this.init();
@@ -167,17 +169,24 @@ export default class WebcamClassifier {
     const img = tf.fromPixels(image);
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
+    this.mappedClassifierLogits[newMappedIndex] = 
+      this.mappedClassifierLogits[newMappedIndex] 
+      ? [...this.mappedClassifierLogits[newMappedIndex], logits] 
+      : [logits]
   }
 
   clear(index) {
     const newMappedIndex = this.mappedButtonIndexes.indexOf(index);
     if (newMappedIndex > -1) {
-        this.classifier.clearClass(newMappedIndex);
-    }
-    // Reset mappedButtonIndexes when there is no class in the classifier.
-    const classCount = Object.keys(this.classifier.getClassExampleCount()).length
-    if (classCount === 0) {
-      this.mappedButtonIndexes = [];
+      this.mappedButtonIndexes.splice(newMappedIndex, 1);
+      this.mappedClassifierLogits.splice(newMappedIndex, 1);
+      this.classifier.clearAllClasses();
+      this.mappedButtonIndexes.forEach((_classIndex, idx) => {
+        const logits = this.mappedClassifierLogits[idx]
+        logits.forEach((logit) => {
+          this.classifier.addExample(logit, idx); 
+        })
+      })
     }
   }
 
