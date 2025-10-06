@@ -169,10 +169,7 @@ export default class WebcamClassifier {
     const img = tf.fromPixels(image);
     const logits = this.mobilenetModule.infer(img, 'conv_preds');
     this.classifier.addExample(logits, newMappedIndex);
-    this.mappedClassifierLogits[newMappedIndex] = 
-      this.mappedClassifierLogits[newMappedIndex] 
-      ? [...this.mappedClassifierLogits[newMappedIndex], logits] 
-      : [logits]
+    (this.mappedClassifierLogits[newMappedIndex] ??= []).push(logits);
   }
 
   clear(index) {
