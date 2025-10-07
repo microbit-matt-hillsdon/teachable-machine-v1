@@ -163,6 +163,7 @@ class LaunchScreen {
         if (this.hasConnectedBefore) {
             this.displayConnectionError(connectionErrorMsg["disconnected"]);
         }
+        GLOBALS.camInput.stop();
     }
 
     async displayConnectionError(errMessage) {

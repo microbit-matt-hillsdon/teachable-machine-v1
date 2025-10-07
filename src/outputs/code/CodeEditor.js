@@ -99,9 +99,13 @@ class CodeEditor {
         window.history.pushState(null, "", "/code");
         Object.assign(this.element.style, editorVisibleStyles);
         window.addEventListener("popstate", () => {
+            GLOBALS.inputSection.exitPictureInPicture();
             Object.assign(this.element.style, editorHiddenStyles);
             this.clearClassDetection();
         }, { once: true })
+        GLOBALS.inputSection.requestPictureInPicture().catch(e => {
+            // Permissions, browser support. Nothing we can do.
+        })
     }
 
     close() {

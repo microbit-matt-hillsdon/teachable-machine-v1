@@ -220,6 +220,14 @@ class InputSection {
             }
         }
     }
+
+    requestPictureInPicture() {
+        return this.camInput.requestPictureInPicture();
+    }
+
+    exitPictureInPicture() {
+        this.camInput.exitPictureInPicture();
+    }
 }
 
 import TweenMax from 'gsap/esm';
