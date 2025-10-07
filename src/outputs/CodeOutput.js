@@ -37,6 +37,12 @@ class CodeOutput {
         this.codePreviews.appendChild(this.blockPreviewContainer);
         this.container.appendChild(this.codePreviews);
 
+        this.codeStatus = document.createElement("p");
+        this.codeStatus.classList.add("output__code-status");
+        this.codeStatus.innerText = "Your latest program has not be downloaded.";
+        this.container.appendChild(this.codeStatus);
+        this.codeStatus.style.display = "none";
+
         this.openMakeCodeBtn = document.createElement("button");
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
@@ -44,12 +50,17 @@ class CodeOutput {
         this.openMakeCodeBtn.addEventListener("click", () => openCodeEditor());
         this.container.appendChild(this.openMakeCodeBtn);
         this.classNames = GLOBALS.classNames;
-        this.renderBlock = this.renderBlock.bind(this);
+        this.onCodeEditorClose = this.onCodeEditorClose.bind(this);
     }
 
     showTab() {
         this.tab.style.display = "block";
         return this.tab;
+    }
+
+    onCodeEditorClose({ project, isDeviceSynced }) {
+        this.codeStatus.style.display = isDeviceSynced ? "none" : "block";
+        this.renderBlock(project);
     }
 
     renderBlock(code) {

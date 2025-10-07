@@ -32,7 +32,7 @@ class OutputSection {
             onEditorContentLoaded: () => {
                 outputs.SoundOutput.enableOpenMakeCodeBtn()
             },
-            onClose: outputs.CodeOutput.renderBlock
+            onClose: outputs.CodeOutput.onCodeEditorClose
         });
         GLOBALS.soundOutput = outputs.SoundOutput;
 

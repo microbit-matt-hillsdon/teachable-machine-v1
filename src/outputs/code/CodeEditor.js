@@ -72,18 +72,20 @@ class CodeEditor {
         // Create and initialise an instance of MakeCodeFrameDriver.
         this.project = initialMakeCodeProject;
         this.isEditorLoaded = false;
+        this.isDeviceSynced = false;
         this.driverRef = new MakeCodeFrameDriver(
             {
                 controllerId: "Teachable machine with micro:bit",
                 queryParams: { hideLanguage: "1" },
                 initialProjects: async () => [this.project],
                 onEditorContentLoaded: (e) => {
-                    console.log("MakeCode is now ready")
+                    console.log("MakeCode is now ready");
                     this.isEditorLoaded = true;
                     onEditorContentLoaded();
                 },
                 onWorkspaceSave: (e) => {
                     this.project = e.project;
+                    this.isDeviceSynced = false;
                 },
                 onDownload: this.onDownload.bind(this),
                 onBack: this.close.bind(this),
@@ -112,7 +114,10 @@ class CodeEditor {
     close() {
         Object.assign(this.element.style, editorHiddenStyles);
         this.clearTopBarClassDetection();
-        this.onCloseCallback(this.project);
+        this.onCloseCallback({
+            project: this.project,
+            isDeviceSynced: this.isDeviceSynced,
+        });
     }
 
     onClassDetected(event) {
@@ -137,6 +142,7 @@ class CodeEditor {
             }
         });
         this.progressDialog.close();
+        this.isDeviceSynced = true;
         this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
     }
 }
