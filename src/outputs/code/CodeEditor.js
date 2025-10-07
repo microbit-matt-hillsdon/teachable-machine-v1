@@ -96,7 +96,7 @@ class CodeEditor {
 
     open() {
         // Simple routing to allow use of browser back button as well as UI button.
-        window.history.pushState(null, "", "/makecode");
+        window.history.pushState(null, "", "/code");
         Object.assign(this.element.style, editorVisibleStyles);
         window.addEventListener("popstate", () => {
             Object.assign(this.element.style, editorHiddenStyles);
