@@ -65,7 +65,7 @@ class LEDOutput {
         this.defaultAssets = [
             this.microbitLEDIcons[0],
             this.microbitLEDIcons[1],
-            this.microbitLEDIcons[2],
+            null,
         ];
 
         this.LEDIcons = {};
@@ -113,7 +113,11 @@ class LEDOutput {
             input.classList.add("output__led-input");
             input.classList.add(`output__led-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = LEDIcon;
+            if (LEDIcon) {
+                input.value = LEDIcon;
+            } else {
+                this.setNothingInput(input);
+            }
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
@@ -140,17 +144,18 @@ class LEDOutput {
             this.currentLEDIcon = null;
         }
         event.target.parentNode.LEDIcon = null;
-        event.target.parentNode.input.value = "Nothing";
-
-        event.target.parentNode.input.classList.add(
-            "output__led-input--nothing"
-        );
+        this.setNothingInput(event.target.parentNode.input)
 
         if (this.currentBorder && this.currentClassName) {
             this.currentBorder.classList.remove(
                 `output__led-input--${this.currentClassName}-selected`
             );
         }
+    }
+
+    setNothingInput(input) {
+        input.value = "Nothing";
+        input.classList.add("output__led-input--nothing");
     }
 
     searchResultLEDIconClick(event) {

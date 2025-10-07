@@ -37,7 +37,7 @@ class SoundOutput {
 		this.defaultAssets = [ 
 			this.soundEffects[0], 
 			this.soundEffects[1], 
-			this.soundEffects[2]
+			null
 		];
 
 		this.numLoaded = 0;
@@ -105,7 +105,11 @@ class SoundOutput {
 			input.classList.add('output__sound-input');
 			input.classList.add(`output__sound-input--${id}`);
 			input.setAttribute('readonly', 'readonly');
-			input.value = sound;
+            if (sound) {
+                input.value = sound;
+            } else {
+                this.setNothingInput(input);
+            }
 			inputClass.appendChild(speakerIcon);
 			inputClass.appendChild(editIcon);
 			inputClass.appendChild(input);
@@ -167,13 +171,18 @@ class SoundOutput {
 			}
 		}
 		event.target.parentNode.sound = null;
-		event.target.parentNode.input.value = 'Nothing';
+		this.setNothingInput(event.target.parentNode.input)
 
 		event.target.parentNode.input.classList.add('output__sound-input--nothing');
 
         if (this.currentBorder && this.currentClassName) {
             this.currentBorder.classList.remove(`output__sound-input--${this.currentClassName}-selected`);
         }
+    }
+
+	setNothingInput(input) {
+        input.value = "Nothing";
+        input.classList.add("output__sound-input--nothing");
     }
 
 	searchResultPlayClick(event) {
@@ -231,7 +240,6 @@ class SoundOutput {
 	}
 
     playSound(sound) {
-        this.stopSounds();
 		if (!this.search.visible) {
 			if (this.currentSound === sound) {
 				this.currentSound = null;
@@ -273,11 +281,7 @@ class SoundOutput {
                 this.currentIndex = index;
 
                 let sound = this.inputClasses[this.currentIndex].sound;
-                if (sound) {
-                    this.playSound(sound);
-                }else {
-                    this.stopSounds();
-                }
+                this.playSound(sound);
 
                 if (this.currentIcon) {
                     this.currentIcon.classList.remove('output__sound-speaker--active');

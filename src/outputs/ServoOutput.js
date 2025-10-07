@@ -26,7 +26,7 @@ class ServoOutput {
         this.defaultAssets = [
             this.microbitServoOptions[0],
             this.microbitServoOptions[1],
-            this.microbitServoOptions[2],
+            null,
         ];
 
         this.servoOptions = {};
@@ -71,7 +71,11 @@ class ServoOutput {
             input.classList.add("output__servo-input");
             input.classList.add(`output__servo-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = option;
+            if (option) {
+                input.value = option;
+            } else {
+                this.setNothingInput(input);
+            }
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
@@ -98,11 +102,7 @@ class ServoOutput {
             this.currentServoOption = null;
         }
         event.target.parentNode.servoOption = null;
-        event.target.parentNode.input.value = "Nothing";
-
-        event.target.parentNode.input.classList.add(
-            "output__servo-input--nothing"
-        );
+        this.setNothingInput(event.target.parentNode.input)
 
         if (this.currentBorder && this.currentClassName) {
             this.currentBorder.classList.remove(
@@ -110,6 +110,12 @@ class ServoOutput {
             );
         }
     }
+
+    setNothingInput(input) {
+        input.value = "Nothing";
+        input.classList.add("output__servo-input--nothing");
+    }
+
 
     searchResultServoOptionClick(event) {
         event.stopPropagation();
