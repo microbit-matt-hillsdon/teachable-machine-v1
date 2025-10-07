@@ -13,8 +13,13 @@
 // limitations under the License.
 
 class CodeOutput {
-    constructor(codeEditor) {
+    constructor({ openCodeEditor }) {
         this.id = "CodeOutput";
+
+        // Hide tab initially.
+        this.tab = document.querySelector(`#${this.id}`);
+        this.tab.style.display = "none";
+
         this.element = document.createElement("div");
         this.element.classList.add("output__code");
         this.container = document.createElement("div");
@@ -26,37 +31,29 @@ class CodeOutput {
 
         this.codePreviews = document.createElement("div");
         this.codePreviews.classList.add("output__code-container");
+        this.blockPreviewContainer = document.createElement("div");
+        this.blockPreviewContainer.classList.add("block-preview");
+        this.blockPreviewContainer.classList.add("block-preview-full");
+        this.codePreviews.appendChild(this.blockPreviewContainer);
         this.container.appendChild(this.codePreviews);
-
-        makeCodeProjectsForCodePreview.forEach((code) => {
-            const blockPreviewContainer = document.createElement("div");
-            blockPreviewContainer.classList.add("block-preview");
-            this.codePreviews.appendChild(blockPreviewContainer);
-            blockPreviewContainer.innerHTML = "<p>Loading...</p>";
-            this.renderBlock(blockPreviewContainer, code);
-        });
 
         this.openMakeCodeBtn = document.createElement("button");
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
         this.openMakeCodeBtn.innerText = "Edit in MakeCode";
-        this.openMakeCodeBtn.addEventListener(
-            "click",
-            this.openMakeCode.bind(this)
-        );
+        this.openMakeCodeBtn.addEventListener("click", () => openCodeEditor());
         this.container.appendChild(this.openMakeCodeBtn);
-
-        this.codeEditor = codeEditor;
         this.classNames = GLOBALS.classNames;
+        this.renderBlock = this.renderBlock.bind(this);
     }
 
-    openMakeCode() {
-        this.codeEditor.open();
-        this.codePreviews.innerHTML =
-            "<p>Open MakeCode editor to see the code.</p>";
+    showTab() {
+        this.tab.style.display = "block";
+        return this.tab;
     }
 
-    renderBlock(parent, code) {
+    renderBlock(code) {
+        this.blockPreviewContainer.innerHTML = "<p>Loading...</p>";
         this.renderer
             .renderBlocks({ code, options: { layout: BlockLayout.None } })
             .then((result) => {
@@ -65,7 +62,7 @@ class CodeOutput {
                     /<style[^>]*>[\s\S]*?<\/style>/gi,
                     ""
                 );
-                parent.innerHTML = svgText;
+                this.blockPreviewContainer.innerHTML = svgText;
             });
     }
 
@@ -81,7 +78,6 @@ class CodeOutput {
             const className = this.classNames[index];
             GLOBALS.microbit.writeToMicrobit(className);
             // Dispatch event for code editor.
-            console.log("dispatch class detected")
             const event = new CustomEvent("classDetected", {
                 detail: { className },
             });

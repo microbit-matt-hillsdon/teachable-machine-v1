@@ -16,15 +16,24 @@ class OutputSection {
     constructor(element) {
         this.element = element;
 
-        this.codeEditor = new CodeEditor(this.element);
+        const outputCallbacks = {
+            openCodeEditor: this.openCodeEditor.bind(this),
+        }
         const outputs = {
             GIFOutput: new GIFOutput(),
             LEDOutput: new LEDOutput(),
             ServoOutput: new ServoOutput(),
-            CodeOutput: new CodeOutput(this.codeEditor),
-            SoundOutput: new SoundOutput(document.querySelector('#SoundOutput')),
+            CodeOutput: new CodeOutput(outputCallbacks),
+            SoundOutput: new SoundOutput(outputCallbacks),
             SpeechOutput: new SpeechOutput()
         };
+        this.codeEditor = new CodeEditor({
+            parentElement: this.element,
+            onEditorContentLoaded: () => {
+                outputs.SoundOutput.enableOpenMakeCodeBtn()
+            },
+            onClose: outputs.CodeOutput.renderBlock
+        });
         GLOBALS.soundOutput = outputs.SoundOutput;
 
         this.classNames = GLOBALS.classNames;
@@ -54,6 +63,17 @@ class OutputSection {
         this.element.appendChild(this.arrow.element);
     }
 
+    async openCodeEditor(project) {
+        if (project) {
+            await this.codeEditor.loadProject(project);
+        }
+        this.codeEditor.open();
+        if (this.currentOutput.id !== "CodeOutput") {
+            const tabElement = this.outputs.CodeOutput.showTab();
+            this.internalChangeOutput(tabElement);
+        }
+    }
+
     enable() {
         this.element.classList.remove('section--disabled');
     }
@@ -81,11 +101,15 @@ class OutputSection {
     }
 
     changeOutput(event) {
+        this.internalChangeOutput(event.target);
+    }
+
+    internalChangeOutput(link) {
         if (this.currentLink) {
             this.currentLink.classList.remove('output_selector__option--selected');
         }
 
-        this.currentLink = event.target;
+        this.currentLink = link;
         this.currentLink.classList.add('output_selector__option--selected');
         let outputId = this.currentLink.id;
 
@@ -110,7 +134,7 @@ class OutputSection {
         if (this.currentOutput.id === 'SoundOutput' && play) {
             GLOBALS.soundOutput.playCurrentSound();
         }else if (this.currentOutput.id === 'SoundOutput' && !play) {
-            GLOBALS.soundOutput.pauseCurrentSound();
+            GLOBALS.soundOutput.stopSounds();
         }
     }
 
