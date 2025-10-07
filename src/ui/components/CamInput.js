@@ -48,6 +48,7 @@ class CamInput {
     this.started = false;
     this.webcamClassifier.stopTimer();
     this.hide();
+    this.exitPictureInPicture();
   }
 
   hide() {
@@ -81,6 +82,14 @@ class CamInput {
             this.webcamClassifier.video.width = this.width;
             this.webcamClassifier.video.height = this.width / this.videoRatio;
     }*/
+  }
+
+  requestPictureInPicture() {
+      return this.webcamClassifier.requestPictureInPicture();
+  }
+
+  exitPictureInPicture() {
+      this.webcamClassifier.exitPictureInPicture();
   }
 }
 
