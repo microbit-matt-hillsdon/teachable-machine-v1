@@ -193,7 +193,7 @@ export default class WebcamClassifier {
     this.images[this.classNames[index]].imagesCount = 0;
     this.images[this.classNames[index]].latestThumbs = [];
     this.images[this.classNames[index]].latestImages = [];
-    GLOBALS.soundOutput.pauseCurrentSound();
+    GLOBALS.soundOutput.stopSounds();
 
     setTimeout(() => {
       GLOBALS.clearing = false;
@@ -355,6 +355,17 @@ export default class WebcamClassifier {
 
     this.timer = requestAnimationFrame(this.animate.bind(this));
   }
+
+  requestPictureInPicture() {
+      return this.video.requestPictureInPicture();
+  }
+
+  exitPictureInPicture() {
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+      }
+  }
+
 }
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';

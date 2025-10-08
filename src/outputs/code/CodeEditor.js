@@ -104,7 +104,21 @@ class CodeEditor {
     }
 
     open() {
+        // Simple routing to allow use of browser back button as well as UI button.
+        window.history.pushState(null, "", "/code");
         Object.assign(this.element.style, editorVisibleStyles);
+        window.addEventListener("popstate", () => {
+            GLOBALS.inputSection.exitPictureInPicture();
+            Object.assign(this.element.style, editorHiddenStyles);
+            this.clearTopBarClassDetection();
+            this.onCloseCallback({
+                project: this.project,
+                isDeviceSynced: this.isDeviceSynced,
+            });
+        }, { once: true })
+        GLOBALS.inputSection.requestPictureInPicture().catch(e => {
+            // Permissions, browser support. Nothing we can do.
+        })
     }
 
     async loadProject(project) {
@@ -112,12 +126,7 @@ class CodeEditor {
     }
 
     close() {
-        Object.assign(this.element.style, editorHiddenStyles);
-        this.clearTopBarClassDetection();
-        this.onCloseCallback({
-            project: this.project,
-            isDeviceSynced: this.isDeviceSynced,
-        });
+        window.history.back();
     }
 
     onClassDetected(event) {
