@@ -161,6 +161,7 @@ class ServoOutput {
     }
 
     resetServo() {
+        console.trace("stopServo")
         GLOBALS.microbit.stopServo();
     }
 

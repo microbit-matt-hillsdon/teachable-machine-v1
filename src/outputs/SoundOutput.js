@@ -244,6 +244,7 @@ class SoundOutput {
     }
 
     stopSounds() {
+		console.trace("stopSounds")
 		// We can't mute individual micro:bit sounds, instead we can only stop all sounds.
 		GLOBALS.microbit.stopSounds()
 		// if (this.currentSound) {

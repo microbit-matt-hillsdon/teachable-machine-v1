@@ -203,6 +203,7 @@ class LEDOutput {
     }
 
     clearDisplay() {
+        console.trace("clearDisplay")
         GLOBALS.microbit.clearDisplay();
     }
 
