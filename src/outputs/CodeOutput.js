@@ -28,9 +28,12 @@ class CodeOutput {
         this.codePreviews.classList.add("output__code-container");
         this.container.appendChild(this.codePreviews);
 
-        makeCodeProjectsForCodePreview.forEach((code) => {
+        makeCodeProjectsForCodePreview.forEach((code, idx) => {
             const blockPreviewContainer = document.createElement("div");
             blockPreviewContainer.classList.add("block-preview");
+            if (idx === 2) {
+                blockPreviewContainer.classList.add("small");
+            }
             this.codePreviews.appendChild(blockPreviewContainer);
             blockPreviewContainer.innerHTML = "<p>Loading...</p>";
             this.renderBlock(blockPreviewContainer, code);
