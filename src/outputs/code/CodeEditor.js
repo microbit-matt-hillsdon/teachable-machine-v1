@@ -86,7 +86,7 @@ class CodeEditor {
                 },
                 onWorkspaceSave: (e) => {
                     this.project = e.project;
-                    this.isDeviceSynced = false;
+                    this.#setDeviceSynced(false);
                 },
                 onDownload: this.onDownload.bind(this),
                 onBack: this.close.bind(this),
@@ -104,11 +104,40 @@ class CodeEditor {
         this.onCloseCallback = onClose;
     }
 
+    #setDeviceSynced(isDeviceSynced) {
+        this.isDeviceSynced = isDeviceSynced;
+    
+        if (isDeviceSynced) {
+            this.#unpauseCamera();
+        } else {
+            this.#pauseCamera();
+        }
+    }
+
+    #pauseCamera() {
+        this.#showTopBarPausedStatus();
+        GLOBALS.inputSection.camInput.stop();
+    }
+
+    #unpauseCamera() {
+        this.clearTopBarClassDetection();
+        // We might have stopped the camera due to device sync.
+        if (!GLOBALS.inputSection.camInput.started) {
+            try {
+                GLOBALS.inputSection.camInput.start();
+                GLOBALS.inputSection.requestPictureInPicture();
+            } catch (e) {
+                // Best effort restart.
+            }
+        }
+    }
+
     open() {
         // Simple routing to allow use of browser back button as well as UI button.
         window.history.pushState(null, "", "/code");
         Object.assign(this.element.style, editorVisibleStyles);
         window.addEventListener("popstate", () => {
+            this.#unpauseCamera();
             GLOBALS.inputSection.exitPictureInPicture();
             Object.assign(this.element.style, editorHiddenStyles);
             this.clearTopBarClassDetection();
@@ -117,9 +146,13 @@ class CodeEditor {
                 isDeviceSynced: this.isDeviceSynced,
             });
         }, { once: true })
-        GLOBALS.inputSection.requestPictureInPicture().catch(e => {
-            // Permissions, browser support. Nothing we can do.
-        })
+        if (!this.isDeviceSynced) {
+            this.#pauseCamera();
+        } else {
+            GLOBALS.inputSection.requestPictureInPicture().catch(e => {
+                // Permissions, browser support. Nothing we can do.
+            })
+        }
     }
 
     async loadProject(project) {
@@ -141,6 +174,11 @@ class CodeEditor {
         this.topBar.className = "top-bar";
     }
 
+    #showTopBarPausedStatus() {
+        this.classDetectedStatus.innerHTML = "<p><span style='font-weight: bold'>Press Download to re-enable the camera</span></p>";
+        this.topBar.className = "top-bar";
+    }
+
     async onDownload(e) {
         await GLOBALS.microbit.downloadProgram(e.hex, (progress) => {
             if (progress) {
@@ -152,7 +190,7 @@ class CodeEditor {
             }
         });
         this.progressDialog.close();
-        this.isDeviceSynced = true;
+        this.#setDeviceSynced(true);
         this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
     }
 }
