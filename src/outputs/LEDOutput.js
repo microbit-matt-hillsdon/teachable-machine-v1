@@ -22,7 +22,7 @@ class LEDOutput {
             "Small heart",
             "Yes",
             "No",
-            "Happy",
+            "Smile", // Happy
             "Sad",
             "Confused",
             "Angry",
@@ -64,8 +64,8 @@ class LEDOutput {
 
         this.defaultAssets = [
             this.microbitLEDIcons[0],
-            this.microbitLEDIcons[1],
-            this.microbitLEDIcons[2],
+            this.microbitLEDIcons[4],
+            null,
         ];
 
         this.LEDIcons = {};
@@ -113,7 +113,7 @@ class LEDOutput {
             input.classList.add("output__led-input");
             input.classList.add(`output__led-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = LEDIcon;
+            input.value = LEDIcon === null ? "Nothing" : LEDIcon;
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 

@@ -26,7 +26,7 @@ class ServoOutput {
         this.defaultAssets = [
             this.microbitServoOptions[0],
             this.microbitServoOptions[1],
-            this.microbitServoOptions[2],
+            null,
         ];
 
         this.servoOptions = {};
@@ -71,7 +71,7 @@ class ServoOutput {
             input.classList.add("output__servo-input");
             input.classList.add(`output__servo-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = option;
+            input.value = option === null ? "nothing" : option;
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 

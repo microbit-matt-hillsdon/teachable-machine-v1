@@ -35,9 +35,9 @@ class SoundOutput {
         window.addEventListener('mobileLaunch', this.touchAudio.bind(this));
 
 		this.defaultAssets = [ 
-			this.soundEffects[0], 
-			this.soundEffects[1], 
-			this.soundEffects[2]
+			this.soundEffects[2], 
+			this.soundEffects[6], 
+			null
 		];
 
 		this.numLoaded = 0;
@@ -105,7 +105,7 @@ class SoundOutput {
 			input.classList.add('output__sound-input');
 			input.classList.add(`output__sound-input--${id}`);
 			input.setAttribute('readonly', 'readonly');
-			input.value = sound;
+			input.value = sound === null ? "nothing" : sound;
 			inputClass.appendChild(speakerIcon);
 			inputClass.appendChild(editIcon);
 			inputClass.appendChild(input);
@@ -254,7 +254,6 @@ class SoundOutput {
 	}
 
     playSound(sound) {
-        this.stopSounds();
 		if (!this.search.visible) {
 			if (this.currentSound === sound) {
 				this.currentSound = null;
@@ -298,8 +297,6 @@ class SoundOutput {
                 let sound = this.inputClasses[this.currentIndex].sound;
                 if (sound) {
                     this.playSound(sound);
-                }else {
-                    this.stopSounds();
                 }
 
                 if (this.currentIcon) {
