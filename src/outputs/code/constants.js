@@ -2,9 +2,9 @@ const extensionVersion = "bddabb4a84578f71a8d19326a135e14fe99d71f6";
 
 const classNames = ["green", "purple", "orange"];
 const mainTsForClasses = {
-    orange: "TMMachineLearning.onMLOrangeStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.hello), music.PlaybackMode.InBackground)\n})",
-    purple: "TMMachineLearning.onMLPurpleStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.happy), music.PlaybackMode.InBackground)\n})",
-    green: "TMMachineLearning.onMLGreenStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.giggle), music.PlaybackMode.InBackground)\n})",
+    orange: "TMMachineLearning.onMLOrangeStart(function () {})",
+    purple: "TMMachineLearning.onMLPurpleStart(function () {\n    music.stopAllSounds()\n    music.play(music.builtinPlayableSoundEffect(soundExpression.happy), music.PlaybackMode.InBackground)\n})",
+    green: "TMMachineLearning.onMLGreenStart(function () {\n    music.stopAllSounds()\n    music.play(music.builtinPlayableSoundEffect(soundExpression.giggle), music.PlaybackMode.InBackground)\n})",
 };
 
 const pxtJson = JSON.stringify({
@@ -41,7 +41,7 @@ export const initialMakeCodeProject = {
         "pxt.json": pxtJson,
         "README.md": "",
         "main.blocks":
-            '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="0" y="0"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.giggle</field></shadow></value></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="0" y="149"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.happy</field></shadow></value></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="-3" y="308"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.hello</field></shadow></value></block></statement></block></xml>',
+            '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="0" y="0"><statement name="HANDLER"><block type="music_stop_all_sounds"><next><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="music_string_playable"></shadow><block type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.giggle</field></block></value></block></next></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="-2" y="207"><statement name="HANDLER"><block type="music_stop_all_sounds"><next><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="music_string_playable"></shadow><block type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.happy</field></block></value></block></next></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="3" y="425"></block></xml>',
         "main.ts": classNames
             .map((className) => mainTsForClasses[className])
             .join("\n"),
