@@ -255,7 +255,7 @@ class SoundOutput {
 
     playSound(sound) {
 		if (!this.search.visible) {
-			if (this.currentSound === sound) {
+			if (this.currentSound === sound || this.sounds[sound] === null) {
 				this.currentSound = null;
 			}else if (this.sounds[sound] !== null) {
 				this.currentSound = this.sounds[sound];
@@ -295,9 +295,7 @@ class SoundOutput {
                 this.currentIndex = index;
 
                 let sound = this.inputClasses[this.currentIndex].sound;
-                if (sound) {
-                    this.playSound(sound);
-                }
+                this.playSound(sound);
 
                 if (this.currentIcon) {
                     this.currentIcon.classList.remove('output__sound-speaker--active');
