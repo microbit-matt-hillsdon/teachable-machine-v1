@@ -80,6 +80,9 @@ class CodeEditor {
                 initialProjects: async () => [this.project],
                 onEditorContentLoaded: (e) => {
                     console.log("MakeCode is now ready");
+                    this.driverRef.hideSimulator().catch(e => {
+                        // Nothing we can do.
+                    });
                     this.isEditorLoaded = true;
                     const event = new CustomEvent("makeCodeReady", {});
                     window.dispatchEvent(event)
