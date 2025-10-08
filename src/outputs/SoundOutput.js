@@ -110,12 +110,6 @@ class SoundOutput {
 			inputClass.appendChild(editIcon);
 			inputClass.appendChild(input);
 
-			var deleteIcon = document.createElement('div');
-			deleteIcon.classList.add('output__sound-delete');
-			inputClass.appendChild(deleteIcon);
-
-			deleteIcon.addEventListener('click', this.clearInput.bind(this));
-			input.addEventListener('click', this.editInput.bind(this));
             document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this), false);
 			// speakerIcon.addEventListener('click', this.testSound.bind(this));
 			// this.inputClasses[index] = speakerIcon;

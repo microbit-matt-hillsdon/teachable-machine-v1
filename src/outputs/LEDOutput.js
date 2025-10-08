@@ -117,12 +117,6 @@ class LEDOutput {
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
-            var deleteIcon = document.createElement("div");
-            deleteIcon.classList.add("output__led-delete");
-            inputClass.appendChild(deleteIcon);
-
-            deleteIcon.addEventListener("click", this.clearInput.bind(this));
-            input.addEventListener("click", this.editInput.bind(this));
             inputClass.input = input;
             this.inputClasses[index] = inputClass;
             this.offScreen.appendChild(inputClass);
