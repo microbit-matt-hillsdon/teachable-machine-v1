@@ -75,8 +75,12 @@ class CodeEditor {
                 controllerId: "Teachable machine with micro:bit",
                 queryParams: { hideLanguage: "1" },
                 initialProjects: async () => [initialMakeCodeProject],
-                onEditorContentLoaded: (e) =>
-                    console.log("MakeCode is now ready"),
+                onEditorContentLoaded: (e) => {
+                    console.log("MakeCode is now ready")
+                    this.driverRef.hideSimulator().catch(e => {
+                        // Nothing we can do.
+                    });
+                },
                 onWorkspaceSave: (e) => {
                     console.log(e.project.header.id, e.project);
                 },
