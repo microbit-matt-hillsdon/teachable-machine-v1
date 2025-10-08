@@ -119,13 +119,15 @@ class CodeEditor {
         GLOBALS.inputSection.camInput.stop();
     }
 
-    #unpauseCamera() {
+    #unpauseCamera(skipPictureInPicture) {
         this.clearTopBarClassDetection();
         // We might have stopped the camera due to device sync.
         if (!GLOBALS.inputSection.camInput.started) {
             try {
                 GLOBALS.inputSection.camInput.start();
-                GLOBALS.inputSection.requestPictureInPicture();
+                if (!skipPictureInPicture) {
+                    GLOBALS.inputSection.requestPictureInPicture();
+                }
             } catch (e) {
                 // Best effort restart.
             }
@@ -137,7 +139,7 @@ class CodeEditor {
         window.history.pushState(null, "", "/code");
         Object.assign(this.element.style, editorVisibleStyles);
         window.addEventListener("popstate", () => {
-            this.#unpauseCamera();
+            this.#unpauseCamera(true);
             GLOBALS.inputSection.exitPictureInPicture();
             Object.assign(this.element.style, editorHiddenStyles);
             this.clearTopBarClassDetection();
