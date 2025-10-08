@@ -13,7 +13,7 @@
 // limitations under the License.
 
 class ServoOutput {
-    constructor() {
+    constructor({ openCodeEditor }) {
         this.id = "ServoOutput";
 
         // Corresponds with servo options in MakeCode.
@@ -26,7 +26,7 @@ class ServoOutput {
         this.defaultAssets = [
             this.microbitServoOptions[0],
             this.microbitServoOptions[1],
-            this.microbitServoOptions[2],
+            null,
         ];
 
         this.servoOptions = {};
@@ -71,22 +71,45 @@ class ServoOutput {
             input.classList.add("output__servo-input");
             input.classList.add(`output__servo-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = option;
+            input.value = option === null ? "nothing" : option;
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
-            var deleteIcon = document.createElement("div");
-            deleteIcon.classList.add("output__servo-delete");
-            inputClass.appendChild(deleteIcon);
-
-            deleteIcon.addEventListener("click", this.clearInput.bind(this));
-            input.addEventListener("click", this.editInput.bind(this));
             inputClass.input = input;
             this.inputClasses[index] = inputClass;
             this.offScreen.appendChild(inputClass);
         }
+
+        this.openMakeCodeBtn = document.createElement("button");
+        this.openMakeCodeBtn.classList.add("button");
+        this.openMakeCodeBtn.classList.add("button--open-makecode");
+        this.openMakeCodeBtn.disabled = true;
+        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.addEventListener(
+            "click",
+            this.openMakeCode.bind(this)
+        );
+        this.offScreen.appendChild(this.openMakeCodeBtn);
+        this.openCodeEditorWithProject = openCodeEditor;
+
         this.element.appendChild(this.offScreen);
         this.buildCanvas();
+
+        window.addEventListener("makeCodeReady", this.onMakeCodeReady.bind(this));
+        window.addEventListener("editorOpened", this.onEditorOpened.bind(this));
+    }
+
+    onMakeCodeReady() {
+        this.openMakeCodeBtn.disabled = false;
+    }
+
+    openMakeCode() {
+        this.openCodeEditorWithProject(servoMakeCodeProject);
+        onEditorOpened()
+    }
+
+    onEditorOpened() {
+        this.openMakeCodeBtn.innerText = "Reset my code to this";
     }
 
     clearInput(event) {
@@ -279,6 +302,7 @@ class ServoOutput {
     }
 }
 
+import { servoMakeCodeProject } from "./code/constants.js";
 import ServoSearch from "./servo/ServoSearch.js";
 import GLOBALS from "../config.js";
 

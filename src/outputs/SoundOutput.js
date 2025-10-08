@@ -13,7 +13,7 @@
 // limitations under the License.
 
 class SoundOutput {
-	constructor() {
+	constructor({ openCodeEditor }) {
 		this.id = 'SoundOutput';
 		this.loaded = false;
 		this.canTrigger = true;
@@ -35,9 +35,9 @@ class SoundOutput {
         window.addEventListener('mobileLaunch', this.touchAudio.bind(this));
 
 		this.defaultAssets = [ 
-			this.soundEffects[0], 
-			this.soundEffects[1], 
-			this.soundEffects[2]
+			this.soundEffects[2], 
+			this.soundEffects[6], 
+			null
 		];
 
 		this.numLoaded = 0;
@@ -105,17 +105,11 @@ class SoundOutput {
 			input.classList.add('output__sound-input');
 			input.classList.add(`output__sound-input--${id}`);
 			input.setAttribute('readonly', 'readonly');
-			input.value = sound;
+			input.value = sound === null ? "nothing" : sound;
 			inputClass.appendChild(speakerIcon);
 			inputClass.appendChild(editIcon);
 			inputClass.appendChild(input);
 
-			var deleteIcon = document.createElement('div');
-			deleteIcon.classList.add('output__sound-delete');
-			inputClass.appendChild(deleteIcon);
-
-			deleteIcon.addEventListener('click', this.clearInput.bind(this));
-			input.addEventListener('click', this.editInput.bind(this));
             document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this), false);
 			// speakerIcon.addEventListener('click', this.testSound.bind(this));
 			// this.inputClasses[index] = speakerIcon;
@@ -124,10 +118,39 @@ class SoundOutput {
 			this.offScreen.appendChild(inputClass);
 
 		}
-		this.element.appendChild(this.offScreen);
+
+        this.openMakeCodeBtn = document.createElement("button");
+        this.openMakeCodeBtn.classList.add("button");
+        this.openMakeCodeBtn.classList.add("button--open-makecode");
+        this.openMakeCodeBtn.disabled = true;
+        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.addEventListener(
+            "click",
+            this.openMakeCode.bind(this)
+        );
+        this.offScreen.appendChild(this.openMakeCodeBtn);
+        this.openCodeEditorWithProject = openCodeEditor;
+
+        this.element.appendChild(this.offScreen);
 		this.speakers = [];
 		this.buildCanvas();
+
+        window.addEventListener("makeCodeReady", this.onMakeCodeReady.bind(this));
+        window.addEventListener("editorOpened", this.onEditorOpened.bind(this));
 	}
+
+    onMakeCodeReady() {
+        this.openMakeCodeBtn.disabled = false;
+    }
+
+    openMakeCode() {
+        this.openCodeEditorWithProject(soundMakeCodeProject);
+        onEditorOpened()
+    }
+
+    onEditorOpened() {
+        this.openMakeCodeBtn.innerText = "Reset my code to this";
+    }
 
     handleVisibilityChange() {
 		if (GLOBALS.outputSection.currentOutput &&
@@ -231,9 +254,8 @@ class SoundOutput {
 	}
 
     playSound(sound) {
-        this.stopSounds();
 		if (!this.search.visible) {
-			if (this.currentSound === sound) {
+			if (this.currentSound === sound || this.sounds[sound] === null) {
 				this.currentSound = null;
 			}else if (this.sounds[sound] !== null) {
 				this.currentSound = this.sounds[sound];
@@ -273,11 +295,7 @@ class SoundOutput {
                 this.currentIndex = index;
 
                 let sound = this.inputClasses[this.currentIndex].sound;
-                if (sound) {
-                    this.playSound(sound);
-                }else {
-                    this.stopSounds();
-                }
+                this.playSound(sound);
 
                 if (this.currentIcon) {
                     this.currentIcon.classList.remove('output__sound-speaker--active');
@@ -388,5 +406,9 @@ class SoundOutput {
 
 import SoundSearch from './sound/SoundSearch.js';
 import GLOBALS from './../config.js';
+import {
+    soundMakeCodeProject,
+} from "./code/constants.js";
+
 
 export default SoundOutput;

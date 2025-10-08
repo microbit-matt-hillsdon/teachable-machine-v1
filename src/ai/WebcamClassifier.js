@@ -193,7 +193,7 @@ export default class WebcamClassifier {
     this.images[this.classNames[index]].imagesCount = 0;
     this.images[this.classNames[index]].latestThumbs = [];
     this.images[this.classNames[index]].latestImages = [];
-    GLOBALS.soundOutput.pauseCurrentSound();
+    GLOBALS.soundOutput.stopSounds();
 
     setTimeout(() => {
       GLOBALS.clearing = false;

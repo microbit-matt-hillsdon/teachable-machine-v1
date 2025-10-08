@@ -16,14 +16,14 @@
 // move it off screen but keep it in the layout.
 const editorHiddenStyles = {
     transform: "translate(-150vw, -150vh)",
-    visibility: "hidden"
+    visibility: "hidden",
 };
 const editorVisibleStyles = {
     transform: "unset",
     visibility: "unset",
 };
 class CodeEditor {
-    constructor(parentElement) {
+    constructor({ parentElement, onClose }) {
         this.parent = parentElement;
         this.id = "CodeEditor";
         this.element = document.createElement("div");
@@ -40,7 +40,7 @@ class CodeEditor {
         this.backButton.addEventListener("click", this.close.bind(this));
         this.topBar.appendChild(this.backButton);
         this.classDetectedStatus = document.createElement("div");
-        this.classDetectedStatus.classList.add("status")
+        this.classDetectedStatus.classList.add("status");
         this.topBar.appendChild(this.classDetectedStatus);
         this.element.appendChild(this.topBar);
 
@@ -70,19 +70,26 @@ class CodeEditor {
         this.element.appendChild(this.progressDialog);
 
         // Create and initialise an instance of MakeCodeFrameDriver.
+        this.project = soundMakeCodeProject;
+        this.isEditorLoaded = false;
+        this.isDeviceSynced = false;
         this.driverRef = new MakeCodeFrameDriver(
             {
                 controllerId: "Teachable machine with micro:bit",
                 queryParams: { hideLanguage: "1" },
-                initialProjects: async () => [initialMakeCodeProject],
+                initialProjects: async () => [this.project],
                 onEditorContentLoaded: (e) => {
-                    console.log("MakeCode is now ready")
+                    console.log("MakeCode is now ready");
                     this.driverRef.hideSimulator().catch(e => {
                         // Nothing we can do.
                     });
+                    this.isEditorLoaded = true;
+                    const event = new CustomEvent("makeCodeReady", {});
+                    window.dispatchEvent(event)
                 },
                 onWorkspaceSave: (e) => {
-                    console.log(e.project.header.id, e.project);
+                    this.project = e.project;
+                    this.isDeviceSynced = false;
                 },
                 onDownload: this.onDownload.bind(this),
                 onBack: this.close.bind(this),
@@ -96,6 +103,8 @@ class CodeEditor {
             "classDetected",
             this.onClassDetected.bind(this)
         );
+
+        this.onCloseCallback = onClose;
     }
 
     open() {
@@ -105,11 +114,19 @@ class CodeEditor {
         window.addEventListener("popstate", () => {
             GLOBALS.inputSection.exitPictureInPicture();
             Object.assign(this.element.style, editorHiddenStyles);
-            this.clearClassDetection();
+            this.clearTopBarClassDetection();
+            this.onCloseCallback({
+                project: this.project,
+                isDeviceSynced: this.isDeviceSynced,
+            });
         }, { once: true })
         GLOBALS.inputSection.requestPictureInPicture().catch(e => {
             // Permissions, browser support. Nothing we can do.
         })
+    }
+
+    async loadProject(project) {
+        await this.driverRef.importProject({ project });
     }
 
     close() {
@@ -117,14 +134,14 @@ class CodeEditor {
     }
 
     onClassDetected(event) {
-        const className = event.detail.className
-        this.classDetectedStatus.innerHTML = `<p>Detected: ${className}</p>`
-        this.topBar.className = `top-bar detected ${className}`
+        const className = event.detail.className;
+        this.classDetectedStatus.innerHTML = `<p>Detected: ${className}</p>`;
+        this.topBar.className = `top-bar detected ${className}`;
     }
 
-    clearClassDetection() {
-        this.classDetectedStatus.innerHTML = ""
-        this.topBar.className = "top-bar"
+    clearTopBarClassDetection() {
+        this.classDetectedStatus.innerHTML = "";
+        this.topBar.className = "top-bar";
     }
 
     async onDownload(e) {
@@ -138,6 +155,7 @@ class CodeEditor {
             }
         });
         this.progressDialog.close();
+        this.isDeviceSynced = true;
         this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
     }
 }
@@ -147,5 +165,5 @@ import {
     MakeCodeFrameDriver,
     createMakeCodeURL,
 } from "@microbit/makecode-embed/vanilla";
-import { initialMakeCodeProject } from "./constants.js";
+import { soundMakeCodeProject } from "./constants.js";
 export default CodeEditor;
