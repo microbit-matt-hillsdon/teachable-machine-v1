@@ -102,6 +102,5 @@ import {
     createMakeCodeRenderBlocks,
 } from "@microbit/makecode-embed/vanilla";
 import GLOBALS from "../config.js";
-import { makeCodeProjectsForCodePreview } from "./code/constants.js";
 
 export default CodeOutput;

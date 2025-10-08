@@ -1,12 +1,5 @@
 const extensionVersion = "bddabb4a84578f71a8d19326a135e14fe99d71f6";
 
-const classNames = ["green", "purple", "orange"];
-const mainTsForClasses = {
-    orange: "TMMachineLearning.onMLOrangeStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.hello), music.PlaybackMode.InBackground)\n})",
-    purple: "TMMachineLearning.onMLPurpleStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.happy), music.PlaybackMode.InBackground)\n})",
-    green: "TMMachineLearning.onMLGreenStart(function () {\n    music.play(music.builtinPlayableSoundEffect(soundExpression.giggle), music.PlaybackMode.InBackground)\n})",
-};
-
 const pxtJson = JSON.stringify({
     name: "TMv1Integration",
     description: "",
@@ -20,38 +13,53 @@ const pxtJson = JSON.stringify({
     preferredEditor: "blocksprj",
 });
 
-export const initialMakeCodeProject = {
-    header: {
-        target: "microbit",
-        targetVersion: "8.0.16",
-        editor: "blocksprj",
-        name: "TMv1Integration",
-        meta: {},
-        pubId: "",
-        pubCurrent: false,
-        id: "ad5c181a-e6d9-4f62-8e18-4fd34b7617f6",
-        recentUse: 1759408610,
-        modificationTime: 1759408610,
-        path: "TMv1Integration",
-        cloudCurrent: false,
-        saveId: null,
-        githubCurrent: false,
-    },
-    text: {
-        "pxt.json": pxtJson,
-        "README.md": "",
-        "main.blocks":
-            '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="0" y="0"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.giggle</field></shadow></value></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="0" y="149"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.happy</field></shadow></value></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="-3" y="308"><statement name="HANDLER"><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.hello</field></shadow></value></block></statement></block></xml>',
-        "main.ts": classNames
-            .map((className) => mainTsForClasses[className])
-            .join("\n"),
-    },
+const generateMakeCodeProject = (overrideText) => {
+    return {
+        header: {
+            target: "microbit",
+            targetVersion: "8.0.16",
+            editor: "blocksprj",
+            name: "TMv1Integration",
+            meta: {},
+            pubId: "",
+            pubCurrent: false,
+            id: "ad5c181a-e6d9-4f62-8e18-4fd34b7617f6",
+            recentUse: 1759408610,
+            modificationTime: 1759408610,
+            path: "TMv1Integration",
+            cloudCurrent: false,
+            saveId: null,
+            githubCurrent: false,
+        },
+        text: {
+            "pxt.json": pxtJson,
+            "README.md": "",
+            "main.blocks":
+                '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="35" y="16"></block><block type="TMMachineLearning_onMLPurpleStart" x="36" y="155"></block><block type="TMMachineLearning_onMLOrangeStart" x="30" y="266"></block></xml>',
+            "main.ts":
+                "TMMachineLearning.onMLOrangeStart(function () {\n\t\n})\nTMMachineLearning.onMLPurpleStart(function () {\n\t\n})\nTMMachineLearning.onMLGreenStart(function () {\n\t\n})\n",
+            ...overrideText,
+        },
+    };
 };
 
-export const makeCodeProjectsForCodePreview = classNames.map((className) => ({
-    ...initialMakeCodeProject,
-    text: {
-        "pxt.json": pxtJson,
-        "main.ts": mainTsForClasses[className],
-    },
-}));
+export const soundMakeCodeProject = generateMakeCodeProject({
+    "main.blocks":
+        '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="35" y="16"><statement name="HANDLER"><block type="music_stop_all_sounds"><next><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.hello</field></shadow></value></block></next></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="31" y="208"><statement name="HANDLER"><block type="music_stop_all_sounds"><next><block type="music_playable_play"><field name="playbackMode">music.PlaybackMode.InBackground</field><value name="toPlay"><shadow type="soundExpression_builtinPlayableSoundEffect"><field name="soundExpression">soundExpression.spring</field></shadow></value></block></next></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="29" y="404"></block></xml>',
+    "main.ts":
+        "TMMachineLearning.onMLOrangeStart(function () {\n\t\n})\nTMMachineLearning.onMLPurpleStart(function () {\n    music.stopAllSounds()\n    music.play(music.builtinPlayableSoundEffect(soundExpression.spring), music.PlaybackMode.InBackground)\n})\nTMMachineLearning.onMLGreenStart(function () {\n    music.stopAllSounds()\n    music.play(music.builtinPlayableSoundEffect(soundExpression.hello), music.PlaybackMode.InBackground)\n})\n",
+});
+
+export const ledMakeCodeProject = generateMakeCodeProject({
+    "main.blocks":
+        '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="0" y="0"><statement name="HANDLER"><block type="basic_show_icon"><field name="i">IconNames.Heart</field></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="-1" y="164"><statement name="HANDLER"><block type="basic_show_icon"><field name="i">IconNames.Happy</field></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="4" y="344"><statement name="HANDLER"><block type="device_clear_display"></block></statement></block></xml>',
+    "main.ts":
+        "TMMachineLearning.onMLOrangeStart(function () {\n    basic.clearScreen()\n})\nTMMachineLearning.onMLPurpleStart(function () {\n    basic.showIcon(IconNames.Happy)\n})\nTMMachineLearning.onMLGreenStart(function () {\n    basic.showIcon(IconNames.Heart)\n})\n",
+});
+
+export const servoMakeCodeProject = generateMakeCodeProject({
+    "main.blocks":
+        '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="35" y="16"></block><block type="TMMachineLearning_onMLPurpleStart" x="36" y="155"></block><block type="TMMachineLearning_onMLOrangeStart" x="30" y="266"><statement name="HANDLER"><block type="servoservostop"><field name="servo">servos.P0</field></block></statement></block></xml>',
+    "main.ts":
+        "TMMachineLearning.onMLOrangeStart(function () {\n    servos.P0.stop()\n})\nTMMachineLearning.onMLPurpleStart(function () {\n\t\n})\nTMMachineLearning.onMLGreenStart(function () {\n\t\n})\n",
+});

@@ -21,17 +21,14 @@ class OutputSection {
         }
         const outputs = {
             GIFOutput: new GIFOutput(),
-            LEDOutput: new LEDOutput(),
-            ServoOutput: new ServoOutput(),
+            LEDOutput: new LEDOutput(outputCallbacks),
+            ServoOutput: new ServoOutput(outputCallbacks),
             CodeOutput: new CodeOutput(outputCallbacks),
             SoundOutput: new SoundOutput(outputCallbacks),
             SpeechOutput: new SpeechOutput()
         };
         this.codeEditor = new CodeEditor({
             parentElement: this.element,
-            onEditorContentLoaded: () => {
-                outputs.SoundOutput.enableOpenMakeCodeBtn()
-            },
             onClose: outputs.CodeOutput.onCodeEditorClose
         });
         GLOBALS.soundOutput = outputs.SoundOutput;
@@ -72,6 +69,8 @@ class OutputSection {
             const tabElement = this.outputs.CodeOutput.showTab();
             this.internalChangeOutput(tabElement);
         }
+        const customEvent = new CustomEvent("editorOpened", {});
+        window.dispatchEvent(customEvent);
     }
 
     enable() {

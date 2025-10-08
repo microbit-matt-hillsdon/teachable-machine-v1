@@ -13,7 +13,7 @@
 // limitations under the License.
 
 class ServoOutput {
-    constructor() {
+    constructor({ openCodeEditor }) {
         this.id = "ServoOutput";
 
         // Corresponds with servo options in MakeCode.
@@ -85,8 +85,37 @@ class ServoOutput {
             this.inputClasses[index] = inputClass;
             this.offScreen.appendChild(inputClass);
         }
+
+        this.openMakeCodeBtn = document.createElement("button");
+        this.openMakeCodeBtn.classList.add("button");
+        this.openMakeCodeBtn.classList.add("button--open-makecode");
+        this.openMakeCodeBtn.disabled = true;
+        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.addEventListener(
+            "click",
+            this.openMakeCode.bind(this)
+        );
+        this.offScreen.appendChild(this.openMakeCodeBtn);
+        this.openCodeEditorWithProject = openCodeEditor;
+
         this.element.appendChild(this.offScreen);
         this.buildCanvas();
+
+        window.addEventListener("makeCodeReady", this.onMakeCodeReady.bind(this));
+        window.addEventListener("editorOpened", this.onEditorOpened.bind(this));
+    }
+
+    onMakeCodeReady() {
+        this.openMakeCodeBtn.disabled = false;
+    }
+
+    openMakeCode() {
+        this.openCodeEditorWithProject(servoMakeCodeProject);
+        onEditorOpened()
+    }
+
+    onEditorOpened() {
+        this.openMakeCodeBtn.innerText = "Reset my code to this";
     }
 
     clearInput(event) {
@@ -279,6 +308,7 @@ class ServoOutput {
     }
 }
 
+import { servoMakeCodeProject } from "./code/constants.js";
 import ServoSearch from "./servo/ServoSearch.js";
 import GLOBALS from "../config.js";
 

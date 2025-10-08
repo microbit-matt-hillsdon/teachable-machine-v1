@@ -23,7 +23,7 @@ const editorVisibleStyles = {
     visibility: "unset",
 };
 class CodeEditor {
-    constructor({ parentElement, onEditorContentLoaded, onClose }) {
+    constructor({ parentElement, onClose }) {
         this.parent = parentElement;
         this.id = "CodeEditor";
         this.element = document.createElement("div");
@@ -70,7 +70,7 @@ class CodeEditor {
         this.element.appendChild(this.progressDialog);
 
         // Create and initialise an instance of MakeCodeFrameDriver.
-        this.project = initialMakeCodeProject;
+        this.project = soundMakeCodeProject;
         this.isEditorLoaded = false;
         this.isDeviceSynced = false;
         this.driverRef = new MakeCodeFrameDriver(
@@ -81,7 +81,8 @@ class CodeEditor {
                 onEditorContentLoaded: (e) => {
                     console.log("MakeCode is now ready");
                     this.isEditorLoaded = true;
-                    onEditorContentLoaded();
+                    const event = new CustomEvent("makeCodeReady", {});
+                    window.dispatchEvent(event)
                 },
                 onWorkspaceSave: (e) => {
                     this.project = e.project;
@@ -161,5 +162,5 @@ import {
     MakeCodeFrameDriver,
     createMakeCodeURL,
 } from "@microbit/makecode-embed/vanilla";
-import { initialMakeCodeProject } from "./constants.js";
+import { soundMakeCodeProject } from "./constants.js";
 export default CodeEditor;

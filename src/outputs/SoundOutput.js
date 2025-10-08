@@ -135,19 +135,26 @@ class SoundOutput {
             this.openMakeCode.bind(this)
         );
         this.offScreen.appendChild(this.openMakeCodeBtn);
+        this.openCodeEditorWithProject = openCodeEditor;
 
         this.element.appendChild(this.offScreen);
 		this.speakers = [];
 		this.buildCanvas();
-        this.openCodeEditorWithProject = openCodeEditor;
+
+        window.addEventListener("makeCodeReady", this.onMakeCodeReady.bind(this));
+        window.addEventListener("editorOpened", this.onEditorOpened.bind(this));
 	}
 
-    enableOpenMakeCodeBtn() {
+    onMakeCodeReady() {
         this.openMakeCodeBtn.disabled = false;
     }
 
     openMakeCode() {
-        this.openCodeEditorWithProject(initialMakeCodeProject);
+        this.openCodeEditorWithProject(soundMakeCodeProject);
+        onEditorOpened()
+    }
+
+    onEditorOpened() {
         this.openMakeCodeBtn.innerText = "Reset my code to this";
     }
 
@@ -411,7 +418,7 @@ class SoundOutput {
 import SoundSearch from './sound/SoundSearch.js';
 import GLOBALS from './../config.js';
 import {
-    initialMakeCodeProject,
+    soundMakeCodeProject,
 } from "./code/constants.js";
 
 
