@@ -18,8 +18,8 @@
 	font-family: $font;
 	font-size: 14px;
 	color: $color__white;
-	background: $color__blue--primary;
-	border: 4px solid $color__blue--primary;
+	background: $color__blue--shadow-bottom;
+	border: 4px solid $color__blue--shadow-bottom;
 	cursor: pointer;
 	width: 100%;
 	padding: 5px 0;
@@ -58,10 +58,10 @@
 .output__code-editor .top-bar {
 	width: 100%;
 	height: 3rem;
-	background: $color__background;
+	background: $color__blue--shadow-bottom;
 	text-align: start;
 	display: flex;
-	color: $color__text--light;
+	color: $color__white;
 	font-family: $font;
 	font-size: 16px;
 }
@@ -71,13 +71,13 @@
 	color: $color__white;
 }
 .output__code-editor .top-bar.green {
-	background: $color__class-green--primary
+	background: $color__class-green--shadow-bottom
 }
 .output__code-editor .top-bar.orange {
-	background: $color__class-orange--primary
+	background: $color__class-orange--shadow-left
 }
 .output__code-editor .top-bar.purple {
-	background: $color__class-purple--primary
+	background: $color__class-purple--shadow-bottom
 }
 
 .output__code-editor .top-bar button {
@@ -87,6 +87,7 @@
 	border: none;
 	padding: 0 2em;
 	cursor: pointer;
+	color: $color__white;
 	display: flex;
 	width: max-content;
 	align-items: center;
