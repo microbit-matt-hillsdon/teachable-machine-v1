@@ -145,7 +145,6 @@ class SoundOutput {
 
     openMakeCode() {
         this.openCodeEditorWithProject(soundMakeCodeProject);
-        onEditorOpened()
     }
 
     onEditorOpened() {

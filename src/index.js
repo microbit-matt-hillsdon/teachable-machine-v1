@@ -16,6 +16,7 @@ import '../style/main.styl';
 import TweenMax from 'gsap';
 
 import GLOBALS from './config.js';
+import routes from './routes.js';
 import Button from './ui/components/Button.js';
 import IntroSection from './ui/modules/IntroSection.js';
 import InputSection from './ui/modules/InputSection.js';
@@ -27,6 +28,10 @@ import LaunchScreen from './ui/modules/wizard/LaunchScreen.js';
 import BrowserUtils from './ui/components/BrowserUtils';
 
 function init() {
+  // E.g. refreshing the page on the /code route.
+  if (window.location.pathname !== routes.home) {
+    history.replaceState(null, "", routes.home);
+  }
 
 	// Shim for forEach for IE/Edge
   if (typeof NodeList.prototype.forEach !== 'function') {
