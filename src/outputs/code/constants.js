@@ -1,4 +1,4 @@
-const extensionVersion = "bddabb4a84578f71a8d19326a135e14fe99d71f6";
+const extensionVersion = "a02b7457f5c9888ce4c58ca94c13cbfca32c7c18";
 
 const pxtJson = JSON.stringify({
     name: "TMv1Integration",
@@ -59,7 +59,7 @@ export const ledMakeCodeProject = generateMakeCodeProject({
 
 export const servoMakeCodeProject = generateMakeCodeProject({
     "main.blocks":
-        '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="35" y="16"></block><block type="TMMachineLearning_onMLPurpleStart" x="36" y="155"></block><block type="TMMachineLearning_onMLOrangeStart" x="30" y="266"><statement name="HANDLER"><block type="servoservostop"><field name="servo">servos.P0</field></block></statement></block></xml>',
+        '<xml xmlns="https://developers.google.com/blockly/xml"><variables></variables><block type="TMMachineLearning_onMLGreenStart" x="0" y="0"><statement name="HANDLER"><block type="servossetslowwave"><field name="servoPin">ServoPinNumber.P0</field></block></statement></block><block type="TMMachineLearning_onMLPurpleStart" x="-4" y="155"><statement name="HANDLER"><block type="servossetfastwave"><field name="servoPin">ServoPinNumber.P0</field></block></statement></block><block type="TMMachineLearning_onMLOrangeStart" x="-11" y="313"><statement name="HANDLER"><block type="servosstopwave"><field name="servoPin">ServoPinNumber.P0</field></block></statement></block></xml>',
     "main.ts":
-        "TMMachineLearning.onMLOrangeStart(function () {\n    servos.P0.stop()\n})\nTMMachineLearning.onMLPurpleStart(function () {\n\t\n})\nTMMachineLearning.onMLGreenStart(function () {\n\t\n})\n",
+        "TMMachineLearning.onMLOrangeStart(function () {\n    servos.stopWave(ServoPinNumber.P0)\n})\nTMMachineLearning.onMLPurpleStart(function () {\n    servos.setFastWave(ServoPinNumber.P0)\n})\nTMMachineLearning.onMLGreenStart(function () {\n    servos.setSlowWave(ServoPinNumber.P0)\n})\n"
 });
