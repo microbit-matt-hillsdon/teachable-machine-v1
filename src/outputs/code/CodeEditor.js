@@ -67,6 +67,14 @@ class CodeEditor {
         this.progressDialogContent = document.createElement("div");
         this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
         this.progressDialog.appendChild(this.progressDialogContent);
+        this.progressDialogCloseBtn = document.createElement("button");
+        this.progressDialogCloseBtn.innerText = "Close";
+        this.progressDialogCloseBtn.addEventListener("click", () => {
+            this.progressDialog.close();
+            this.progressDialogCloseBtn.style.display = "none";
+            this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
+        })
+        this.progressDialog.appendChild(this.progressDialogCloseBtn);
         this.element.appendChild(this.progressDialog);
 
         // Create and initialise an instance of MakeCodeFrameDriver.
@@ -194,19 +202,25 @@ class CodeEditor {
     }
 
     async onDownload(e) {
-        await GLOBALS.microbit.downloadProgram(e.hex, (progress) => {
-            if (progress) {
-                const percentage = Math.round(progress * 100);
-                this.progressDialogContent.innerHTML = `Downloading program...<br/>${percentage}%`;
-            }
-            if (!this.progressDialog.open) {
-                this.progressDialog.showModal();
-            }
-        });
-        this.progressDialog.close();
-        this.#setDeviceSynced(true);
-        this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
+        try {
+            await GLOBALS.microbit.downloadProgram(e.hex, (progress) => {
+                if (progress) {
+                    const percentage = Math.round(progress * 100);
+                    this.progressDialogContent.innerHTML = `Downloading program...<br/>${percentage}%`;
+                }
+                if (!this.progressDialog.open) {
+                    this.progressDialog.showModal();
+                }
+            });
+            this.progressDialog.close();
+            this.#setDeviceSynced(true);
+            this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
+        } catch (e) {
+            this.progressDialogCloseBtn.style.display = "block";
+            this.progressDialogContent.innerHTML = `Error downloading program. Please try again.`;
+        }
     }
+
 
     onSave(e) {
         const blob = new Blob([e.hex], { type: "application/octet-stream" });
