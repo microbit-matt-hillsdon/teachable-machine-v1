@@ -91,6 +91,9 @@ class Microbit {
     usbReset = async () => {
         await this.connection.clearDevice();
     };
+
+    isConnected = () => 
+        this.connection.status === ConnectionStatus.CONNECTED;
 }
 
 const microbitCommandMessage = (command, arg) => {

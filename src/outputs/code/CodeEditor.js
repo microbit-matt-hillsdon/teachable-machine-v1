@@ -114,11 +114,11 @@ class CodeEditor {
         if (isDeviceSynced) {
             this.#unpauseCamera();
         } else {
-            this.#pauseCamera();
+            this.pauseCamera();
         }
     }
 
-    #pauseCamera() {
+    pauseCamera() {
         this.#showTopBarPausedStatus();
         GLOBALS.inputSection.camInput.stop();
     }
@@ -126,11 +126,20 @@ class CodeEditor {
     #unpauseCamera(skipPictureInPicture) {
         this.clearTopBarClassDetection();
         // We might have stopped the camera due to device sync.
-        if (!GLOBALS.inputSection.camInput.started) {
+        // Take care not to restart if disconnected.
+        if (!GLOBALS.inputSection.camInput.started && GLOBALS.microbit.isConnected()) {
             try {
                 GLOBALS.inputSection.camInput.start();
                 if (!skipPictureInPicture) {
-                    GLOBALS.inputSection.requestPictureInPicture();
+                    GLOBALS.inputSection.requestPictureInPicture().catch(e => {
+                        // If the camera wasn't previously running it can be too soon.
+                        // Ideally we'd track metadata loaded from the video element.
+                        setTimeout(() => {
+                            if (GLOBALS.inputSection.camInput.started) {
+                                GLOBALS.inputSection.requestPictureInPicture();
+                            }
+                        }, 600)
+                    })
                 }
             } catch (e) {
                 // Best effort restart.
@@ -153,7 +162,7 @@ class CodeEditor {
             });
         }, { once: true })
         if (!this.isDeviceSynced) {
-            this.#pauseCamera();
+            this.pauseCamera();
         } else {
             GLOBALS.inputSection.requestPictureInPicture().catch(e => {
                 // Permissions, browser support. Nothing we can do.
