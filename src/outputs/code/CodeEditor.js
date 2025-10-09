@@ -134,6 +134,7 @@ class CodeEditor {
                     GLOBALS.inputSection.requestPictureInPicture().catch(e => {
                         // If the camera wasn't previously running it can be too soon.
                         // Ideally we'd track metadata loaded from the video element.
+                        // This can still error due to needing a user gesture.
                         setTimeout(() => {
                             if (GLOBALS.inputSection.camInput.started) {
                                 GLOBALS.inputSection.requestPictureInPicture();
@@ -164,9 +165,11 @@ class CodeEditor {
         if (!this.isDeviceSynced) {
             this.pauseCamera();
         } else {
-            GLOBALS.inputSection.requestPictureInPicture().catch(e => {
-                // Permissions, browser support. Nothing we can do.
-            })
+            if (GLOBALS.microbit.isConnected()) {
+                GLOBALS.inputSection.requestPictureInPicture().catch(e => {
+                    // Permissions, browser support. Nothing we can do.
+                });
+            }
         }
     }
 
