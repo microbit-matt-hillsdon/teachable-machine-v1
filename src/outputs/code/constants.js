@@ -1,4 +1,4 @@
-const extensionVersion = "a02b7457f5c9888ce4c58ca94c13cbfca32c7c18";
+const extensionVersion = "87f085147d3730efb3941ca6fe87281043302159";
 
 const pxtJson = JSON.stringify({
     name: "TMv1Integration",
