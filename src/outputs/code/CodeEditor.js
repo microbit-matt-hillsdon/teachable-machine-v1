@@ -92,6 +92,7 @@ class CodeEditor {
                     this.#setDeviceSynced(false);
                 },
                 onDownload: this.onDownload.bind(this),
+                onSave: this.onSave.bind(this),
                 onBack: this.close.bind(this),
             },
             () => this.iframe
@@ -198,6 +199,20 @@ class CodeEditor {
         this.#setDeviceSynced(true);
         this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
     }
+
+    onSave(e) {
+        const blob = new Blob([e.hex], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+        try {
+            const a = document.createElement("a");
+            a.href = url;
+            // e.name isn't very user friendly at the moment.
+            a.download = "microbit-teachable-machine-program.hex"
+            a.click();
+        } finally {
+            URL.revokeObjectURL(url);
+        }
+    };
 }
 
 import GLOBALS from "../../config.js";
