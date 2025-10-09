@@ -181,7 +181,7 @@ class CodeEditor {
     }
 
     #showTopBarPausedStatus() {
-        this.classDetectedStatus.innerHTML = "<p><span style='font-weight: bold'>Press Download to re-enable the camera</span></p>";
+        this.classDetectedStatus.innerHTML = "<p><span style='font-weight: bold'>⚠️ Press Download to re-enable the camera</span></p>";
         this.topBar.className = "top-bar";
     }
 
