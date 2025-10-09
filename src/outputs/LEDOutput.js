@@ -147,7 +147,6 @@ class LEDOutput {
 
     openMakeCode() {
         this.openCodeEditorWithProject(ledMakeCodeProject);
-        onEditorOpened()
     }
 
     onEditorOpened() {

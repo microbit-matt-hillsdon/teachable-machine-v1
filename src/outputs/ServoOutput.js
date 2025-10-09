@@ -105,7 +105,6 @@ class ServoOutput {
 
     openMakeCode() {
         this.openCodeEditorWithProject(servoMakeCodeProject);
-        onEditorOpened()
     }
 
     onEditorOpened() {
