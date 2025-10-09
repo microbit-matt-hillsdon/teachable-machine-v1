@@ -132,14 +132,10 @@ class CodeEditor {
                 GLOBALS.inputSection.camInput.start();
                 if (!skipPictureInPicture) {
                     GLOBALS.inputSection.requestPictureInPicture().catch(e => {
-                        // If the camera wasn't previously running it can be too soon.
-                        // Ideally we'd track metadata loaded from the video element.
-                        // This can still error due to needing a user gesture.
-                        setTimeout(() => {
-                            if (GLOBALS.inputSection.camInput.started) {
-                                GLOBALS.inputSection.requestPictureInPicture();
-                            }
-                        }, 600)
+                        // This might not work if the video has been started
+                        // now for the first time as it's too soon. If we try
+                        // to wait for metadata it doesn't work either as it's
+                        // no longer a user gesture. Can't win!
                     })
                 }
             } catch (e) {
