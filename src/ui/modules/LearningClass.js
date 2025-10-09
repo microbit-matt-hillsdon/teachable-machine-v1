@@ -155,6 +155,12 @@ class LearningClass {
 	}
 
 	buttonDown() {
+		if (window.location.pathname === routes.code) {
+			// Confusing to record when MakeCode is open. The user may have
+			// a button handler.
+			return;
+		}
+
 		let that = this;
 		this.button.setText('Training');
 		this.section.startRecording(this.index);
@@ -226,6 +232,7 @@ class LearningClass {
 }
 
 import GLOBALS from './../../config.js';
+import routes from "../../routes.js";
 import TweenMax from 'gsap/esm';
 import Button from './../components/Button.js';
 import HighlightArrow from './../components/HighlightArrow.js';

@@ -139,7 +139,7 @@ class CodeEditor {
 
     open() {
         // Simple routing to allow use of browser back button as well as UI button.
-        window.history.pushState(null, "", "/code");
+        window.history.pushState(null, "", routes.code);
         Object.assign(this.element.style, editorVisibleStyles);
         window.addEventListener("popstate", () => {
             this.#unpauseCamera(true);
@@ -201,6 +201,7 @@ class CodeEditor {
 }
 
 import GLOBALS from "../../config.js";
+import routes from "../../routes.js";
 import {
     MakeCodeFrameDriver,
     createMakeCodeURL,

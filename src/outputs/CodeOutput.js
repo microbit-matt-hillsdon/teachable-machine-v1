@@ -69,6 +69,7 @@ class CodeOutput {
             .renderBlocks({ code, options: { layout: BlockLayout.None } })
             .then((result) => {
                 // Remove styling from SVG as it would influence the styling of other components.
+                // TODO: is this what breaks the LED grid? Use a shadow root?
                 const svgText = result.svg.replace(
                     /<style[^>]*>[\s\S]*?<\/style>/gi,
                     ""
