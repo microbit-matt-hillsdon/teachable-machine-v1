@@ -89,8 +89,6 @@ export default class WebcamClassifier {
         audio: false
       }).
       then((stream) => {
-        alert("TELL MATT THIS:", stream.getVideoTracks()[0].label);
-
         GLOBALS.isCamGranted = true;
         this.connectStatusDisplay.style.display = 'none';
         this.active = true;
@@ -207,6 +205,8 @@ export default class WebcamClassifier {
   }
 
   videoLoaded() {
+    alert(`TELL MATT THIS: ${this.stream.getVideoTracks()[0].label}`);
+
     let flip = (GLOBALS.isBackFacingCam) ? 1 : -1;
     let videoRatio = this.video.videoWidth / this.video.videoHeight;
     let parent = this.video.parentNode;
