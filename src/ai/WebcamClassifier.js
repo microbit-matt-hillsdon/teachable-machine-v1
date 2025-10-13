@@ -206,7 +206,7 @@ export default class WebcamClassifier {
 
   videoLoaded() {
     const track = this.stream.getVideoTracks()[0];
-    alert(`TELL MATT THIS: ${track.label}; facingMode=${console.log(capabilities.facingMode)}`);
+    alert(`TELL MATT THIS: ${track.label}; facingMode=${console.log(track.getCapabilities().facingMode)}`);
 
     let flip = (GLOBALS.isBackFacingCam) ? 1 : -1;
     let videoRatio = this.video.videoWidth / this.video.videoHeight;
