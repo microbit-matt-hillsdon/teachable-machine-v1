@@ -89,6 +89,8 @@ export default class WebcamClassifier {
         audio: false
       }).
       then((stream) => {
+        alert("TELL MATT THIS:", stream.getVideoTracks()[0].label);
+
         GLOBALS.isCamGranted = true;
         this.connectStatusDisplay.style.display = 'none';
         this.active = true;
