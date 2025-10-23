@@ -201,9 +201,9 @@ class ConnectStatusDisplay {
     #element;
     #onConnect;
 
-    constructor(element, onTryAgain) {
+    constructor(element, onConnect) {
         this.#element = element;
-        this.#onConnect = onTryAgain;
+        this.#onConnect = onConnect;
     }
 
     /**
