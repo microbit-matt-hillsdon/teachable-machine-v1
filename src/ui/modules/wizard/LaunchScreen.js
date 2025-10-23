@@ -129,9 +129,6 @@ class LaunchScreen {
     }
 
     async connect() {
-        // TODO: Do we need to fix
-        // https://github.com/microbit-foundation/microbit-connection/issues/20
-        // ?
         try {
             this.hasConnectedBefore = false;
             await GLOBALS.microbit.connect();
