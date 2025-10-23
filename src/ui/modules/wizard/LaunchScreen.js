@@ -80,7 +80,7 @@ class LaunchScreen {
         this.skipButtonMobile.addEventListener('click', this.skipClick.bind(this));
         this.startButton.element.addEventListener('click', this.skipClick.bind(this));
 
-        this.connectStatusDisplay = document.getElementById('input__media__activate');
+        this.connectStatusDisplay = new ConnectStatusDisplay(document.getElementById('input__media__activate'), () => this.connect());
         this.hasConnectedBefore = false;
         this.hasDownloadedInitialProgram = false;
         window.addEventListener('disconnected', this.onDisconnected.bind(this));
@@ -132,42 +132,34 @@ class LaunchScreen {
         try {
             this.hasConnectedBefore = false;
             await GLOBALS.microbit.connect();
-            this.connectStatusDisplay.style.display = 'flex';
-            this.connectStatusDisplay.innerHTML = "Loading<br />0%";
+            this.connectStatusDisplay.setLoading(0);
             const fetchedHex = await fetch("static/microbit/TMv1Integration.hex");
             const universalHexString = await fetchedHex.text();
             // Avoid overwriting program on reconnection if the initial program has been downloaded before.
             if (!this.hasDownloadedInitialProgram) {
                 await GLOBALS.microbit.downloadProgram(
                     universalHexString, 
-                    (percentage) => {
-                        this.connectStatusDisplay.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
-                    }
+                    (percentage) => this.connectStatusDisplay.setLoading(percentage)
                 );
                 this.hasDownloadedInitialProgram = true;
             }
-            this.connectStatusDisplay.style.display = 'none';
+            this.connectStatusDisplay.hide();
             GLOBALS.camInput.start();
             this.hasConnectedBefore = true;
         } catch (err) {
-            const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg["generic"]
+            const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg.generic;
             await GLOBALS.microbit.usbReset();
-            await this.displayConnectionError(errMessage)
+            this.connectStatusDisplay.setError(errMessage)
         }
     }
 
     async onDisconnected() {
         if (this.hasConnectedBefore) {
-            this.displayConnectionError(connectionErrorMsg["disconnected"]);
+            this.connectStatusDisplay.setError(connectionErrorMsg.disconnected)
         }
         GLOBALS.outputSection.codeEditor.pauseCamera();
     }
 
-    async displayConnectionError(errMessage) {
-        this.connectStatusDisplay.style.display = 'flex';
-        this.connectStatusDisplay.innerHTML = `<p>${errMessage}</p>`;
-        this.connectStatusDisplay.addEventListener('click', this.connect.bind(this));
-    }
 
     destroy() {
         document.body.classList.remove('no-scroll');
@@ -202,6 +194,47 @@ const connectionErrorMsg = {
     "clear-connect": "Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <a>clicking here to try again</a>.",
     "disconnected": "The micro:bit got disconnected. <a>Click here to try again</a>.",
     generic: "Replug the micro:bit and <a>click here to try again</a>."
+}
+
+class ConnectStatusDisplay {
+
+    #element;
+    #onConnect;
+
+    constructor(element, onTryAgain) {
+        this.#element = element;
+        this.#onConnect = onTryAgain;
+    }
+
+    /**
+     * @param {number} percentage The percentage as a 0..1 value.
+     */
+    setLoading(percentage) {
+        this.#element.style.display = 'flex';
+        this.#element.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
+    }
+
+    /**
+     * @param {string} errMessageHtml The message to display as HTML.
+     */
+    setError(errMessageHtml) {
+        const errorMessageElement = document.createElement("div");
+        Object.assign(errorMessageElement.style, {
+            flexGrow: 1,
+            display: 'flex',
+            alignItems: 'center'
+        });
+        errorMessageElement.innerHTML = `<p>${errMessageHtml}</p>`;
+        errorMessageElement.addEventListener('click', this.#onConnect);
+
+        this.#element.replaceChildren(errorMessageElement);
+        this.#element.style.display = 'flex';
+    }
+
+    hide() {
+        this.#element.style.display = 'none';
+        this.#element.innerHTML = '';
+    }
 }
 
 import TweenMax from 'gsap/esm';
