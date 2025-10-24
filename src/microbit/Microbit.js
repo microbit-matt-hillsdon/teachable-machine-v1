@@ -12,7 +12,7 @@ class Microbit {
         // Initialise connection.
         (async () => {
             await this.connection.initialize();
-            // Hack: we don't want the visibilitychange disconection and it's
+            // Hack: we don't want the visibilitychange disconnection and it's
             // not currently configurable. Remove the listener added in
             // initialize.  We could reinstate this if we also reconnected the
             // camera, but it's not worth it for this demo.
