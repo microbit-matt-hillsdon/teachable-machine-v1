@@ -148,7 +148,7 @@ class LaunchScreen {
             this.hasConnectedBefore = true;
             GLOBALS.microbit.ready();
         } catch (err) {
-            const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg.generic;
+            const errMessage = getConnectionErrorMsgHTML(err.code);
             await GLOBALS.microbit.usbReset();
             this.connectStatusDisplay.setError(errMessage)
         }
@@ -156,7 +156,9 @@ class LaunchScreen {
 
     async onDisconnected() {
         if (this.hasConnectedBefore) {
-            this.connectStatusDisplay.setError(connectionErrorMsg.disconnected)
+            this.connectStatusDisplay.setError(
+                getConnectionErrorMsgHTML(connectionErrorId.disconnected)
+            )
         }
         GLOBALS.outputSection.codeEditor.pauseCamera();
     }
@@ -189,12 +191,31 @@ class LaunchScreen {
     }
 }
 
-const connectionErrorMsg = {
-    "update-req": "Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <a href='https://microbit.org/get-started/user-guide/firmware/'>update your firmware</a> before you can connect to this micro:bit.",
-    "no-device-selected": "No device selected. Plug in a micro:bit and <a>click here to try again</a>.",
-    "clear-connect": "Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <a>clicking here to try again</a>.",
-    "disconnected": "The micro:bit got disconnected. <a>Click here to try again</a>.",
-    generic: "Replug the micro:bit and <a>click here to try again</a>."
+const connectionErrorId = {
+    updateRequired: "update-req",
+    noDeviceSelected: "no-device-selected",
+    clearConnect: "clear-connect",
+    disconnected: "disconnected",
+    generic: "generic"
+}
+
+const getConnectionErrorMsgHTML = (errorId) => {
+    switch (errorId) {
+        case connectionErrorId.updateRequired:
+            return GLOBALS.i18n.t(`input-section-connect-error-update-req`, {
+                link: chunks => `<a href='https://microbit.org/get-started/user-guide/firmware/'>${chunks}</a>`
+            })
+        case connectionErrorId.noDeviceSelected:
+        case connectionErrorId.clearConnect:
+        case connectionErrorId.disconnected:
+        case connectionErrorId.generic: {
+            return GLOBALS.i18n.t(`input-section-connect-error-${errorId}`, {
+                link: chunks => `<a>${chunks}</a>`
+            })
+        }
+        default:
+            return getConnectionErrorMsgHTML(connectionErrorId.generic)
+    }
 }
 
 class ConnectStatusDisplay {
@@ -212,7 +233,7 @@ class ConnectStatusDisplay {
      */
     setLoading(percentage) {
         this.#element.style.display = 'flex';
-        this.#element.innerHTML = `Loading<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
+        this.#element.innerHTML = `${GLOBALS.i18n.t("loading-text")}<br />${percentage ? `${Math.round(percentage * 100)}%` : ""}`;
     }
 
     /**

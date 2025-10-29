@@ -34,8 +34,9 @@ class LearningClass {
 
 		this.resetLink = this.element.querySelector('.link--reset');
 		// this.button.element.addEventListener('mouseup', this.buttonUp.bind(this));
-		this.exampleCounterElement = this.element.querySelector('.examples__counter');
+		this.exampleCounterElement = this.element.querySelector('.examples__status');
 		this.exampleCounter = 0;
+		this.displayExampleCounter()
 
 		this.percentage = 0;
 		this.percentageElement = this.element.querySelector('.machine__value');
@@ -118,13 +119,19 @@ class LearningClass {
 		this.clear();
 	}
 
+	displayExampleCounter() {
+		this.exampleCounterElement.textContent = GLOBALS.i18n.t(
+			"learning-section-examples-label", 
+			{ numExamples: this.exampleCounter }
+		)
+	}
+
 	setSamples(length) {
 		this.exampleCounter = length;
-		let text = this.exampleCounter;	
 
 		let recommendedNumSamples = (GLOBALS.inputType === 'cam') ? 30 : 10;
 
-		this.exampleCounterElement.textContent = text;
+		this.displayExampleCounter()
 
 		if (this.exampleCounter >= recommendedNumSamples && GLOBALS.classesTrained[this.id] === false) {
 			GLOBALS.classesTrained[this.id] = true;

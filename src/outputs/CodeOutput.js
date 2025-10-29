@@ -39,14 +39,14 @@ class CodeOutput {
 
         this.codeStatus = document.createElement("p");
         this.codeStatus.classList.add("output__code-status");
-        this.codeStatus.innerText = "Your latest program has not be downloaded.";
+        this.codeStatus.innerText = GLOBALS.i18n.t("output-section-code-out-of-sync-warning");
         this.container.appendChild(this.codeStatus);
         this.codeStatus.style.display = "none";
 
         this.openMakeCodeBtn = document.createElement("button");
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
-        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.innerText = GLOBALS.i18n.t("output-section-edit-in-makecode-button-text");
         this.openMakeCodeBtn.addEventListener("click", () => openCodeEditor());
         this.container.appendChild(this.openMakeCodeBtn);
         this.classNames = GLOBALS.classNames;
@@ -64,7 +64,7 @@ class CodeOutput {
     }
 
     renderBlock(code) {
-        this.blockPreviewContainer.innerHTML = "<p>Loading...</p>";
+        this.blockPreviewContainer.innerHTML = `<p>${GLOBALS.i18n.t("loading-text")}...</p>`;
         this.renderer
             .renderBlocks({ code, options: { layout: BlockLayout.None } })
             .then((result) => {

@@ -97,15 +97,23 @@ class SoundOutput {
 			})(speakerIcon);
 
 			let editIcon = document.createElement('div');
+			let editLabel = document.createElement("label");
+			editLabel.classList.add("output__edit-label");
+			editLabel.innerText = GLOBALS.i18n.t("output-section-sound-edit-label")
 			editIcon.classList.add('output__sound-edit');
 			editIcon.classList.add(`output__sound-edit--${id}`);
+			editIcon.appendChild(editLabel);
 
 			let input = document.createElement('input');
 			input.classId = id;
 			input.classList.add('output__sound-input');
 			input.classList.add(`output__sound-input--${id}`);
 			input.setAttribute('readonly', 'readonly');
-			input.value = sound === null ? "nothing" : sound;
+			input.value = GLOBALS.i18n.t(
+					sound === null 
+							? "output-section-sound-option-label-nothing"
+							: `output-section-sound-option-label-${sound}`
+			) 
 			inputClass.appendChild(speakerIcon);
 			inputClass.appendChild(editIcon);
 			inputClass.appendChild(input);
@@ -123,7 +131,7 @@ class SoundOutput {
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
         this.openMakeCodeBtn.disabled = true;
-        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.innerText = GLOBALS.i18n.t("output-section-edit-in-makecode-button-text");
         this.openMakeCodeBtn.addEventListener(
             "click",
             this.openMakeCode.bind(this)

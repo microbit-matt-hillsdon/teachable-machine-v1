@@ -1,0 +1,56 @@
+{
+  "intro-text": "JA_Teach a machine using your camera, live in the browser. No coding required.",
+  "intro-button-text": "JA_Let's go!",
+
+  "input-section-title": "JA_Input",
+  "input-section-connect-error-update-req": "JA_Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <link>update your firmware</link> before you can connect to this micro:bit.",
+  "input-section-connect-error-no-device-selected": "JA_No device selected. Plug in a micro:bit and <link>click here to try again</link>.",
+  "input-section-connect-error-clear-connect": "JA_Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <link>clicking here to try again</link>.",
+  "input-section-connect-error-disconnected": "JA_The micro:bit got disconnected. <link>Click here to try again</link>.",
+  "input-section-connect-error-generic": "JA_Replug the micro:bit and <link>click here to try again</link>.",
+
+  "learning-section-title": "JA_Learning",
+  "learning-section-reset-link": "JA_Reset",
+  "learning-section-confidence-label": "JA_Confidence",
+  "learning-section-examples-label": "JA_{numExamples} examples",
+  "learning-section-train-green-button-text": "JA_Train green (button A)",
+  "learning-section-train-purple-button-text": "JA_Train purple (button B)",
+  "learning-section-train-orange-button-text": "JA_Train orange (A+B)",
+
+  "output-section-title": "JA_Output",
+  "output-section-led-title": "JA_LED",
+  "output-section-led-edit-label": "JA_Show",
+  "output-section-led-option-label-heart": "JA_Heart",
+  "output-section-led-option-label-smile": "JA_Smile",
+  "output-section-led-option-label-nothing": "JA_Nothing",
+
+  "output-section-sound-title": "JA_Sound",
+  "output-section-sound-edit-label": "JA_Play",
+  "output-section-sound-option-label-hello": "JA_Hello",
+  "output-section-sound-option-label-spring": "JA_Spring",
+  "output-section-sound-option-label-nothing": "JA_Nothing",
+
+  "output-section-servo-title": "JA_Servo",
+  "output-section-servo-edit-label": "JA_Do",
+  "output-section-servo-option-label-slow-wave": "JA_Slow wave",
+  "output-section-servo-option-label-fast-wave": "JA_Fast wave",
+  "output-section-servo-option-label-nothing": "JA_Nothing",
+
+  "output-section-code-title": "JA_Code",
+  "output-section-code-out-of-sync-warning": "JA_Your latest program has not be downloaded.",
+  "output-section-edit-in-makecode-button-text": "JA_Edit in MakeCode",
+  
+  "code-editor-back-button-text": "JA_Back",
+  "code-editor-out-of-sync-warning": "JA_Press Download to re-enable the camera",
+  "code-editor-detected-class-indicator": "JA_Detected: {className}",
+  
+  "downloading-program-dialog-progress-text": "JA_Downloading program...",
+  "downloading-program-dialog-close-button-text": "JA_Close",
+  "downloading-program-dialog-error-text": "JA_Error downloading program. Please try again.",
+  
+  "class-name-green": "JA_Green",
+  "class-name-purple": "JA_Purple",
+  "class-name-orange": "JA_Orange",
+  
+  "loading-text": "JA_Loading"
+}

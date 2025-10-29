@@ -1,0 +1,56 @@
+{
+  "intro-text": "Teach a machine using your camera, live in the browser. No coding required.",
+  "intro-button-text": "Let's go!",
+
+  "input-section-title": "Input",
+  "input-section-connect-error-update-req": "Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <link>update your firmware</link> before you can connect to this micro:bit.",
+  "input-section-connect-error-no-device-selected": "No device selected. Plug in a micro:bit and <link>click here to try again</link>.",
+  "input-section-connect-error-clear-connect": "Another process is connected to this device. Close any other tabs that may be using WebUSB (for example, MakeCode, Python Editor, CreateAI), or unplug and replug the micro:bit before <link>clicking here to try again</link>.",
+  "input-section-connect-error-disconnected": "The micro:bit got disconnected. <link>Click here to try again</link>.",
+  "input-section-connect-error-generic": "Replug the micro:bit and <link>click here to try again</link>.",
+
+  "learning-section-title": "Learning",
+  "learning-section-reset-link": "Reset",
+  "learning-section-confidence-label": "Confidence",
+  "learning-section-examples-label": "{numExamples} examples",
+  "learning-section-train-green-button-text": "Train green (button A)",
+  "learning-section-train-purple-button-text": "Train purple (button B)",
+  "learning-section-train-orange-button-text": "Train orange (A+B)",
+
+  "output-section-title": "Output",
+  "output-section-led-title": "LED",
+  "output-section-led-edit-label": "Show",
+  "output-section-led-option-label-heart": "Heart",
+  "output-section-led-option-label-smile": "Smile",
+  "output-section-led-option-label-nothing": "Nothing",
+
+  "output-section-sound-title": "Sound",
+  "output-section-sound-edit-label": "Play",
+  "output-section-sound-option-label-hello": "Hello",
+  "output-section-sound-option-label-spring": "Spring",
+  "output-section-sound-option-label-nothing": "Nothing",
+
+  "output-section-servo-title": "Servo",
+  "output-section-servo-edit-label": "Do",
+  "output-section-servo-option-label-slow-wave": "Slow wave",
+  "output-section-servo-option-label-fast-wave": "Fast wave",
+  "output-section-servo-option-label-nothing": "Nothing",
+
+  "output-section-code-title": "Code",
+  "output-section-code-out-of-sync-warning": "Your latest program has not be downloaded.",
+  "output-section-edit-in-makecode-button-text": "Edit in MakeCode",
+  
+  "code-editor-back-button-text": "Back",
+  "code-editor-out-of-sync-warning": "Press Download to re-enable the camera",
+  "code-editor-detected-class-indicator": "Detected: {className}",
+  
+  "downloading-program-dialog-progress-text": "Downloading program...",
+  "downloading-program-dialog-close-button-text": "Close",
+  "downloading-program-dialog-error-text": "Error downloading program. Please try again.",
+  
+  "class-name-green": "Green",
+  "class-name-purple": "Purple",
+  "class-name-orange": "Orange",
+  
+  "loading-text": "Loading"
+}

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
+import I18n from "./I18n.js";
 import Microbit from "./microbit/Microbit";
 
 // limitations under the License.
@@ -60,7 +61,8 @@ let GLOBALS = {
 	audioContext: new AudioContext(),
 	isBackFacingCam: true,
 	microbitName: null,
-	microbit: new Microbit()
+	microbit: new Microbit(),
+	i18n: new I18n(),
 };
 
 export default GLOBALS;

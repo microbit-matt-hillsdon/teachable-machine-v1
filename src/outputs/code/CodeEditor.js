@@ -36,7 +36,7 @@ class CodeEditor {
         this.topBar = document.createElement("div");
         this.topBar.classList.add("top-bar");
         this.backButton = document.createElement("button");
-        this.backButton.innerText = "< Back";
+        this.backButton.innerText = `< ${GLOBALS.i18n.t("code-editor-back-button-text")}`;
         this.backButton.addEventListener("click", this.close.bind(this));
         this.topBar.appendChild(this.backButton);
         this.classDetectedStatus = document.createElement("div");
@@ -63,19 +63,7 @@ class CodeEditor {
         this.iframeWrapper.appendChild(this.iframe);
 
         // Progress dialog.
-        this.progressDialog = document.createElement("dialog");
-        this.progressDialogContent = document.createElement("div");
-        this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
-        this.progressDialog.appendChild(this.progressDialogContent);
-        this.progressDialogCloseBtn = document.createElement("button");
-        this.progressDialogCloseBtn.innerText = "Close";
-        this.progressDialogCloseBtn.addEventListener("click", () => {
-            this.progressDialog.close();
-            this.progressDialogCloseBtn.style.display = "none";
-            this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
-        })
-        this.progressDialog.appendChild(this.progressDialogCloseBtn);
-        this.element.appendChild(this.progressDialog);
+        this.progressDialog = new DownloadingProgressDialog(this.element);
 
         // Create and initialise an instance of MakeCodeFrameDriver.
         this.project = soundMakeCodeProject;
@@ -187,7 +175,12 @@ class CodeEditor {
 
     onClassDetected(event) {
         const className = event.detail.className;
-        this.classDetectedStatus.innerHTML = `<p>Detected: ${className}</p>`;
+        const translatedClassname = GLOBALS.i18n.t(`class-name-${className}`);
+        const detectedStatusText = GLOBALS.i18n.t(
+            "code-editor-detected-class-indicator", 
+            { className: translatedClassname }
+        );
+        this.classDetectedStatus.innerHTML = `<p>${detectedStatusText}</p>`;
         this.topBar.className = `top-bar detected ${className}`;
     }
 
@@ -197,7 +190,8 @@ class CodeEditor {
     }
 
     #showTopBarPausedStatus() {
-        this.classDetectedStatus.innerHTML = "<p><span style='font-weight: bold'>⚠️ Press Download to re-enable the camera</span></p>";
+        const warningText = GLOBALS.i18n.t("code-editor-out-of-sync-warning")
+        this.classDetectedStatus.innerHTML = `<p><span style='font-weight: bold'>⚠️ ${warningText}</span></p>`;
         this.topBar.className = "top-bar";
     }
 
@@ -206,18 +200,16 @@ class CodeEditor {
             await GLOBALS.microbit.downloadProgram(e.hex, (progress) => {
                 if (progress) {
                     const percentage = Math.round(progress * 100);
-                    this.progressDialogContent.innerHTML = `Downloading program...<br/>${percentage}%`;
+                    this.progressDialog.setProgress(percentage)
                 }
                 if (!this.progressDialog.open) {
-                    this.progressDialog.showModal();
+                    this.progressDialog.show();
                 }
             });
             this.progressDialog.close();
             this.#setDeviceSynced(true);
-            this.progressDialogContent.innerHTML = "Downloading program...<br/>0%";
         } catch (e) {
-            this.progressDialogCloseBtn.style.display = "block";
-            this.progressDialogContent.innerHTML = `Error downloading program. Please try again.`;
+            this.progressDialog.showError();
         }
     }
 
@@ -234,6 +226,42 @@ class CodeEditor {
             URL.revokeObjectURL(url);
         }
     };
+}
+
+class DownloadingProgressDialog {
+    constructor(parentEl) {
+        // Build dialog
+        this.dialog = document.createElement("dialog");
+        this.dialogContent = document.createElement("div");
+        this.setProgress(0);
+        this.dialog.appendChild(this.dialogContent);
+        this.closeBtn = document.createElement("button");
+        this.closeBtn.innerText = GLOBALS.i18n.t("downloading-program-dialog-close-button-text");
+        this.closeBtn.addEventListener("click", this.close.bind(this))
+        this.dialog.appendChild(this.closeBtn);
+        parentEl.appendChild(this.dialog);
+    }
+
+    show() {
+        this.dialog.showModal();
+    }
+
+    close() {
+        this.dialog.close();
+        this.closeBtn.style.display = "none";
+        this.setProgress(0);
+    }
+
+    setProgress(percentage) {
+        const text = GLOBALS.i18n.t("downloading-program-dialog-progress-text");
+        this.dialogContent.innerHTML = `${text}<br/>${percentage}%`;
+    }
+
+    showError() {
+        this.closeBtn.style.display = "block";
+        const errorMsg = GLOBALS.i18n.t("downloading-program-dialog-error-text");
+        this.dialogContent.innerHTML = errorMsg;
+    }
 }
 
 import GLOBALS from "../../config.js";
