@@ -22,9 +22,16 @@ class Microbit {
             document.removeEventListener("visibilitychange", this.connection.visibilityChangeListener);
         })();
 
+        // Ignore serial data until micro:bit is ready (connected, with the
+        // correct program, and the webcam has started).
+        this.ignoreSerialData = true;
+
         // Initialise micro:bit serial listeners.
         this.serialBuffer = "";
         this.serialDataListener = (event) => {
+            if (this.ignoreSerialData) {
+                return;
+            }
             const cmds = (this.serialBuffer + event.data).split("\n");
             this.serialBuffer = cmds[cmds.length - 1];
             cmds.forEach((cmd, idx) => {
@@ -40,6 +47,7 @@ class Microbit {
             if (event.status !== ConnectionStatus.CONNECTED) {
                 const customEvent = new CustomEvent("disconnected", {});
                 window.dispatchEvent(customEvent);
+                this.ignoreSerialData = true
             }
         };
         this.connection.addEventListener("status", this.serialStatusListener);
@@ -95,6 +103,10 @@ class Microbit {
             { partial: true, progress }
         );
     };
+
+    ready = () => {
+        this.ignoreSerialData = false;
+    }
 
     usbReset = async () => {
         await this.connection.clearDevice();

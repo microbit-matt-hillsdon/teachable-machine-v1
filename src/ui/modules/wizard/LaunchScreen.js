@@ -146,6 +146,7 @@ class LaunchScreen {
             this.connectStatusDisplay.hide();
             GLOBALS.camInput.start();
             this.hasConnectedBefore = true;
+            GLOBALS.microbit.ready();
         } catch (err) {
             const errMessage = connectionErrorMsg[err.code] ?? connectionErrorMsg.generic;
             await GLOBALS.microbit.usbReset();
