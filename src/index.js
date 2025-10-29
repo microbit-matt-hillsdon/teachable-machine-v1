@@ -30,9 +30,8 @@ import * as Sentry from "@sentry/browser";
 
 function init() {
   Sentry.init({
-    // TODO: Replace with correct project DSN
-    dsn: "https://255eeec84256bcb3045e0f20f535eee0@o333751.ingest.us.sentry.io/4507108147003392",
-    release: "microbit-teachablemachine",
+    dsn: "https://15e0b368863e98ae12ae95727dd72bab@o333751.ingest.us.sentry.io/4510273655013376",
+    sendDefaultPii: false,
     enabled: window.location.hostname === 'microbit.teachable-machine-v1.pages.dev'
   });
 
