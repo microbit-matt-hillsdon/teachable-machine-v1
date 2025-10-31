@@ -54,7 +54,7 @@ class CodeEditor {
         this.iframe.src = createMakeCodeURL(
             "https://makecode.microbit.org",
             undefined, // Version.
-            undefined, // Language.
+            GLOBALS.i18n.locale, // Language.
             2, // Controller.
             { hideMenu: "" } // Query params.
         );
