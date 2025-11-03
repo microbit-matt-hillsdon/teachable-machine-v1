@@ -23,7 +23,12 @@ class LaunchScreen {
         this.messageIsNotCompatible = document.querySelector('#is-not-compatible');
 
         this.startButton.element.classList.add('button--disabled');
-        document.querySelector('.wizard__browser-warning').style.display = 'block';
+        const browserWarningDiv = document.querySelector('.wizard__browser-warning')
+        browserWarningDiv.style.display = 'block';
+        browserWarningDiv.innerHTML = `${GLOBALS.i18n.t("intro-browser-incompatible-1")} 
+        <br> ${GLOBALS.i18n.t("intro-browser-incompatible-2", {
+            link: chunks => `<a class="link" href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">${chunks}</a>`
+        })}`
 
         let facebookButton = document.querySelector('.intro__share-link--facebook');
         let twitterButton = document.querySelector('.intro__share-link--twitter');

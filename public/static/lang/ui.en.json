@@ -1,6 +1,8 @@
 {
   "intro-text": "Teach a machine using your camera, live in the browser. No coding required.",
   "intro-button-text": "Let's go!",
+  "intro-browser-incompatible-1": "Sorry, your browser doesn’t support the latest technologies.",
+  "intro-browser-incompatible-2": "Download <link>Google Chrome</link> to use this and other experiments.",
 
   "input-section-title": "Input",
   "input-section-connect-error-update-req": "Connecting to the micro:bit failed because the firmware on your micro:bit is too old. You must <link>update your firmware</link> before you can connect to this micro:bit.",
