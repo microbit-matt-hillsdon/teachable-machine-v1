@@ -63,8 +63,8 @@ class LEDOutput {
         ];
 
         this.defaultAssets = [
-            "heart",
-            "smile",
+            "Heart",
+            "Smile",
             null,
         ];
 
@@ -120,7 +120,7 @@ class LEDOutput {
             input.value = GLOBALS.i18n.t(
                 LEDIcon === null 
                     ? "output-section-led-option-label-nothing"
-                    : `output-section-led-option-label-${LEDIcon}`
+                    : `output-section-led-option-label-${LEDIcon.toLowerCase()}`
             ) 
             
             inputClass.appendChild(editIcon);
