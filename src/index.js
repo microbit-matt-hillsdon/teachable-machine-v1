@@ -26,8 +26,15 @@ import Wizard from './ui/modules/Wizard.js';
 import Recording from './ui/modules/Recording';
 import LaunchScreen from './ui/modules/wizard/LaunchScreen.js';
 import BrowserUtils from './ui/components/BrowserUtils';
+import * as Sentry from "@sentry/browser";
 
 function init() {
+  Sentry.init({
+    dsn: "https://15e0b368863e98ae12ae95727dd72bab@o333751.ingest.us.sentry.io/4510273655013376",
+    sendDefaultPii: false,
+    enabled: window.location.hostname === 'microbit.teachable-machine-v1.pages.dev'
+  });
+
   // E.g. refreshing the page on the /code route.
   if (window.location.pathname !== routes.home) {
     history.replaceState(null, "", routes.home);
