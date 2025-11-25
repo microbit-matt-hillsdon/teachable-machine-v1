@@ -1,0 +1,59 @@
+{
+  "intro-text": "カメラを使ってブラウザ上で機械学習を体験できます。プログラミング不要。",
+  "intro-button-text": "始める",
+  "intro-browser-incompatible-1": "申し訳ございません。お使いのブラウザは最新技術に対応していません。",
+  "intro-browser-incompatible-2": "この実験や他の実験を使用するには、<link>Google Chrome</link>をダウンロードしてください。",
+
+  "input-section-title": "入力",
+  "input-section-connect-error-update-req": "micro:bitのファームウェアが古いため接続に失敗しました。このmicro:bitに接続する前に<link>ファームウェアを更新</link>する必要があります。",
+  "input-section-connect-error-no-device-selected": "デバイスが選択されていません。micro:bitを接続して<link>ここをクリックして再試行</link>してください。",
+  "input-section-connect-error-clear-connect": "別のプロセスがこのデバイスに接続されています。WebUSBを使用している他のタブ(MakeCode、Python Editor、CreateAIなど)を閉じるか、micro:bitを抜き差ししてから<link>ここをクリックして再試行</link>してください。",
+  "input-section-connect-error-disconnected": "micro:bitが切断されました。<link>ここをクリックして再試行</link>してください。",
+  "input-section-connect-error-generic": "micro:bitを抜き差しして<link>ここをクリックして再試行</link>してください。",
+
+  "learning-section-title": "学習",
+  "learning-section-reset-link": "リセット",
+  "learning-section-confidence-label": "信頼度",
+  "learning-section-examples-label": "{numExamples}個のサンプル",
+  "learning-section-train-green-button-text": "緑を学習(ボタンA)",
+  "learning-section-train-purple-button-text": "紫を学習(ボタンB)",
+  "learning-section-train-orange-button-text": "オレンジを学習(A+B)",
+
+  "output-section-title": "出力",
+  "output-section-led-title": "LED",
+  "output-section-led-edit-label": "表示",
+  "output-section-led-option-label-heart": "ハート",
+  "output-section-led-option-label-smile": "スマイル",
+  "output-section-led-option-label-nothing": "なし",
+
+  "output-section-sound-title": "サウンド",
+  "output-section-sound-edit-label": "再生",
+  "output-section-sound-option-label-hello": "ハロー",
+  "output-section-sound-option-label-spring": "バネ",
+  "output-section-sound-option-label-nothing": "なし",
+
+  "output-section-servo-title": "サーボ",
+  "output-section-servo-edit-label": "動作",
+  "output-section-servo-option-label-slow-wave": "ゆっくり動く",
+  "output-section-servo-option-label-fast-wave": "速く動く",
+  "output-section-servo-option-label-nothing": "なし",
+
+  "output-section-code-title": "コード",
+  "output-section-code-out-of-sync-warning": "最新のプログラムがダウンロードされていません。",
+  "output-section-reset-code-to-default-button-text": "コードをこれにリセット",
+  "output-section-edit-in-makecode-button-text": "MakeCodeで編集",
+  
+  "code-editor-back-button-text": "戻る",
+  "code-editor-out-of-sync-warning": "ダウンロードを押してカメラを再度有効にしてください",
+  "code-editor-detected-class-indicator": "検出: {className}",
+  
+  "downloading-program-dialog-progress-text": "プログラムをダウンロード中...",
+  "downloading-program-dialog-close-button-text": "閉じる",
+  "downloading-program-dialog-error-text": "プログラムのダウンロードに失敗しました。もう一度お試しください。",
+  
+  "class-name-green": "緑",
+  "class-name-purple": "紫",
+  "class-name-orange": "オレンジ",
+  
+  "loading-text": "読み込み中"
+}

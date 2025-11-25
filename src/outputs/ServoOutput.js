@@ -18,8 +18,8 @@ class ServoOutput {
 
         // Corresponds with servo options in MakeCode.
         this.microbitServoOptions = [
-            "slow wave",
-            "fast wave",
+            "slow-wave",
+            "fast-wave",
             ...[...Array(13).keys()].map((i) => `${i * 15}`),
         ];
 
@@ -63,15 +63,23 @@ class ServoOutput {
             inputClass.servoOption = option;
 
             let editIcon = document.createElement("div");
+            let editLabel = document.createElement("label");
+			editLabel.classList.add("output__edit-label");
+			editLabel.innerText = GLOBALS.i18n.t("output-section-servo-edit-label")
             editIcon.classList.add("output__servo-edit");
             editIcon.classList.add(`output__servo-edit--${id}`);
+            editIcon.appendChild(editLabel);
 
             let input = document.createElement("input");
             input.classId = id;
             input.classList.add("output__servo-input");
             input.classList.add(`output__servo-input--${id}`);
             input.setAttribute("readonly", "readonly");
-            input.value = option === null ? "nothing" : option;
+			input.value = GLOBALS.i18n.t(
+                option === null 
+                    ? "output-section-servo-option-label-nothing"
+                    : `output-section-servo-option-label-${option}`
+			) 
             inputClass.appendChild(editIcon);
             inputClass.appendChild(input);
 
@@ -84,7 +92,7 @@ class ServoOutput {
         this.openMakeCodeBtn.classList.add("button");
         this.openMakeCodeBtn.classList.add("button--open-makecode");
         this.openMakeCodeBtn.disabled = true;
-        this.openMakeCodeBtn.innerText = "Edit in MakeCode";
+        this.openMakeCodeBtn.innerText = GLOBALS.i18n.t("output-section-edit-in-makecode-button-text");
         this.openMakeCodeBtn.addEventListener(
             "click",
             this.openMakeCode.bind(this)
@@ -108,7 +116,7 @@ class ServoOutput {
     }
 
     onEditorOpened() {
-        this.openMakeCodeBtn.innerText = "Reset my code to this";
+        this.openMakeCodeBtn.innerText = GLOBALS.i18n.t("output-section-reset-code-to-default-button-text");
     }
 
     clearInput(event) {

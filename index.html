@@ -44,16 +44,12 @@
                 <h1 class="intro__title"><span class="hidden-text">Teachable Machine</span><img
                     src="static/teachable-machine-splash-desktop.svg" alt="" class="intro__title-image intro__title-image--desktop"><img src="static/teachable-machine-splash-desktop.svg" alt="" class="intro__title-image intro__title-image--mobile"></h1>
                     <span class="intro__content-desktop">
-                        <p class="intro__text">Teach a machine using your camera,<span class="intro__text-break"></span> live in the browser. No coding required.</p>
+                        <p data-i18n="intro-text" class="intro__text"></p>
                         <div class="intro__cta">
                             <a href="#" class="button button--large button--color-blue" id="start-tutorial-button">
-                                <span class="button__content">
-                                    <span class="icon icon--speaker">
-                                    </span>
-                                    Let’s Go!
-                                </span>
+                                <span class="button__content" data-i18n="intro-button-text"></span>
                             </a>
-                            <p class="wizard__browser-warning">Sorry, your browser doesn’t support the latest technologies. <br>Download <a class="link" href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">Google Chrome</a> to use this and other experiments.</p>
+                            <p class="wizard__browser-warning"></p>
                         </div>
                     </span>
                     <span class="intro__content-mobile" id="is-compatible">
@@ -71,17 +67,12 @@
                         browser like Chrome.
                     </span>
                 </div>
-                <div class="intro__footer">
-                    <a href="https://experiments.withgoogle.com/ai" target="_blank" class="link intro__footer-link--left"><img
-                        src="./static/footer-intro.svg" class="intro__footer-image"
-                        alt="Made with some friends at Google"></a>
-                        <a href="https://www.google.com/policies/" target="_blank" class="link link--grey intro__footer-link--right">Privacy &amp; Terms</a>
-                    </div>
+                <div class="intro__footer"></div>
                 </div>
                 <div class="machine" id="machine">
                     <div class="machine__sections">
                         <div id="input-section" class="section section--disabled input section--input">
-                            <h2 class="section__title"><span>Input</span></h2>
+                            <h2 class="section__title"><span data-i18n="input-section-title"></span></h2>
                             <div class="section__container">
                                 <div class="input__media">
                                     <p id="input__media__activate" class="input__media__activate"></p>
@@ -111,69 +102,69 @@
                             <span class="arrow-line"></span>
                             <span class="arrow-line"></span>
                         </a>
-                        <h2 class="section__title section__title--learning"><span>Learning</span></h2>
+                        <h2 class="section__title section__title--learning"><span data-i18n="learning-section-title"></span></h2>
                         <div class="section__container">
                             <div id="green" class="learning__class learning__class--disabled learning__class--green">
                                 <div class="examples">
-                                    <div class="machine__status examples__status"><span class="examples__counter">0</span> examples</div>
+                                    <div class="machine__status examples__status"></div>
                                     <div class="examples__wrapper">
                                         <img src="static/close.svg" class="examples__close-icon">
-                                        <a href="#" class="link link--reset">Reset</a>
+                                        <a href="#" class="link link--reset" data-i18n="learning-section-reset-link"></a>
                                         <canvas class="examples__viewer"></canvas>
                                     </div>
                                 </div>
                                 <div class="learning__class-column">
                                     <div class="confidence">
-                                        <div class="machine__status confidence__status">Confidence</div>
+                                        <div class="machine__status confidence__status" data-i18n="learning-section-confidence-label"></div>
                                         <div class="machine__meter">
                                             <div class="machine__value machine__value--color-green">
                                                 <div class="machine__percentage machine__percentage--white">0%</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="#" class="button button--record button--color-green"><span class="button__content button__content--small">Train <br>Green (button A)</span></a>
+                                    <a href="#" class="button button--record button--color-green"><br><span class="button__content button__content--small" data-i18n="learning-section-train-green-button-text"></span></a>
                                 </div>
                             </div>
                             <div id="purple" class="learning__class learning__class--disabled learning__class--purple">
                                 <div class="examples">
-                                    <div class="machine__status examples__status"><span class="examples__counter">0</span> examples</div>
+                                    <div class="machine__status examples__status"></div>
                                     <div class="examples__wrapper">
                                         <img src="static/close.svg" class="examples__close-icon">
-                                        <a href="#" class="link link--reset">Reset</a>
+                                        <a href="#" class="link link--reset" data-i18n="learning-section-reset-link"></a>
                                         <canvas class="examples__viewer"></canvas>
                                     </div>
                                 </div>
                                 <div class="learning__class-column">
                                     <div class="confidence">
-                                        <div class="machine__status confidence__status">Confidence</div>
+                                        <div class="machine__status confidence__status" data-i18n="learning-section-confidence-label"></div>
                                         <div class="machine__meter">
                                             <div class="machine__value machine__value--color-purple">
                                                 <div class="machine__percentage machine__percentage--white">0%</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="#" class="button button--record button--color-purple"><span class="button__content button__content--small">Train <br>Purple (button B)</span></a>
+                                    <a href="#" class="button button--record button--color-purple"><br><span class="button__content button__content--small" data-i18n="learning-section-train-purple-button-text"></span></a>
                                 </div>
                             </div>
                             <div id="orange" class="learning__class learning__class--disabled learning__class--orange">
                                 <div class="examples">
-                                    <div class="machine__status examples__status"><span class="examples__counter">0</span> examples</div>
+                                    <div class="machine__status examples__status"></div>
                                     <div class="examples__wrapper">
                                         <img src="static/close.svg" class="examples__close-icon">
-                                        <a href="#" class="link link--reset">Reset</a>
+                                        <a href="#" class="link link--reset" data-i18n="learning-section-reset-link"></a>
                                         <canvas class="examples__viewer"></canvas>
                                     </div>
                                 </div>
                                 <div class="learning__class-column">
                                     <div class="confidence">
-                                        <div class="machine__status confidence__status">Confidence</div>
+                                        <div class="machine__status confidence__status" data-i18n="learning-section-confidence-label"></div>
                                         <div class="machine__meter">
                                             <div class="machine__value machine__value--color-orange">
                                                 <div class="machine__percentage machine__percentage--white">0%</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="#" class="button button--record button--color-orange"><span class="button__content button__content--small">Train <br>Orange (A+B)</span></a>
+                                    <a href="#" class="button button--record button--color-orange"><br><span class="button__content button__content--small" data-i18n="learning-section-train-orange-button-text"></span></a>
                                 </div>
                             </div>
                         </div>
@@ -205,14 +196,14 @@
               </svg>
           </div>
           <div id="output-section" class="section section--disabled output section--output">
-            <h2 class="section__title"><span>Output</span></h2>
+            <h2 class="section__title"><span data-i18n="output-section-title"></span></h2>
             <div class="section__container">
                 <div class="output__controls">
                     <div class="output__selector-wrapper">
-                        <div id="LEDOutput" class="output_selector__option output_selector__option--selected">LED</div>
-                        <div id="SoundOutput" class="output_selector__option">Sound</div>
-                        <div id="ServoOutput" class="output_selector__option">Servo</div>
-                        <div id="CodeOutput" class="output_selector__option">Code</div>
+                        <div id="LEDOutput" class="output_selector__option output_selector__option--selected" data-i18n="output-section-led-title">LED</div>
+                        <div id="SoundOutput" class="output_selector__option" data-i18n="output-section-sound-title">Sound</div>
+                        <div id="ServoOutput" class="output_selector__option" data-i18n="output-section-servo-title">Servo</div>
+                        <div id="CodeOutput" class="output_selector__option" data-i18n="output-section-code-title">Code</div>
                         <!-- Hide non-micro:bit outputs -->
                         <!-- <div id="GIFOutput" class="output_selector__option output_selector__option--selected">GIF</div> -->
                         <!-- <div id="SpeechOutput" class="output_selector__option">Speech</div> -->

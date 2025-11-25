@@ -13,12 +13,8 @@
 // limitations under the License.
 
 import '../style/main.styl';
-import TweenMax from 'gsap';
-
 import GLOBALS from './config.js';
 import routes from './routes.js';
-import Button from './ui/components/Button.js';
-import IntroSection from './ui/modules/IntroSection.js';
 import InputSection from './ui/modules/InputSection.js';
 import LearningSection from './ui/modules/LearningSection.js';
 import OutputSection from './ui/modules/OutputSection.js';
@@ -28,7 +24,7 @@ import LaunchScreen from './ui/modules/wizard/LaunchScreen.js';
 import BrowserUtils from './ui/components/BrowserUtils';
 import * as Sentry from "@sentry/browser";
 
-function init() {
+async function init() {
   Sentry.init({
     dsn: "https://15e0b368863e98ae12ae95727dd72bab@o333751.ingest.us.sentry.io/4510273655013376",
     sendDefaultPii: false,
@@ -39,6 +35,8 @@ function init() {
   if (window.location.pathname !== routes.home) {
     history.replaceState(null, "", routes.home);
   }
+
+	await GLOBALS.i18n.initialise();
 
 	// Shim for forEach for IE/Edge
   if (typeof NodeList.prototype.forEach !== 'function') {
