@@ -26,7 +26,7 @@ class CodeOutput {
         this.container.classList.add("output__code-container");
         this.element.appendChild(this.container);
 
-        this.renderer = createMakeCodeRenderBlocks({});
+        this.renderer = createMakeCodeRenderBlocks({ lang: GLOBALS.i18n.locale });
         this.renderer.initialize();
 
         this.codePreviews = document.createElement("div");
