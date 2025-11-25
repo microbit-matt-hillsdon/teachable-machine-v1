@@ -8,6 +8,7 @@ class I18n {
   }
 
   async initialise() {
+    this.#configHtmlLang();
     await this.#load();
     this.#translatePage();
   }
@@ -32,6 +33,11 @@ class I18n {
     for (const [key, message] of Object.entries(this.messages)) {
       this.formatters[key] = new IntlMessageFormat(message, this.locale);
     }
+  }
+
+  #configHtmlLang() {
+    const htmlEl = document.querySelector("html")
+    htmlEl.lang = this.locale
   }
 
   t(key, values = {}) {
