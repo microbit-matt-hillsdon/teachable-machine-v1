@@ -159,7 +159,7 @@ class LEDOutput {
     }
 
     onEditorOpened() {
-        this.openMakeCodeBtn.innerText = "Reset my code to this";
+        this.openMakeCodeBtn.innerText = GLOBALS.i18n.t("output-section-reset-code-to-default-button-text");
     }
 
     clearInput(event) {

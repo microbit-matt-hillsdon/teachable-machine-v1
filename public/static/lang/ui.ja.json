@@ -40,6 +40,7 @@
 
   "output-section-code-title": "コード",
   "output-section-code-out-of-sync-warning": "最新のプログラムがダウンロードされていません。",
+  "output-section-reset-code-to-default-button-text": "コードをこれにリセット",
   "output-section-edit-in-makecode-button-text": "MakeCodeで編集",
   
   "code-editor-back-button-text": "戻る",
