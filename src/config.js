@@ -19,7 +19,7 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 let GLOBALS = {
 	button: {
 		padding: 0,
-		frontHeight: 40,
+		frontHeight: 50,
 		states: {
 			normal: {
 				x: 8,
