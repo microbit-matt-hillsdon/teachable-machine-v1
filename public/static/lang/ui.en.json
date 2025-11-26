@@ -39,7 +39,7 @@
   "output-section-servo-option-label-nothing": "Nothing",
 
   "output-section-code-title": "Code",
-  "output-section-code-out-of-sync-warning": "Your latest program has not be downloaded.",
+  "output-section-code-out-of-sync-warning": "Your latest program has not been downloaded.",
   "output-section-reset-code-to-default-button-text": "Reset my code to this",
   "output-section-edit-in-makecode-button-text": "Edit in MakeCode",
   
