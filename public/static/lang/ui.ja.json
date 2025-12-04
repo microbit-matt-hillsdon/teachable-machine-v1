@@ -1,6 +1,6 @@
 {
-  "intro-text": "カメラを使ってブラウザ上で機械学習を体験できます。プログラミング不要。",
-  "intro-button-text": "始める",
+  "intro-text": "カメラを使ってブラウザ上で機械学習を体験できます。プログラミングは不要です。",
+  "intro-button-text": "はじめよう！",
   "intro-browser-incompatible-1": "申し訳ございません。お使いのブラウザは最新技術に対応していません。",
   "intro-browser-incompatible-2": "この実験や他の実験を使用するには、<link>Google Chrome</link>をダウンロードしてください。",
 
@@ -15,9 +15,9 @@
   "learning-section-reset-link": "リセット",
   "learning-section-confidence-label": "信頼度",
   "learning-section-examples-label": "{numExamples}個のサンプル",
-  "learning-section-train-green-button-text": "緑を学習(ボタンA)",
-  "learning-section-train-purple-button-text": "紫を学習(ボタンB)",
-  "learning-section-train-orange-button-text": "オレンジを学習(A+B)",
+  "learning-section-train-green-button-text": "緑の学習(ボタンA)",
+  "learning-section-train-purple-button-text": "紫の学習(ボタンB)",
+  "learning-section-train-orange-button-text": "オレンジの学習(A+B)",
 
   "output-section-title": "出力",
   "output-section-led-title": "LED",
@@ -40,10 +40,10 @@
 
   "output-section-code-title": "コード",
   "output-section-code-out-of-sync-warning": "最新のプログラムがダウンロードされていません。",
-  "output-section-reset-code-to-default-button-text": "コードをこれにリセット",
+  "output-section-reset-code-to-default-button-text": "コードをリセット",
   "output-section-edit-in-makecode-button-text": "MakeCodeで編集",
   
-  "code-editor-back-button-text": "戻る",
+  "code-editor-back-button-text": "もどる",
   "code-editor-out-of-sync-warning": "ダウンロードを押してカメラを再度有効にしてください",
   "code-editor-detected-class-indicator": "検出: {className}",
   
