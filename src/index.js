@@ -28,7 +28,8 @@ async function init() {
   Sentry.init({
     dsn: "https://15e0b368863e98ae12ae95727dd72bab@o333751.ingest.us.sentry.io/4510273655013376",
     sendDefaultPii: false,
-    enabled: window.location.hostname === 'microbit.teachable-machine-v1.pages.dev'
+    // We may enable again in the future.
+    enabled: false
   });
 
   // E.g. refreshing the page on the /code route.
