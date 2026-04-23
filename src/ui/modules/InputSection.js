@@ -26,6 +26,9 @@ class InputSection {
         this.mediaFlipButton = element.querySelector('.input__media__flip');
         this.mediaFlipButton.addEventListener('click', this.flipCamera.bind(this));
 
+        this.togglePhotoImageButton = element.querySelector('.input__logits__flip');
+        this.togglePhotoImageButton.addEventListener('click', this.togglePhotoImage.bind(this));
+
         this.inputContainer = element.querySelector('.input__media');
 
         this.currentInput = null;
@@ -219,6 +222,19 @@ class InputSection {
                 location.reload();
             }
         }
+    }
+
+    togglePhotoImage(event) {
+        event.preventDefault();
+        const showPhotoImage = !GLOBALS.webcamClassifier.showPhotoImage
+        const logitEvent = new CustomEvent("photo", {
+            detail: { showImage: showPhotoImage }
+        })
+        window.dispatchEvent(logitEvent);
+        this.togglePhotoImageButton.textContent = 
+            showPhotoImage
+            ? "Show logits" 
+            : "Show camera feed"
     }
 }
 
