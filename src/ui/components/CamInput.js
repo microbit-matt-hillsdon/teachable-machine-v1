@@ -18,9 +18,14 @@ class CamInput {
     this.element.classList.add('input__camera');
 
     this.webcamClassifier = new WebcamClassifier();
+    // The live <video> stays in the DOM as the frame source but is hidden;
+    // the preview canvas is what the user sees, refreshed at the throttled FPS.
     this.element.appendChild(this.webcamClassifier.video);
     this.webcamClassifier.video.setAttribute('muted', 'true');
     this.webcamClassifier.video.classList.add('input__camera-video');
+    this.webcamClassifier.video.style.visibility = 'hidden';
+    this.webcamClassifier.previewCanvas.classList.add('input__camera-video');
+    this.element.appendChild(this.webcamClassifier.previewCanvas);
     this.webcamClassifier.video.addEventListener(
         'loadeddata', this.videoLoaded.bind(this));
     window.addEventListener('resize', this.size.bind(this));

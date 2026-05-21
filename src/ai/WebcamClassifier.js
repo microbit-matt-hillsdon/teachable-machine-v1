@@ -33,6 +33,15 @@ export default class WebcamClassifier {
     this.blankCanvas = document.createElement('canvas');
     this.blankCanvas.width = 227;
     this.blankCanvas.height = 227;
+    // Canvas that mirrors the video at a throttled frame rate. This is what
+    // the UI displays and what training/prediction reads from, so the
+    // simulated lower frame rate affects both preview and capture.
+    this.previewCanvas = document.createElement('canvas');
+    this.previewCanvas.width = 227;
+    this.previewCanvas.height = 227;
+    this.previewCtx = this.previewCanvas.getContext('2d');
+    this.targetFps = 30;
+    this.lastPreviewDrawTime = 0;
     this.timer = null;
     this.active = false;
     this.wasActive = false;
@@ -204,6 +213,10 @@ export default class WebcamClassifier {
     this.startWebcam();
   }
 
+  setTargetFps(fps) {
+    this.targetFps = Number(fps) || 0;
+  }
+
   videoLoaded() {
     let flip = (GLOBALS.isBackFacingCam) ? 1 : -1;
     let videoRatio = this.video.videoWidth / this.video.videoHeight;
@@ -211,14 +224,20 @@ export default class WebcamClassifier {
     let parentWidth = parent.offsetWidth;
     let parentHeight = parent.offsetHeight;
     let videoWidth = parentHeight * videoRatio;
-    this.video.style.width = videoWidth + 'px';
-    this.video.style.height = parentHeight + 'px';
-    this.video.style.transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
 
-    // If video is taller:
+    this.previewCanvas.width = this.video.videoWidth;
+    this.previewCanvas.height = this.video.videoHeight;
+
+    const targets = [this.video, this.previewCanvas];
+    let transform = 'scaleX(' + flip + ') translate(' + (50 * flip * -1) + '%, -50%)';
     if (videoRatio < 1) {
-      this.video.style.transform = 'scale(' + (flip * 2) + ', 2) translate(' + (flip * 20 * -1) + '%, -30%)';
+      transform = 'scale(' + (flip * 2) + ', 2) translate(' + (flip * 20 * -1) + '%, -30%)';
     }
+    targets.forEach((target) => {
+      target.style.width = videoWidth + 'px';
+      target.style.height = parentHeight + 'px';
+      target.style.transform = transform;
+    });
   }
 
   blur() {
@@ -283,10 +302,30 @@ export default class WebcamClassifier {
   }
 
   async animate() {
-    // Get image data from video element
-    const image = this.video;
+    // Gate the whole frame on the simulated frame rate. requestAnimationFrame
+    // still drives the loop at ~60Hz, but we only "advance" a frame (copy from
+    // the video into the preview canvas, run capture/predict) when enough time
+    // has passed for the chosen FPS. Between advances the preview canvas keeps
+    // showing the last drawn frame, so the on-screen view and the captured
+    // images are both throttled to the same rate.
+    const now = performance.now();
+    const minInterval = this.targetFps > 0 ? 1000 / this.targetFps : 0;
+    if (now - this.lastPreviewDrawTime < minInterval) {
+      this.timer = requestAnimationFrame(this.animate.bind(this));
+      return;
+    }
+    this.lastPreviewDrawTime = now;
+
+    if (this.video.videoWidth > 0 && this.video.videoHeight > 0) {
+      this.previewCtx.drawImage(
+        this.video, 0, 0, this.previewCanvas.width, this.previewCanvas.height);
+    }
+
+    // Read all downstream image data from the throttled canvas, not the live
+    // video, so capture and on-screen preview stay in lockstep.
+    const image = this.previewCanvas;
     const exampleCount = Object.keys(this.classifier.getClassExampleCount()).length;
-    
+
     if (this.isDown) {
       this.current.imagesCount += 1;
       this.currentClass.setSamples(this.current.imagesCount);
@@ -297,7 +336,7 @@ export default class WebcamClassifier {
         this.current.latestImages.shift();
       }
       this.thumbContext.drawImage(
-        this.video, this.thumbVideoX, 0, this.thumbVideoWidthReal,
+        image, this.thumbVideoX, 0, this.thumbVideoWidthReal,
         this.thumbVideoHeight);
       let data = this.thumbContext.getImageData(
         0, 0, this.canvasWidth, this.canvasHeight);

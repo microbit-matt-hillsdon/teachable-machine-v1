@@ -58,6 +58,56 @@ async function init() {
 	if (localStorage.getItem('isBackFacingCam') && localStorage.getItem('isBackFacingCam') === 'true') {
 		GLOBALS.isBackFacingCam = true;
 	}
+
+	initFpsControl();
+}
+
+// Log-scale slider so you can reach sub-1-fps rates at the low end without
+// losing the high end. Slider position 0..max maps to fps MIN_FPS..MAX_FPS.
+const MIN_FPS = 0.1;
+const MAX_FPS = 30;
+const LOG_MIN = Math.log10(MIN_FPS);
+const LOG_RANGE = Math.log10(MAX_FPS) - LOG_MIN;
+
+function sliderToFps(pos, max) {
+	return Math.pow(10, LOG_MIN + (pos / max) * LOG_RANGE);
+}
+
+function formatFps(fps) {
+	if (fps >= 10) return String(Math.round(fps));
+	if (fps >= 1) return fps.toFixed(1);
+	if (fps >= 0.1) return fps.toFixed(2);
+	return fps.toFixed(3);
+}
+
+function initFpsControl() {
+	const slider = document.getElementById('fps-slider');
+	const valueEl = document.getElementById('fps-value');
+	if (!slider || !valueEl) return;
+
+	const sliderMax = Number(slider.max);
+	const storedPos = Number(localStorage.getItem('targetFpsSliderPos'));
+	const initialPos = Number.isFinite(storedPos) && storedPos >= 0 && storedPos <= sliderMax
+		? storedPos
+		: sliderMax;
+	slider.value = String(initialPos);
+
+	const apply = (pos) => {
+		const fps = sliderToFps(pos, sliderMax);
+		valueEl.textContent = formatFps(fps);
+		GLOBALS.targetFps = fps;
+		if (GLOBALS.webcamClassifier) {
+			GLOBALS.webcamClassifier.setTargetFps(fps);
+		}
+	};
+
+	apply(initialPos);
+
+	slider.addEventListener('input', () => {
+		const pos = Number(slider.value);
+		localStorage.setItem('targetFpsSliderPos', String(pos));
+		apply(pos);
+	});
 }
 
 window.addEventListener('load', init);
